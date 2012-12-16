@@ -13,21 +13,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerListener implements Listener {
 
 	public static DonationPoints plugin;
-	
+
 	public PlayerListener(DonationPoints instance) {
 		plugin = instance;
 	}
-	
+
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		Block block = event.getClickedBlock();
 		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-		
+
 		if (block.getState() instanceof Sign) {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
@@ -42,7 +43,7 @@ public class PlayerListener implements Listener {
 				try {
 					while (playerBalance1.next()) {
 						Double newbalance = playerBalance1.getDouble("balance");
-						
+
 						if (!(newbalance >= price)) {
 							player.sendMessage("§cYou don't have enough points for this pacakage.");
 						} else if (newbalance >= price) {
@@ -66,4 +67,25 @@ public class PlayerListener implements Listener {
 			}
 		}
 	}
+
+//	public void onPlayerLoginEvent(PlayerJoinEvent e) {
+//		Player player = e.getPlayer();
+//		String username = player.getName();
+//		ResultSet rs2 = DBConnection.query("SELECT player FROM points_players WHERE player = '" + username + "';", false);
+//		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
+//
+//			try {
+//				if (rs2.next()) {
+//					do {
+//						// Does Nothing if the player already has an account.
+//					} while (rs2.next());
+//				} else if (!rs2.next()) {
+//					DBConnection.query("INSERT INTO points_players(player, balance) VALUES ('" + username + "', 0", true);
+//					player.sendMessage("§aDonationPoints account created.");
+//				}
+//			} catch (SQLException ex) {
+//				ex.printStackTrace();
+//			}
+//		}
+//	}
 }

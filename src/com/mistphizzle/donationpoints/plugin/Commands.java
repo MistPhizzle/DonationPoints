@@ -58,7 +58,7 @@ public class Commands {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-					} else if (args.length == 2 && s.hasPermission("darkpoints.balance.others")) {
+					} else if (args.length == 2 && s.hasPermission("donationpoints.balance.others")) {
 						ResultSet rs2 = DBConnection.query("SELECT balance FROM points_players WHERE player = '" + args[1] + "';", false);
 						try {
 							if (rs2.next()) {

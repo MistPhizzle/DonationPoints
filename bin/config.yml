@@ -1,8 +1,5 @@
 # This is the default configuration for DonationPoints.
 # Change any information you wish unless documented otherwise not to do so.
-General:
-  #This is the version of the config the plugin is using. Please do not change this. This is to check for any updates your config may need.
-  config: 1.0
 MySQL:
   host: localhost
   port: 3306
