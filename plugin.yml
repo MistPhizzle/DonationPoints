@@ -1,6 +1,6 @@
 name: DonationPoints
 author: MistPhizzle
-version: 1.0
+version: 1.1-DEV
 main: com.mistphizzle.donationpoints.plugin.DonationPoints
 commands:
   donationpoints:

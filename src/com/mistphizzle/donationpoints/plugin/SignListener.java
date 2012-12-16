@@ -21,8 +21,7 @@ public class SignListener implements Listener {
 		String line1 = e.getLine(0);
 		
 		// Permissions
-		if (line1.equalsIgnoreCase("[Premium]"));
-		if (!p.hasPermission("donationpoints.sign.create")) {
+		if (line1.equalsIgnoreCase("[Premium]") && !p.hasPermission("donationpoints.sign.create")) {
 			e.setCancelled(true);
 			p.sendMessage("§cYou don't have permission to create DonationPoints signs.");
 		} else if (p.hasPermission("donationpoints.sign.create")) {
