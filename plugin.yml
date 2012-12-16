@@ -6,3 +6,22 @@ commands:
   donationpoints:
     usage: /<command>
     aliases: [dp, points]
+permissions:
+  donationpoints.admin:
+    default: op
+    children:
+      donationpoints.sign.create: true
+      donationpoints.sign.use: true
+      donationpoints.create: true
+      donationpoints.create.others: true
+      donationpoints.balance: true
+      donationpoints.balance.others: true
+      donationpoints.give: true
+      donationpoints.take: true
+      donationpoints.reload: true
+  donationpoints.user:
+    default: op
+    children:
+      donationpoints.sign.use: true
+      donationpoints.create: true
+      donationpoints.balance: true
