@@ -1,0 +1,8 @@
+name: DonationPoints
+author: MistPhizzle
+version: 1.0
+main: com.mistphizzle.donationpoints.plugin.DonationPoints
+commands:
+  donationpoints:
+    usage: /<command>
+    aliases: [dp, points]
