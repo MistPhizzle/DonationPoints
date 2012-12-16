@@ -62,9 +62,17 @@ public class DonationPoints extends JavaPlugin {
 		
 		DBConnection.init();
 		
-		//DBConnection.query("CREATE TABLE IF NOT EXISTS points_players(`id` INT NOT NULL AUTO INCREMENT, PRIMARY KEY(`id`), `username` varchar(32), `balance` double(32)", true);
+		// Register Commands
 		
 		cmd = new Commands(this);
+		
+		// Metrics
+		try {
+			MetricsLite metrics = new MetricsLite(this);
+			metrics.start();
+		} catch (IOException e) {
+			// Failed to submit stats.
+		}
 	}
 	
 	@Override
