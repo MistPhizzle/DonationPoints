@@ -18,6 +18,7 @@ permissions:
       donationpoints.balance.others: true
       donationpoints.give: true
       donationpoints.take: true
+      donationpoints.set: true
       donationpoints.reload: true
   donationpoints.user:
     default: op
@@ -25,3 +26,4 @@ permissions:
       donationpoints.sign.use: true
       donationpoints.create: true
       donationpoints.balance: true
+      donationpoints.confirm: true

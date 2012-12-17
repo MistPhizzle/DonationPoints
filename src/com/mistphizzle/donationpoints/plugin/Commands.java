@@ -10,18 +10,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 
 public class Commands {
-	
+
 	DonationPoints plugin;
-	
+
 	public Commands(DonationPoints instance) {
 		this.plugin = instance;
 		init();
 	}
-	
+
 	private void init() {
 		PluginCommand donationpoints = plugin.getCommand("donationpoints");
 		CommandExecutor exe;
-		
+
 		exe = new CommandExecutor() {
 			@Override
 			public boolean onCommand(CommandSender s, Command c, String label, String[] args) {
@@ -35,10 +35,10 @@ public class Commands {
 						s.sendMessage("§3/dp give <player> <amount>§f - Gives a player points.");
 					} if (s.hasPermission("donationpoints.take")) {
 						s.sendMessage("§3/dp take <player> <amount>§f - Takes a player's points.");
+					} if (s.hasPermission("donationpoints.set")) {
+						s.sendMessage("§3/dp set <player> <amount>§f - Sets a player's points.");
 					} if (s.hasPermission("donationpoints.reload")) {
 						s.sendMessage("§3/dp reload §f- Reloads Configuration / Packages.");
-					} if (s.hasPermission("donationpoints.packages")) {
-						s.sendMessage("§3/dp packs§f - Show the package sub commands.");
 					}
 					return true;
 				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
@@ -50,7 +50,7 @@ public class Commands {
 						try {
 							if (rs2.next()) {
 								do {
-									s.sendMessage("§aYou currently have" + rs2.getDouble("balance") + "§3 points.");
+									s.sendMessage("§aYou currently have §3" + rs2.getDouble("balance") + "§a points.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
 								s.sendMessage("§cYour balance can't be found!");
@@ -64,7 +64,7 @@ public class Commands {
 						try {
 							if (rs2.next()) {
 								do {
-									s.sendMessage("§a" + args[1] + " has §3 " + rs2.getDouble("balance") + "§3 points.");
+									s.sendMessage("§a" + args[1] + " has §3 " + rs2.getDouble("balance") + "§a points.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
 								s.sendMessage("§cWas unable to find a balance for §a " + args[1]);	
@@ -105,10 +105,10 @@ public class Commands {
 					}
 				} else if (args[0].equalsIgnoreCase("give") && args.length == 3 && s.hasPermission("donationpoints.give")) {
 					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1] + "';", true);
-					s.sendMessage("§eYou have given " + args[1] + " §a" + args[2] + "§epoints.");
+					s.sendMessage("§aYou have given §3" + args[1] + " §aa total of §3" + args[2] + " §apoints.");
 				} else if (args[0].equalsIgnoreCase("take") && args.length ==3 && s.hasPermission("donationpoints.take")) {
 					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + args[1] + "';", true);
-					s.sendMessage("§eYou have taken §a" + args[2] + "§e from " + args[1]);
+					s.sendMessage("§aYou have taken §3" + args[2] + "§a points from §3" + args[1]);
 				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
 					if (PlayerListener.purchases.containsKey(s.getName())) {
 						String pack2 = PlayerListener.purchases.get(s.getName());
@@ -118,14 +118,17 @@ public class Commands {
 						for (String cmd : commands) {
 							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
 						}
-						s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a.");
+						s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
 						s.sendMessage("§aYour balance has been updated.");
 						s.sendMessage("§aTransaction Complete.");
 						PlayerListener.purchases.remove(s.getName());
 					} else {
 						s.sendMessage("§cDoesn't look like you have started a transaction.");
 					}
-					
+				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
+					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1] + "';", true);
+					s.sendMessage("§aYou have set §3" + args[1] + "'s §abalance to §3" + args[2]);
+
 				} else {
 					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
 				} return true;
