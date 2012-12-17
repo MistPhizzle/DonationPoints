@@ -25,7 +25,6 @@ public class SignListener implements Listener {
 		Block block = e.getBlock();
 		Sign s = (Sign) block.getState();
 
-
 		// Permissions
 		if (line1.equalsIgnoreCase("[Premium]") && !p.hasPermission("donationpoints.sign.create")) {
 			e.setCancelled(true);

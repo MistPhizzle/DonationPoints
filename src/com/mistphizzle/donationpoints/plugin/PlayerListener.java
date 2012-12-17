@@ -2,6 +2,7 @@ package com.mistphizzle.donationpoints.plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -22,6 +23,9 @@ public class PlayerListener implements Listener {
 	public PlayerListener(DonationPoints instance) {
 		plugin = instance;
 	}
+	
+	public static HashMap<String, String> purchases = new HashMap();
+	public static HashMap<String, String> purchasedPack = new HashMap();
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -47,14 +51,21 @@ public class PlayerListener implements Listener {
 						if (!(newbalance >= price)) {
 							player.sendMessage("§cYou don't have enough points for this pacakage.");
 						} else if (newbalance >= price) {
-							DBConnection.query("UPDATE points_players SET balance = balance - " + price + " WHERE player = '" + username + "';", true);
-							List<String> commands = plugin.getConfig().getStringList("packages." + purchasedPack + ".commands");
-							for (String cmd : commands) {
-								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", username));
+							purchases.put(username, purchasedPack);
+							if (purchases.containsKey(username)) {
+								player.sendMessage("§aType §3/dp confirm §a to purchase §3" + purchasedPack + "§a for §3" + price + "§a points.");
+							} else {
+								player.sendMessage("Hashmap / other error.");
 							}
-							player.sendMessage("§aYou have just purchased §3" + purchasedPack + "§a for §3" + price + "§apoints.");
-							player.sendMessage("§aYour balance has been updated.");
-							player.sendMessage("§aTransaction completed.");
+//							DBConnection.query("UPDATE points_players SET balance = balance - " + price + " WHERE player = '" + username + "';", true);
+//							List<String> commands = plugin.getConfig().getStringList("packages." + purchasedPack + ".commands");
+//							for (String cmd : commands) {
+//								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", username));
+//							}
+							
+//							player.sendMessage("§aYou have just purchased §3" + purchasedPack + "§a for §3" + price + "§apoints.");
+//							player.sendMessage("§aYour balance has been updated.");
+//							player.sendMessage("§aTransaction completed.");
 						}
 					}
 					event.setUseItemInHand(Result.DENY);

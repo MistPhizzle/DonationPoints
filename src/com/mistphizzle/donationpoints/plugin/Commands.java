@@ -2,6 +2,7 @@ package com.mistphizzle.donationpoints.plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -108,6 +109,23 @@ public class Commands {
 				} else if (args[0].equalsIgnoreCase("take") && args.length ==3 && s.hasPermission("donationpoints.take")) {
 					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + args[1] + "';", true);
 					s.sendMessage("§eYou have taken §a" + args[2] + "§e from " + args[1]);
+				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
+					if (PlayerListener.purchases.containsKey(s.getName())) {
+						String pack2 = PlayerListener.purchases.get(s.getName());
+						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
+						DBConnection.query("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';", true);
+						List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+						for (String cmd : commands) {
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+						}
+						s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a.");
+						s.sendMessage("§aYour balance has been updated.");
+						s.sendMessage("§aTransaction Complete.");
+						PlayerListener.purchases.remove(s.getName());
+					} else {
+						s.sendMessage("§cDoesn't look like you have started a transaction.");
+					}
+					
 				} else {
 					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
 				} return true;
