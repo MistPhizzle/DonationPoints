@@ -49,7 +49,7 @@ public class PlayerListener implements Listener {
 						Double newbalance = playerBalance1.getDouble("balance");
 
 						if (!(newbalance >= price)) {
-							player.sendMessage("§cYou don't have enough points for this pacakage.");
+							player.sendMessage("§cYou don't have enough points for this package.");
 						} else if (newbalance >= price) {
 							purchases.put(username, purchasedPack);
 							if (purchases.containsKey(username)) {
