@@ -90,24 +90,4 @@ public class PlayerListener implements Listener {
 //		}
 //	}
 
-//	public void onPlayerLoginEvent(PlayerJoinEvent e) {
-//		Player player = e.getPlayer();
-//		String username = player.getName();
-//		ResultSet rs2 = DBConnection.query("SELECT player FROM points_players WHERE player = '" + username + "';", false);
-//		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
-//
-//			try {
-//				if (rs2.next()) {
-//					do {
-//						// Does Nothing if the player already has an account.
-//					} while (rs2.next());
-//				} else if (!rs2.next()) {
-//					DBConnection.query("INSERT INTO points_players(player, balance) VALUES ('" + username + "', 0", true);
-//					player.sendMessage("§aDonationPoints account created.");
-//				}
-//			} catch (SQLException ex) {
-//				ex.printStackTrace();
-//			}
-//		}
-//	}
 }

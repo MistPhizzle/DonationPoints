@@ -1,6 +1,6 @@
 name: DonationPoints
 author: MistPhizzle
-version: 1.1-DEV
+version: 1.1
 main: com.mistphizzle.donationpoints.plugin.DonationPoints
 commands:
   donationpoints:
@@ -19,6 +19,7 @@ permissions:
       donationpoints.give: true
       donationpoints.take: true
       donationpoints.set: true
+      donationpoints.update: true
       donationpoints.reload: true
   donationpoints.user:
     default: op

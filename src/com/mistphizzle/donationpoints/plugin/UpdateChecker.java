@@ -1,4 +1,4 @@
-//package com.mistphizzle.donationpoints.plugin;
+package com.mistphizzle.donationpoints.plugin;
 //
 //import java.io.InputStream;
 //import java.net.MalformedURLException;
@@ -10,7 +10,7 @@
 //import org.w3c.dom.Node;
 //import org.w3c.dom.NodeList;
 //
-//public class UpdateChecker {
+public class UpdateChecker {
 //	
 //	private static DonationPoints plugin;
 //	private static URL filesFeed;
@@ -55,4 +55,4 @@
 //	public String getLink() {
 //		return UpdateChecker.link;
 //	}
-//}
+}
