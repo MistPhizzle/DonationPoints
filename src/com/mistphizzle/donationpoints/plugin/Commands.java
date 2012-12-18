@@ -122,13 +122,18 @@ public class Commands {
 						s.sendMessage("§aYour balance has been updated.");
 						s.sendMessage("§aTransaction Complete.");
 						PlayerListener.purchases.remove(s.getName());
+						if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
+							DBConnection.query("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")", true);
+							plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. It has been logged to points_transactions.");
+						} else {
+							plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. Not logged to points_transactions.");
+						}
 					} else {
 						s.sendMessage("§cDoesn't look like you have started a transaction.");
 					}
 				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
 					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1] + "';", true);
 					s.sendMessage("§aYou have set §3" + args[1] + "'s §abalance to §3" + args[2]);
-
 				} else {
 					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
 				} return true;

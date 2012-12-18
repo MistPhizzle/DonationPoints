@@ -34,6 +34,10 @@ public final class DBConnection {
 				query("CREATE TABLE points_players(id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), player TEXT(32), balance DOUBLE)", true);
 				DonationPoints.log.info("[DonationPoints] Created points_players table.");
 			}
+			if (!con.tableExists(db, "points_transactions")) {
+				query ("CREATE TABLE points_transactions(id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id), player TEXT(32), package TEXT(255), price DOUBLE)", true);
+				DonationPoints.log.info("[DonationPoints] Created points_transactions table.");
+			}
 		} else {
 			DonationPoints.log.warning("[DonationPoints] MySQL Connection Failed!");
 		}
