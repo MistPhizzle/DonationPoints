@@ -16,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class DonationPoints extends JavaPlugin {
 	
 	protected static Logger log;
+//	protected UpdateChecker updateChecker;
 	
 	// Configs
 	File configFile;
@@ -33,6 +34,9 @@ public class DonationPoints extends JavaPlugin {
 		
 		// Logger
 		this.log = this.getLogger();
+		
+		// Update Checker
+//		UpdateChecker updateChecker;
 		
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
@@ -73,6 +77,14 @@ public class DonationPoints extends JavaPlugin {
 		} catch (IOException e) {
 			// Failed to submit stats.
 		}
+		
+//		// Run Update Checker, log it to console.
+//		this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/server-mods/donationpoints/files.rss");
+//		if (UpdateChecker.updateNeeded() && getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
+//			this.log.info("[DonationPoints] A new version is available: " + this.updateChecker.getVersion());
+//			this.log.info("[DonationPoints] Get it from: " + this.updateChecker.getLink());
+//		}
+		
 	}
 	
 	@Override
