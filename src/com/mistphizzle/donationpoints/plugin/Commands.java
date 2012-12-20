@@ -26,23 +26,37 @@ public class Commands {
 			@Override
 			public boolean onCommand(CommandSender s, Command c, String label, String[] args) {
 				if (args.length < 1) {
-					s.sendMessage("§eDonationPoints Commands");
-					if (s.hasPermission("donationpoints.create")) {
-						s.sendMessage("§3/dp create §f - Creates a points account for you.");
-					} if (s.hasPermission("donationpoints.balance")) {
-						s.sendMessage("§3/dp balance§f - Check your balance.");
-					} if (s.hasPermission("donationpoints.give")) {
-						s.sendMessage("§3/dp give <player> <amount>§f - Gives a player points.");
-					} if (s.hasPermission("donationpoints.take")) {
-						s.sendMessage("§3/dp take <player> <amount>§f - Takes a player's points.");
-					} if (s.hasPermission("donationpoints.set")) {
-						s.sendMessage("§3/dp set <player> <amount>§f - Sets a player's points.");
-					} if (s.hasPermission("donationpoints.update")) {
-						s.sendMessage("§3/dp update§f - Checks if an update for DonationPoints is available.");
-					} if (s.hasPermission("donationpoints.reload")) {
-						s.sendMessage("§3/dp reload §f- Reloads Configuration / Packages.");
-					}
+					s.sendMessage("-----§4DonationPoints Commands§f-----");
+					s.sendMessage("§3/dp basic§f - Show basic DonationPoints commands.");
+					s.sendMessage("§3/dp packages§f - Show the DonationPoints packages commands.");
+					s.sendMessage("§3/dp admin§f - Show the DonationPoints Admin Commands.");
 					return true;
+				} else if (args[0].equalsIgnoreCase("packages")) {
+					s.sendMessage("-----§4DonationPoints Package Commands§f-----");
+					s.sendMessage("§3Nothing to see here yet ;)");
+				} else if (args[0].equalsIgnoreCase("admin")) {
+					s.sendMessage("-----§4DonationPoints Admin Commands§f-----");
+					if (s.hasPermission("donationpoints.give")) {
+						s.sendMessage("§3/dp give <player> <amount>§f - Give points to a player.");
+					} if (s.hasPermission("donationpoints.take")) {
+						s.sendMessage("§3/dp take <player> <amount>§f - Take points from a player.");
+					} if (s.hasPermission("donationpoints.set")) {
+						s.sendMessage("§3/dp set <player> <amount>§f - Set a player's balance.");
+					} if (s.hasPermission("donationpoints.update")) {
+						s.sendMessage("§3/dp update§f - Checks if there is an update available.");
+					} if (s.hasPermission("donationpoints.reload")) {
+						s.sendMessage("§3/dp reload§f - Reloads the Configuration / Packages.");
+					} else {
+						s.sendMessage("§cYou don't have any permission for ANY DonationPoints Admin Commands.");
+					}
+				} else if (args[0].equalsIgnoreCase("basic")) {
+					s.sendMessage("-----§4DonationPoints Basic Commands§f-----");
+					if (s.hasPermission("donationpoints.create")) {
+						s.sendMessage("§3/dp create§f - Creates a points account for you.");
+					}
+					if (s.hasPermission("donationpoints.balance")) {
+						s.sendMessage("§3/dp balance§f - Checks your points balance.");
+					}
 				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
 					plugin.reloadConfig();
 					s.sendMessage("§aConfig / Packages reloaded.");
