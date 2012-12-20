@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class DonationPoints extends JavaPlugin {
 	
 	protected static Logger log;
-//	protected UpdateChecker updateChecker;
+	protected UpdateChecker updateChecker;
 	
 	// Configs
 	File configFile;
@@ -78,12 +77,12 @@ public class DonationPoints extends JavaPlugin {
 			// Failed to submit stats.
 		}
 		
-//		// Run Update Checker, log it to console.
-//		this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/server-mods/donationpoints/files.rss");
-//		if (UpdateChecker.updateNeeded() && getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
-//			this.log.info("[DonationPoints] A new version is available: " + this.updateChecker.getVersion());
-//			this.log.info("[DonationPoints] Get it from: " + this.updateChecker.getLink());
-//		}
+		// Run Update Checker, log it to console.
+		this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/server-mods/donationpoints/files.rss");
+		if (UpdateChecker.updateNeeded() && getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
+			this.log.info("[DonationPoints] A new version is available: " + this.updateChecker.getVersion());
+			this.log.info("[DonationPoints] Get it from: " + this.updateChecker.getLink());
+		}
 		
 	}
 	

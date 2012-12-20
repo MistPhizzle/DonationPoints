@@ -37,6 +37,8 @@ public class Commands {
 						s.sendMessage("§3/dp take <player> <amount>§f - Takes a player's points.");
 					} if (s.hasPermission("donationpoints.set")) {
 						s.sendMessage("§3/dp set <player> <amount>§f - Sets a player's points.");
+					} if (s.hasPermission("donationpoints.update")) {
+						s.sendMessage("§3/dp update§f - Checks if an update for DonationPoints is available.");
 					} if (s.hasPermission("donationpoints.reload")) {
 						s.sendMessage("§3/dp reload §f- Reloads Configuration / Packages.");
 					}
@@ -134,6 +136,16 @@ public class Commands {
 				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
 					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1] + "';", true);
 					s.sendMessage("§aYou have set §3" + args[1] + "'s §abalance to §3" + args[2]);
+				} else if (args[0].equalsIgnoreCase("update")) {
+					if (s.hasPermission("donationpoints.update") && UpdateChecker.updateNeeded()) {
+						s.sendMessage("§eYour server is not running the same version of DonationPoints as the latest file on Bukkit!");
+						s.sendMessage("§ePerhaps it's time to upgrade?");
+					} else if (s.hasPermission("donationpoints.update") && !UpdateChecker.updateNeeded()) {
+						s.sendMessage("§eYou are running the same DonationPoints version as the one on Bukkit!");
+						s.sendMessage("§eNo need for an update at this time. :)");
+					} else {
+						s.sendMessage("§cYou don't have permission for that.");
+					}
 				} else {
 					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
 				} return true;

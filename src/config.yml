@@ -2,7 +2,6 @@
 # Change any information you wish unless documented otherwise not to do so.
 General:
   LogTransactions: true
-#AutoCheckForUpdates does nothing right now. It WILL be used on the UpdateChecker coming in 1.2 that I couldn't squeeze in for 1.1
   AutoCheckForUpdates: true
 MySQL:
   host: localhost

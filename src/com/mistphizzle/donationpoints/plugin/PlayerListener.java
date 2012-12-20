@@ -80,14 +80,14 @@ public class PlayerListener implements Listener {
 	}
 	
 	// Update Checker
-//	@EventHandler
-//	public void playerUpdateCheck(PlayerJoinEvent e) {
-//		Player p = e.getPlayer();
-//		if (UpdateChecker.updateNeeded() && p.hasPermission("donationpoints.update") && plugin.getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
-//			p.sendMessage("§cYour version of DonationPoints differs from the one on Bukkit.");
-//			p.sendMessage("§cPerhaps it's time for an update?");
-//			
-//		}
-//	}
+	@EventHandler
+	public void playerUpdateCheck(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		if (UpdateChecker.updateNeeded() && p.hasPermission("donationpoints.update") && plugin.getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
+			p.sendMessage("§cYour version of DonationPoints differs from the one on Bukkit.");
+			p.sendMessage("§cPerhaps it's time for an update?");
+
+		}
+	}
 
 }
