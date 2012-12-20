@@ -33,6 +33,9 @@ public class Commands {
 					return true;
 				} else if (args[0].equalsIgnoreCase("packages")) {
 					s.sendMessage("-----§4DonationPoints Package Commands§f-----");
+					if (s.hasPermission("donationpoints.package.info")) {
+						s.sendMessage("§3/dp package info <packageName>§f - Shows package information.");
+					}
 					s.sendMessage("§3Nothing to see here yet ;)");
 				} else if (args[0].equalsIgnoreCase("admin")) {
 					s.sendMessage("-----§4DonationPoints Admin Commands§f-----");
@@ -56,6 +59,8 @@ public class Commands {
 					}
 					if (s.hasPermission("donationpoints.balance")) {
 						s.sendMessage("§3/dp balance§f - Checks your points balance.");
+					} else {
+						s.sendMessage("§cYou don't have permission for any DonationPoints Basic Commands.");
 					}
 				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
 					plugin.reloadConfig();
@@ -160,11 +165,19 @@ public class Commands {
 					} else {
 						s.sendMessage("§cYou don't have permission for that.");
 					}
-				} else {
-					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
-				} return true;
-			}
-		}; donationpoints.setExecutor(exe);
-	}
+				} else if (args[0].equalsIgnoreCase("package") && args[1].equalsIgnoreCase("info") && s.hasPermission("donationpoints.package.info")) {
+					String packName = args[2];
+					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+					String description = plugin.getConfig().getString("packages." + packName + ".description");
+					s.sendMessage("-----§e" + packName + " Info§f-----");
+					s.sendMessage("§aPackage Name:§3 " + packName);
+					s.sendMessage("§aPrice:§3 " + price + "0");
+					s.sendMessage("§aDescription:§3 " + description);
+			} else {
+				s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
+			} return true;
+		}
+	}; donationpoints.setExecutor(exe);
+}
 
 }
