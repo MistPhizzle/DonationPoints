@@ -26,17 +26,21 @@ public class Commands {
 			@Override
 			public boolean onCommand(CommandSender s, Command c, String label, String[] args) {
 				if (args.length < 1) {
+					// Base Command
 					s.sendMessage("-----§4DonationPoints Commands§f-----");
 					s.sendMessage("§3/dp basic§f - Show basic DonationPoints commands.");
 					s.sendMessage("§3/dp packages§f - Show the DonationPoints packages commands.");
 					s.sendMessage("§3/dp admin§f - Show the DonationPoints Admin Commands.");
 					return true;
+					// Packages Commands
 				} else if (args[0].equalsIgnoreCase("packages")) {
 					s.sendMessage("-----§4DonationPoints Package Commands§f-----");
 					if (s.hasPermission("donationpoints.package.info")) {
 						s.sendMessage("§3/dp package info <packageName>§f - Shows package information.");
+					} else {
+						s.sendMessage("§cYou don't have permission to use any of the packages commands.");
 					}
-					s.sendMessage("§3Nothing to see here yet ;)");
+					// Admin Commands
 				} else if (args[0].equalsIgnoreCase("admin")) {
 					s.sendMessage("-----§4DonationPoints Admin Commands§f-----");
 					if (s.hasPermission("donationpoints.give")) {
@@ -45,6 +49,8 @@ public class Commands {
 						s.sendMessage("§3/dp take <player> <amount>§f - Take points from a player.");
 					} if (s.hasPermission("donationpoints.set")) {
 						s.sendMessage("§3/dp set <player> <amount>§f - Set a player's balance.");
+					} if (s.hasPermission("donationpoints.version")) {
+						s.sendMessage("§3/dp version§f - Shows the version of the plugin you're running.");
 					} if (s.hasPermission("donationpoints.update")) {
 						s.sendMessage("§3/dp update§f - Checks if there is an update available.");
 					} if (s.hasPermission("donationpoints.reload")) {
@@ -173,6 +179,8 @@ public class Commands {
 					s.sendMessage("§aPackage Name:§3 " + packName);
 					s.sendMessage("§aPrice:§3 " + price + "0");
 					s.sendMessage("§aDescription:§3 " + description);
+				} else if (args[0].equalsIgnoreCase("version") && s.hasPermission("donationpoints.version")) {
+					s.sendMessage("§aThis server is running §eDonationPoints §aversion §3" + plugin.getDescription().getVersion());
 			} else {
 				s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
 			} return true;

@@ -21,6 +21,7 @@ permissions:
       donationpoints.set: true
       donationpoints.update: true
       donationpoints.reload: true
+      donationpoints.version: true
   donationpoints.user:
     default: op
     children:
@@ -28,3 +29,4 @@ permissions:
       donationpoints.create: true
       donationpoints.balance: true
       donationpoints.confirm: true
+      donationpoints.package.info: true
