@@ -162,7 +162,10 @@ public class Commands {
 					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1] + "';", true);
 					s.sendMessage("§aYou have set §3" + args[1] + "'s §abalance to §3" + args[2]);
 				} else if (args[0].equalsIgnoreCase("update")) {
-					if (s.hasPermission("donationpoints.update") && UpdateChecker.updateNeeded()) {
+					if (!plugin.getConfig().getBoolean("General.AutoCheckForUpdates") && s.hasPermission("donationpoints.update")) {
+						s.sendMessage("§cThis server does not have the Update Checker for DonationPoints enabled.");
+						s.sendMessage("§cChange the value in the config to true for this to work.");
+					} else if (s.hasPermission("donationpoints.update") && UpdateChecker.updateNeeded()) {
 						s.sendMessage("§eYour server is not running the same version of DonationPoints as the latest file on Bukkit!");
 						s.sendMessage("§ePerhaps it's time to upgrade?");
 					} else if (s.hasPermission("donationpoints.update") && !UpdateChecker.updateNeeded()) {
@@ -181,11 +184,11 @@ public class Commands {
 					s.sendMessage("§aDescription:§3 " + description);
 				} else if (args[0].equalsIgnoreCase("version") && s.hasPermission("donationpoints.version")) {
 					s.sendMessage("§aThis server is running §eDonationPoints §aversion §3" + plugin.getDescription().getVersion());
-			} else {
-				s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
-			} return true;
-		}
-	}; donationpoints.setExecutor(exe);
-}
+				} else {
+					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
+				} return true;
+			}
+		}; donationpoints.setExecutor(exe);
+	}
 
 }
