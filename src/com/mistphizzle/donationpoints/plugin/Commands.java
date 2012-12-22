@@ -78,7 +78,7 @@ public class Commands {
 					s.sendMessage("§aConfig / Packages reloaded.");
 				} else if (args[0].equalsIgnoreCase("balance") && s.hasPermission("donationpoints.balance")) {
 					if (args.length == 1) {
-						ResultSet rs2 = DBConnection.query("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';", false);
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';");
 						try {
 							if (rs2.next()) {
 								do {
@@ -92,7 +92,7 @@ public class Commands {
 							e.printStackTrace();
 						}
 					} else if (args.length == 2 && s.hasPermission("donationpoints.balance.others")) {
-						ResultSet rs2 = DBConnection.query("SELECT balance FROM points_players WHERE player = '" + args[1] + "';", false);
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1] + "';");
 						try {
 							if (rs2.next()) {
 								do {
@@ -107,28 +107,28 @@ public class Commands {
 					}
 				} else if (args[0].equalsIgnoreCase("create") && s.hasPermission("donationpoints.create")) {
 					if (args.length == 1) {
-						ResultSet rs2 = DBConnection.query("SELECT player FROM points_players WHERE player = '" + s.getName() + "';", false);
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName() + "';");
 						try {
 							if (rs2.next()) {
 								do {
 									s.sendMessage("§cA balance was found for you already. We will not create a new one.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
-								DBConnection.query("INSERT INTO points_players(player, balance) VALUES ('" + s.getName() + "', 0)", true);
+								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + s.getName() + "', 0)");
 								s.sendMessage("§aYour account has been created.");
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
 					} if (args.length == 2 && s.hasPermission("donationpoints.create.others")) {
-						ResultSet rs2 = DBConnection.query("SELECT player FROM points_players WHERE player = '" + args[1] + "';", false);
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1] + "';");
 						try {
 							if (rs2.next()) {
 								do {
 									s.sendMessage("§3" + args[1] + " §calready has a balance.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
-								DBConnection.query("INSERT INTO points_players(player, balance) VALUES ('" + args[1] + "', 0)", true);
+								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + args[1] + "', 0)");
 								s.sendMessage("§aCreated an account for §3" + args[1]);
 							}
 						} catch (SQLException e) {
@@ -136,16 +136,16 @@ public class Commands {
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("give") && args.length == 3 && s.hasPermission("donationpoints.give")) {
-					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1] + "';", true);
+					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1] + "';");
 					s.sendMessage("§aYou have given §3" + args[1] + " §aa total of §3" + args[2] + " §apoints.");
 				} else if (args[0].equalsIgnoreCase("take") && args.length ==3 && s.hasPermission("donationpoints.take")) {
-					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + args[1] + "';", true);
+					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + args[1] + "';");
 					s.sendMessage("§aYou have taken §3" + args[2] + "§a points from §3" + args[1]);
 				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
 					if (PlayerListener.purchases.containsKey(s.getName())) {
 						String pack2 = PlayerListener.purchases.get(s.getName());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
-						DBConnection.query("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';", true);
+						DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
 						List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 						for (String cmd : commands) {
 							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
@@ -155,7 +155,7 @@ public class Commands {
 						s.sendMessage("§aTransaction Complete.");
 						PlayerListener.purchases.remove(s.getName());
 						if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-							DBConnection.query("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")", true);
+							DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")");
 							plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. It has been logged to points_transactions.");
 						} else {
 							plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. Not logged to points_transactions.");
@@ -164,7 +164,7 @@ public class Commands {
 						s.sendMessage("§cDoesn't look like you have started a transaction.");
 					}
 				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
-					ResultSet rs2 = DBConnection.query("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1] + "';", true);
+					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1] + "';");
 					s.sendMessage("§aYou have set §3" + args[1] + "'s §abalance to §3" + args[2]);
 				} else if (args[0].equalsIgnoreCase("update")) {
 					if (!plugin.getConfig().getBoolean("General.AutoCheckForUpdates") && s.hasPermission("donationpoints.update")) {

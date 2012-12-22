@@ -17,6 +17,8 @@ public class DonationPoints extends JavaPlugin {
 	protected static Logger log;
 	protected UpdateChecker updateChecker;
 	
+	public static DonationPoints instance;
+	
 	// Configs
 	File configFile;
 	FileConfiguration config;
@@ -31,11 +33,10 @@ public class DonationPoints extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		
+		instance = this;
+		
 		// Logger
 		this.log = this.getLogger();
-		
-		// Update Checker
-//		UpdateChecker updateChecker;
 		
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
@@ -62,6 +63,8 @@ public class DonationPoints extends JavaPlugin {
 		DBConnection.user = config.getString("MySQL.username", "root");
 		DBConnection.pass = config.getString("MySQL.password", "");
 		DBConnection.port = config.getInt("MySQL.port", 3306);
+		DBConnection.engine = config.getString("MySQL.engine", "sqlite");
+		DBConnection.sqlite_db = config.getString("MySQL.SQLiteDB", "donationpoints.db");
 		
 		DBConnection.init();
 		
@@ -88,7 +91,7 @@ public class DonationPoints extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		DBConnection.disable();
+		DBConnection.sql.close();
 	}
 	
 	// Methods
@@ -129,6 +132,10 @@ public class DonationPoints extends JavaPlugin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static DonationPoints getInstance() {
+		return instance;
 	}
 
 }

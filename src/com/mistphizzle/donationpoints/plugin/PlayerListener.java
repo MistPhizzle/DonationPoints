@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
 				String purchasedPack = s.getLine(1);
 				Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 				String username = player.getName();
-				ResultSet playerBalance1 = DBConnection.query("SELECT balance FROM points_players WHERE player = '" + username + "';", false);
+				ResultSet playerBalance1 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + username + "';");
 				try {
 					while (playerBalance1.next()) {
 						Double newbalance = playerBalance1.getDouble("balance");
@@ -57,15 +57,6 @@ public class PlayerListener implements Listener {
 							} else {
 								player.sendMessage("Hashmap / other error.");
 							}
-							//							DBConnection.query("UPDATE points_players SET balance = balance - " + price + " WHERE player = '" + username + "';", true);
-							//							List<String> commands = plugin.getConfig().getStringList("packages." + purchasedPack + ".commands");
-							//							for (String cmd : commands) {
-							//								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", username));
-							//							}
-
-							//							player.sendMessage("§aYou have just purchased §3" + purchasedPack + "§a for §3" + price + "§apoints.");
-							//							player.sendMessage("§aYour balance has been updated.");
-							//							player.sendMessage("§aTransaction completed.");
 						}
 					}
 					event.setUseItemInHand(Result.DENY);
@@ -94,14 +85,14 @@ public class PlayerListener implements Listener {
 		Player p = e.getPlayer();
 		String user = p.getName();
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
-			ResultSet rs2 = DBConnection.query("SELECT balance FROM points_players WHERE player = '" + user + "';", false);
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + user + "';");
 			try {
 				if (rs2.next()) {
 					do {
 						// Does nothing because the player already has an account.
 					} while (rs2.next());
 				} else if (!rs2.next()) {
-					DBConnection.query("INSERT INTO points_players(player, balance) VALUES ('" + user + "', 0)", true);
+					DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + user + "', 0)");
 					plugin.log.info("Created an account for " + user);
 				}
 			} catch (SQLException ex) {
