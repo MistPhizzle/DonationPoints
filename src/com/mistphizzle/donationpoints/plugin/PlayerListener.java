@@ -23,7 +23,7 @@ public class PlayerListener implements Listener {
 	public PlayerListener(DonationPoints instance) {
 		plugin = instance;
 	}
-	
+
 	public static HashMap<String, String> purchases = new HashMap();
 	public static HashMap<String, String> purchasedPack = new HashMap();
 
@@ -57,15 +57,15 @@ public class PlayerListener implements Listener {
 							} else {
 								player.sendMessage("Hashmap / other error.");
 							}
-//							DBConnection.query("UPDATE points_players SET balance = balance - " + price + " WHERE player = '" + username + "';", true);
-//							List<String> commands = plugin.getConfig().getStringList("packages." + purchasedPack + ".commands");
-//							for (String cmd : commands) {
-//								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", username));
-//							}
-							
-//							player.sendMessage("§aYou have just purchased §3" + purchasedPack + "§a for §3" + price + "§apoints.");
-//							player.sendMessage("§aYour balance has been updated.");
-//							player.sendMessage("§aTransaction completed.");
+							//							DBConnection.query("UPDATE points_players SET balance = balance - " + price + " WHERE player = '" + username + "';", true);
+							//							List<String> commands = plugin.getConfig().getStringList("packages." + purchasedPack + ".commands");
+							//							for (String cmd : commands) {
+							//								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", username));
+							//							}
+
+							//							player.sendMessage("§aYou have just purchased §3" + purchasedPack + "§a for §3" + price + "§apoints.");
+							//							player.sendMessage("§aYour balance has been updated.");
+							//							player.sendMessage("§aTransaction completed.");
 						}
 					}
 					event.setUseItemInHand(Result.DENY);
@@ -78,7 +78,7 @@ public class PlayerListener implements Listener {
 			}
 		}
 	}
-	
+
 	// Update Checker
 	@EventHandler
 	public void playerUpdateCheck(PlayerJoinEvent e) {
@@ -86,8 +86,27 @@ public class PlayerListener implements Listener {
 		if (UpdateChecker.updateNeeded() && p.hasPermission("donationpoints.update") && plugin.getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
 			p.sendMessage("§cYour version of DonationPoints differs from the one on Bukkit.");
 			p.sendMessage("§cPerhaps it's time for an update?");
-
 		}
 	}
 
+	@EventHandler
+	public void AutoCreateAccount(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		String user = p.getName();
+		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
+			ResultSet rs2 = DBConnection.query("SELECT balance FROM points_players WHERE player = '" + user + "';", false);
+			try {
+				if (rs2.next()) {
+					do {
+						// Does nothing because the player already has an account.
+					} while (rs2.next());
+				} else if (!rs2.next()) {
+					DBConnection.query("INSERT INTO points_players(player, balance) VALUES ('" + user + "', 0)", true);
+					plugin.log.info("Created an account for " + user);
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
 }
