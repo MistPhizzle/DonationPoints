@@ -92,10 +92,11 @@ public class DonationPoints extends JavaPlugin {
 	}
 	
 	// Methods
-	private void firstRun() throws Exception {
+	public void firstRun() throws Exception {
 		if (!configFile.exists()) {
 			configFile.getParentFile().mkdirs();
 			copy(getResource("config.yml"), configFile);
+			log.info("Config not found. Generaing.");
 		}
 	}
 	

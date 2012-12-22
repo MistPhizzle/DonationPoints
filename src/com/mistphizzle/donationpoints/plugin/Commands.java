@@ -70,6 +70,11 @@ public class Commands {
 					}
 				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
 					plugin.reloadConfig();
+					try {
+						plugin.firstRun();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 					s.sendMessage("§aConfig / Packages reloaded.");
 				} else if (args[0].equalsIgnoreCase("balance") && s.hasPermission("donationpoints.balance")) {
 					if (args.length == 1) {
