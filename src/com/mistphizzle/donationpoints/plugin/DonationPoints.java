@@ -13,50 +13,50 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DonationPoints extends JavaPlugin {
-	
+
 	protected static Logger log;
 	protected UpdateChecker updateChecker;
-	
+
 	public static DonationPoints instance;
-	
+
 	// Configs
 	File configFile;
 	FileConfiguration config;
-	
+
 	// Commands
 	Commands cmd;
-	
+
 	// Events
 	private final SignListener signListener = new SignListener(this);
 	private final PlayerListener playerListener = new PlayerListener(this);
-	
+
 	@Override
 	public void onEnable() {
-		
+
 		instance = this;
-		
+
 		// Logger
 		this.log = this.getLogger();
-		
+
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
-		
+
 		// Use firstRun() method
 		try {
 			firstRun();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		// Declare FileConfigurations, load.
 		config = new YamlConfiguration();
 		loadYamls();
-		
+
 		// Events
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(signListener, this);
 		pm.registerEvents(playerListener, this);
-		
+
 		// Database Variables
 		DBConnection.host = config.getString("MySQL.host", "localhost");
 		DBConnection.db = config.getString("MySQL.database", "minecraft");
@@ -65,13 +65,13 @@ public class DonationPoints extends JavaPlugin {
 		DBConnection.port = config.getInt("MySQL.port", 3306);
 		DBConnection.engine = config.getString("MySQL.engine", "sqlite");
 		DBConnection.sqlite_db = config.getString("MySQL.SQLiteDB", "donationpoints.db");
-		
+
 		DBConnection.init();
-		
+
 		// Register Commands
-		
+
 		cmd = new Commands(this);
-		
+
 		// Metrics
 		try {
 			MetricsLite metrics = new MetricsLite(this);
@@ -79,21 +79,24 @@ public class DonationPoints extends JavaPlugin {
 		} catch (IOException e) {
 			// Failed to submit stats.
 		}
-		
+
 		// Run Update Checker, log it to console.
-		this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/server-mods/donationpoints/files.rss");
-		if (UpdateChecker.updateNeeded() && getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
-			this.log.info("[DonationPoints] A new version is available: " + this.updateChecker.getVersion());
-			this.log.info("[DonationPoints] Get it from: " + this.updateChecker.getLink());
+		if (getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
+
+			this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/server-mods/donationpoints/files.rss");
+			if (UpdateChecker.updateNeeded()) {
+				this.log.info("[DonationPoints] A new version is available: " + this.updateChecker.getVersion());
+				this.log.info("[DonationPoints] Get it from: " + this.updateChecker.getLink());
+			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public void onDisable() {
 		DBConnection.sql.close();
 	}
-	
+
 	// Methods
 	public void firstRun() throws Exception {
 		if (!configFile.exists()) {
@@ -102,7 +105,7 @@ public class DonationPoints extends JavaPlugin {
 			log.info("Config not found. Generaing.");
 		}
 	}
-	
+
 	private void loadYamls() {
 		try {
 			config.load(configFile);
@@ -110,7 +113,7 @@ public class DonationPoints extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void copy(InputStream in, File file) {
 		try {
 			OutputStream out = new FileOutputStream(file);
@@ -125,7 +128,7 @@ public class DonationPoints extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void saveYamls() {
 		try {
 			config.save(configFile);
@@ -133,7 +136,7 @@ public class DonationPoints extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static DonationPoints getInstance() {
 		return instance;
 	}
