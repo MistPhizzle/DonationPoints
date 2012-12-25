@@ -145,20 +145,53 @@ public class Commands {
 					if (PlayerListener.purchases.containsKey(s.getName())) {
 						String pack2 = PlayerListener.purchases.get(s.getName());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
-						DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
-						List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
-						for (String cmd : commands) {
-							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
-						}
-						s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
-						s.sendMessage("§aYour balance has been updated.");
-						s.sendMessage("§aTransaction Complete.");
-						PlayerListener.purchases.remove(s.getName());
-						if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-							DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")");
-							plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. It has been logged to points_transactions.");
+//						DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
+						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
+						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT * FROM points_transactions WHERE player = '" + s.getName() + "' AND package = '" + pack2 + "';");
+						if (plugin.getConfig().getBoolean("General.UseLimits")) {
+							try {
+								numberpurchased.last();
+								int size = numberpurchased.getRow();
+
+								if (size >= limit) {
+									s.sendMessage("§cYou can't purchase §3" + pack2 + "§c because you have reached the limit.");
+								} else if (size < limit) {
+									List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+									for (String cmd : commands) {
+										plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+									}
+									DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
+									s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
+									s.sendMessage("§aYour balance has been updated.");
+									s.sendMessage("§aTransaction Complete.");
+									PlayerListener.purchases.remove(s.getName());
+									if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
+										DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")");
+										DonationPoints.log.info(s.getName() + " has made a purchase. It has been logged to points_transactions.");
+
+									} else {
+										plugin.log.info(s.getName() + " has made a purchase and it has not been logged to points_transactions.");
+									}
+								}
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
 						} else {
-							plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. Not logged to points_transactions.");
+							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+							for (String cmd : commands) {
+								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+							}
+							DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
+							s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
+							s.sendMessage("§aYour balance has been updated.");
+							s.sendMessage("§aTransaction Complete.");
+							PlayerListener.purchases.remove(s.getName());
+							if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
+								DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")");
+								plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. It has been logged to points_transactions.");
+							} else {
+								plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. Not logged to points_transactions.");
+							}
 						}
 					} else {
 						s.sendMessage("§cDoesn't look like you have started a transaction.");

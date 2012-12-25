@@ -2,6 +2,7 @@
 # Change any information you wish unless documented otherwise not to do so.
 General:
   LogTransactions: true
+  UseLimits: true
   AutoCheckForUpdates: true
   AutoCreateAccounts: true
 #MySQL Login Information. After you put the info in, restart your server.
@@ -22,11 +23,13 @@ packages:
   God:
     price: 500
     description: This will give you god mode.
+    limit: 3
     commands:
     - god %player
     - say %player has received god mode.
   kick:
     price: 1000
     description: This will kick the player.
+    limit: 1
     commands:
     - kick %player
