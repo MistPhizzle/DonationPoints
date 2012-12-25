@@ -26,21 +26,23 @@ public final class DBConnection {
 			DonationPoints.log.info("[DonationPoints] Etablishing Database Connection...");
 
 			if (!sql.tableExists("points_players")) {
+				DonationPoints.log.info("Creating points_players table.");
 				String query = "CREATE TABLE IF NOT EXISTS `points_players` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
 						+ "`player` TEXT(32),"
-						+ "`balance` DOUBLE(255),"
-						+  "PRIMARY KEY (`id`));";
+						+ "`balance` double,"
+						+ " PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
 
 			if (!sql.tableExists("points_transactions")) {
+				DonationPoints.log.info("Creating points_transactions table");
 				String query = "CREATE TABLE IF NOT EXISTS `points_transactions` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
-						+ "`price` DOUBLE(255),"
-						+ "PRIMARY KEY (`id));";
+						+ "`price` double,"
+						+ "PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
 
