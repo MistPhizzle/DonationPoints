@@ -2,7 +2,7 @@
 # Change any information you wish unless documented otherwise not to do so.
 General:
   LogTransactions: true
-  UseLimits: true
+  UseLimits: false
   AutoCheckForUpdates: true
   AutoCreateAccounts: true
 #MySQL Login Information. After you put the info in, restart your server.
