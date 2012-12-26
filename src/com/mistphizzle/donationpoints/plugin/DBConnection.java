@@ -83,7 +83,7 @@ public final class DBConnection {
 			
 			if (!sql.tableExists("points_cumulative")) {
 				DonationPoints.log.info("Creating points_cumulative table.");
-				String query = "CREATE TABLE `points_players` ("
+				String query = "CREATE TABLE `points_cumulative` ("
 						+ "`player` TEXT(32),"
 						+ "`balance` DOUBLE(255));";
 				sql.modifyQuery(query);
