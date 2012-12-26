@@ -45,35 +45,27 @@ public final class DBConnection {
 						+ "PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
-
-			//			try {
-			//				con = new MySQLConnection(host, port, db, user, pass);
-			//			} catch (InstantiationException e) {
-			//				e.printStackTrace();
-			//			} catch (IllegalAccessException e) {
-			//				e.printStackTrace();
-			//			} catch (ClassNotFoundException e) {
-			//				e.printStackTrace();
-			//			}
-
-//			if (con.connect(true)) {
-//				DonationPoints.log.info("[DonationPoints] Connection Established!");
-//				if (!con.tableExists(db, "points_players")) {
-//					query("CREATE TABLE points_players(id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), player TEXT(32), balance DOUBLE)", true);
-//					DonationPoints.log.info("[DonationPoints] Created points_players table.");
-//				}
-//				if (!con.tableExists(db, "points_transactions")) {
-//					query ("CREATE TABLE points_transactions(id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id), player TEXT(32), package TEXT(255), price DOUBLE)", true);
-//					DonationPoints.log.info("[DonationPoints] Created points_transactions table.");
-//				}
-//			} else {
-//				DonationPoints.log.warning("[DonationPoints] MySQL Connection Failed!");
-//			}
+			if (!sql.tableExists("points_cumulative")) {
+				DonationPoints.log.info("Creating points_cumulative table.");
+				String query = "CREATE TABLE IF NOT EXISTS `points_cumulative` ("
+						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
+						+ "`player` TEXT(32),"
+						+ "`balance` double,"
+						+ " PRIMARY KEY (id));";
+				sql.modifyQuery(query);
+			}
+/*
+ * Everything below this line is for the sqlite connections.
+ * Will only work if the player has "sqlite" for the engine in their config. 
+ * sqlite can be in any case.
+ * Generates the tables points_players, points_transactions, and points_cumulative and logs them into the console.
+ */
 		} else if (engine.equalsIgnoreCase("sqlite")) {
 			sql = new SQLite(DonationPoints.log, "[DonationPoints] Establishing SQLite Connection.", sqlite_db, DonationPoints.getInstance().getDataFolder().getAbsolutePath());
 			((SQLite) sql).open();
 			
 			if (!sql.tableExists("points_players")) {
+				DonationPoints.log.info("Creating points_players table.");
 				String query = "CREATE TABLE `points_players` ("
 						+ "`player` TEXT(32),"
 						+ "`balance` DOUBLE(255));";
@@ -81,10 +73,19 @@ public final class DBConnection {
 			}
 
 			if (!sql.tableExists("points_transactions")) {
+				DonationPoints.log.info("Creating points_transactions table.");
 				String query = "CREATE TABLE `points_transactions` ("
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
 						+ "`price` DOUBLE(255));";
+				sql.modifyQuery(query);
+			}
+			
+			if (!sql.tableExists("points_cumulative")) {
+				DonationPoints.log.info("Creating points_cumulative table.");
+				String query = "CREATE TABLE `points_players` ("
+						+ "`player` TEXT(32),"
+						+ "`balance` DOUBLE(255));";
 				sql.modifyQuery(query);
 			}
 		} else {
