@@ -31,6 +31,7 @@ public class Commands {
 					s.sendMessage("§3/dp basic§f - Show basic DonationPoints commands.");
 					s.sendMessage("§3/dp packages§f - Show the DonationPoints packages commands.");
 					s.sendMessage("§3/dp admin§f - Show the DonationPoints Admin Commands.");
+					s.sendMessage("§3/dp cumulative§f - Show the DonationPoints Cumulative Points commands.");
 					return true;
 					// Packages Commands
 				} else if (args[0].equalsIgnoreCase("packages")) {
@@ -57,6 +58,24 @@ public class Commands {
 						s.sendMessage("§3/dp reload§f - Reloads the Configuration / Packages.");
 					} else {
 						s.sendMessage("§cYou don't have any permission for ANY DonationPoints Admin Commands.");
+					}
+					// Cumulative points.
+				} else if (args[0].equalsIgnoreCase("cumulative")) {
+					s.sendMessage("-----§4DonationPoints Cumulative Commands§f----");
+					if (!plugin.getConfig().getBoolean("General.EnableCumulativePoints")) {
+						s.sendMessage("§cThis server does not have cumulative points enabled.");
+					} else {
+						if (s.hasPermission("donationpoints.cumulative.balance")) {
+							s.sendMessage("§3/dp c balance§f - Check your Cumulative Balance.");
+						} if (s.hasPermission("donationpoints.cumulative.give")) {
+							s.sendMessage("§3/dp c give <player> <amount>§f - Give a player Cumulative Points.");
+						} if (s.hasPermission("donationpoints.cumulative.take")) {
+							s.sendMessage("§3/dp c take <player> <amount>§f - Take a player's Cumulative points.");
+						} if (s.hasPermission("donationpoints.cumulative.set")) {
+							s.sendMessage("§3/dp c set <player> <amount>§f - Set a player's cumulative points balance.");
+						} else {
+							s.sendMessage("§cYou don't have access to any Cumulative points commands.");
+						}
 					}
 				} else if (args[0].equalsIgnoreCase("basic")) {
 					s.sendMessage("-----§4DonationPoints Basic Commands§f-----");
