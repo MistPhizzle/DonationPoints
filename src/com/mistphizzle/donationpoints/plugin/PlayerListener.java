@@ -79,6 +79,12 @@ public class PlayerListener implements Listener {
 			p.sendMessage("§cPerhaps it's time for an update?");
 		}
 	}
+	
+	@EventHandler
+	public void playercumulativecheck(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		// Will get to this later.
+	}
 
 	@EventHandler
 	public void AutoCreateAccount(PlayerJoinEvent e) {

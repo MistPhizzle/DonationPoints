@@ -22,6 +22,8 @@ public class DonationPoints extends JavaPlugin {
 	// Configs
 	File configFile;
 	FileConfiguration config;
+	File cumulativeFile;
+	FileConfiguration cumulative;
 
 	// Commands
 	Commands cmd;
@@ -40,6 +42,7 @@ public class DonationPoints extends JavaPlugin {
 
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
+		cumulativeFile = new File(getDataFolder(), "cumulativepackages.yml");
 
 		// Use firstRun() method
 		try {
@@ -50,6 +53,7 @@ public class DonationPoints extends JavaPlugin {
 
 		// Declare FileConfigurations, load.
 		config = new YamlConfiguration();
+		cumulative = new YamlConfiguration();
 		loadYamls();
 
 		// Events
@@ -104,11 +108,17 @@ public class DonationPoints extends JavaPlugin {
 			copy(getResource("config.yml"), configFile);
 			log.info("Config not found. Generaing.");
 		}
+		if (!cumulativeFile.exists()) {
+			cumulativeFile.getParentFile().mkdirs();
+			copy(getResource("cumulativepackages.yml"), cumulativeFile);
+			log.info("Creating Cumulative Packages File.");
+		}
 	}
 
 	private void loadYamls() {
 		try {
 			config.load(configFile);
+			config.load(cumulativeFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -132,8 +142,41 @@ public class DonationPoints extends JavaPlugin {
 	public void saveYamls() {
 		try {
 			config.save(configFile);
+			config.save(configFile);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	// Get Cumulative Points Configs
+	public FileConfiguration getWitchConfig() {
+		if (cumulative == null) {
+			reloadCumulativeConfig();
+		}
+		return cumulative;
+	}
+
+	public void reloadCumulativeConfig() {
+		if (cumulativeFile == null) {
+			cumulativeFile = new File(getDataFolder(), "cumulativepackages.yml");
+		}
+		cumulative = YamlConfiguration.loadConfiguration(cumulativeFile);
+
+		InputStream defConfigStream = getResource("cumulativepackages.yml");
+		if (defConfigStream != null) {
+			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+			cumulative.setDefaults(defConfig);
+		}
+	}
+
+	public void saveWitchConfig() {
+		if (cumulative == null || cumulativeFile == null) {
+			return;
+		}
+		try {
+			cumulative.save(cumulativeFile);
+		} catch (IOException ex) {
+			this.log.info("Could not save config to " + cumulativeFile);
 		}
 	}
 
