@@ -3,8 +3,6 @@ package com.mistphizzle.donationpoints.plugin;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -32,7 +30,9 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		Block block = event.getClickedBlock();
 		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
+		if (!player.hasPermission("donationpoints.sign.use")) {
+			player.sendMessage("§cYou don't have permission to use the DonationPoints signs.");
+		}
 		if (block.getState() instanceof Sign) {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
