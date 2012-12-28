@@ -1,5 +1,6 @@
 #This page contains all of the information required on the Cumulative Packages.
 #This file is completely irrelevant if you have EnableCumulativePoints disabled in your main config.yml.
+#Currently not working.
 packages:
   God:
     CumulativePoints: 100

@@ -149,7 +149,7 @@ public class DonationPoints extends JavaPlugin {
 	}
 
 	// Get Cumulative Points Configs
-	public FileConfiguration getWitchConfig() {
+	public FileConfiguration getCumulativeConfig() {
 		if (cumulative == null) {
 			reloadCumulativeConfig();
 		}
@@ -169,7 +169,7 @@ public class DonationPoints extends JavaPlugin {
 		}
 	}
 
-	public void saveWitchConfig() {
+	public void saveCumulativeConfig() {
 		if (cumulative == null || cumulativeFile == null) {
 			return;
 		}

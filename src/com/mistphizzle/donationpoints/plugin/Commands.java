@@ -393,6 +393,13 @@ public class Commands {
 							} catch (SQLException ex) {
 								ex.printStackTrace();
 							}
+//						} else if (args[1].equalsIgnoreCase("check")) {
+//							if (!s.hasPermission("donationpoints.cumulative.check")) {
+//								s.sendMessage("§cYou don't have permission to do that!");
+//							}
+//							ResultSet cbalance = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + s.getName() + "';");
+//							String desiredPackage = args[2];
+//							double desiredPackagePrice = plugin.getCumulativeConfig().getDouble("packages." + desiredPackage + ".price");
 						}
 					}
 				} else {
