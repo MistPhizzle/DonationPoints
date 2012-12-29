@@ -10,6 +10,7 @@ import org.bukkit.block.Sign;
 
 public class SignListener implements Listener {
 
+	public static String SignMessage;
 	public static DonationPoints plugin;
 
 	public SignListener(DonationPoints instance) {
@@ -26,17 +27,17 @@ public class SignListener implements Listener {
 		Sign s = (Sign) block.getState();
 
 		// Permissions
-		if (line1.equalsIgnoreCase("[Premium]") && !p.hasPermission("donationpoints.sign.create")) {
+		if (line1.equalsIgnoreCase("[" + SignMessage + "]") && !p.hasPermission("donationpoints.sign.create")) {
 			e.setCancelled(true);
 			block.breakNaturally();
 			p.sendMessage("§cYou don't have permission to create DonationPoints signs.");
-		} else if (p.hasPermission("donationpoints.sign.create") && line1.equalsIgnoreCase("[Premium]")) {
+		} else if (p.hasPermission("donationpoints.sign.create") && line1.equalsIgnoreCase("[" + SignMessage + "]")) {
 			if (block.getType() == Material.SIGN_POST) {
 				p.sendMessage("§cDonationPoints signs must be placed on a wall.");
 				block.breakNaturally();
 				e.setCancelled(true);
 			} else {
-				p.sendMessage("§aYou have created a Premium sign.");
+				p.sendMessage("§aYou have created a DonationPoints sign.");
 			}
 		} 
 	}

@@ -15,6 +15,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerListener implements Listener {
+	
+	public static String SignMessage;
 
 	public static DonationPoints plugin;
 
@@ -36,7 +38,7 @@ public class PlayerListener implements Listener {
 		if (block.getState() instanceof Sign) {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
-			if (signline1.equalsIgnoreCase("[Premium]")
+			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
 					&& block.getType() == Material.WALL_SIGN
 					&& player.hasPermission("donationpoints.sign.use")) {
