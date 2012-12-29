@@ -25,7 +25,7 @@ public class SignListener implements Listener {
 		String line1 = e.getLine(0);
 		Block block = e.getBlock();
 		Sign s = (Sign) block.getState();
-		String pack = e.getLine(2);
+		String pack = e.getLine(1);
 
 		// Permissions
 		if (line1.equalsIgnoreCase("[" + SignMessage + "]") && !p.hasPermission("donationpoints.sign.create")) {
@@ -37,8 +37,12 @@ public class SignListener implements Listener {
 				p.sendMessage("§cDonationPoints signs must be placed on a wall.");
 				block.breakNaturally();
 				e.setCancelled(true);
-			} else if (plugin.getConfig().getString("packages." + pack) == null) {
+			} if (plugin.getConfig().getString("packages." + pack) == null) {
 				p.sendMessage("§cThat package does not exist.");
+				e.setCancelled(true);
+				block.breakNaturally();
+			} if (e.getLine(1).isEmpty()) {
+				p.sendMessage("§cYou didn't enter a packag eon the second line!");
 				e.setCancelled(true);
 				block.breakNaturally();
 			} else {
