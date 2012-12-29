@@ -31,7 +31,6 @@ public class Commands {
 					s.sendMessage("§3/dp basic§f - Show basic DonationPoints commands.");
 					s.sendMessage("§3/dp packages§f - Show the DonationPoints packages commands.");
 					s.sendMessage("§3/dp admin§f - Show the DonationPoints Admin Commands.");
-					s.sendMessage("§3/dp cumulative§f - Show the DonationPoints Cumulative Points commands.");
 					return true;
 					// Packages Commands
 				} else if (args[0].equalsIgnoreCase("packages")) {
@@ -58,27 +57,6 @@ public class Commands {
 						s.sendMessage("§3/dp reload§f - Reloads the Configuration / Packages.");
 					} else {
 						s.sendMessage("§cYou don't have any permission for ANY DonationPoints Admin Commands.");
-					}
-					// Cumulative points.
-				} else if (args[0].equalsIgnoreCase("cumulative")) {
-					s.sendMessage("-----§4DonationPoints Cumulative Commands§f----");
-					if (!plugin.getConfig().getBoolean("General.EnableCumulativePoints")) {
-						s.sendMessage("§cThis server does not have cumulative points enabled.");
-					} else {
-						if (s.hasPermission("donationpoints.cumulative.create")) {
-							s.sendMessage("§3/dp c create§f - Create a Cumulative Points Account.");
-						}
-						if (s.hasPermission("donationpoints.cumulative.balance")) {
-							s.sendMessage("§3/dp c balance§f - Check your Cumulative Balance.");
-						} if (s.hasPermission("donationpoints.cumulative.give")) {
-							s.sendMessage("§3/dp c give <player> <amount>§f - Give a player Cumulative Points.");
-						} if (s.hasPermission("donationpoints.cumulative.take")) {
-							s.sendMessage("§3/dp c take <player> <amount>§f - Take a player's Cumulative points.");
-						} if (s.hasPermission("donationpoints.cumulative.set")) {
-							s.sendMessage("§3/dp c set <player> <amount>§f - Set a player's cumulative points balance.");
-						} else {
-							s.sendMessage("§cYou don't have access to any Cumulative points commands.");
-						}
 					}
 				} else if (args[0].equalsIgnoreCase("basic")) {
 					s.sendMessage("-----§4DonationPoints Basic Commands§f-----");
@@ -244,164 +222,6 @@ public class Commands {
 					s.sendMessage("§aDescription:§3 " + description);
 				} else if (args[0].equalsIgnoreCase("version") && s.hasPermission("donationpoints.version")) {
 					s.sendMessage("§aThis server is running §eDonationPoints §aversion §3" + plugin.getDescription().getVersion());
-				} else if (args[0].equalsIgnoreCase("c") && args[1].equalsIgnoreCase("balance")) {
-					if (!s.hasPermission("donationpoints.cumulative.balance")) {
-						s.sendMessage("§cYou don't have permission to do that!");
-					} if (!plugin.getConfig().getBoolean("General.EnableCumulativePoints")) {
-						s.sendMessage("§cThis server does not have cumulative points enabled.");
-					} else {
-						if (args.length == 2) {
-							ResultSet bal1 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + s.getName() + "';");
-							try {
-								if (bal1.next()) {
-									do {
-										s.sendMessage("§aYou have §3" + bal1.getDouble("balance") + "§a cumulative points.");
-									} while (bal1.next());
-								} else if (!bal1.next()) {
-									s.sendMessage("§cWe were unable to find a Cumulative Points balance for you.");
-									if (s.hasPermission("donationpoints.cumulative.create")) {
-										s.sendMessage("§cCreate one using §3/dp c create");
-									}
-								}
-							} catch (SQLException ex) {
-								ex.printStackTrace();
-							}
-						} if (args.length == 3) {
-							if (!s.hasPermission("donationpoints.cumulative.balance.others")) {
-								s.sendMessage("§cYou don't have permission to check another player's balance.");
-							}
-							ResultSet bal2 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + args[2] + "';");
-							try {
-								if (bal2.next()) {
-									do {
-										s.sendMessage("§3" + args[2] + "§a has a cumulative points balance of §3 " + bal2.getDouble("balance") + "§a points.");
-									}while (bal2.next());
-								} else if (!bal2.next()) {
-									s.sendMessage("§cWe can't find a cumulative points balance for §3" + args[2]);
-									if (s.hasPermission("donationpoints.cumulative.create.others")) {
-										s.sendMessage("§cCreate one using §3/dp c create " + args[2]);
-									}
-								}
-							} catch (SQLException ex) {
-								ex.printStackTrace();
-							}
-						}
-					}
-				} else if (args[0].equalsIgnoreCase("c")) {
-					if (args.length == 1) {
-						s.sendMessage("§cYou didn't supply enough arguments.");
-					}
-					if (!plugin.getConfig().getBoolean("General.EnableCumulativePoints")) {
-						s.sendMessage("§cThis server does not have cumulative points enabled.");
-					} else {
-						if (args[1].equalsIgnoreCase("create")) {
-							if (args.length == 2) {
-								if (!s.hasPermission("donationpoints.cumulative.create")) {
-									s.sendMessage("§cYou don't have permission to do that!");
-								}
-								ResultSet create1 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + s.getName() + "';");
-								try {
-									if (create1.next()) {
-										do {
-											s.sendMessage("§cWe have already found a Cumulative Points balance for you.");
-											s.sendMessage("§cNo need for a new one.");
-										} while (create1.next());
-									} else if (!create1.next()) {
-										DBConnection.sql.modifyQuery("INSERT INTO points_cumulative(player, balance) VALUES ('" + s.getName() + "', 0)");
-										s.sendMessage("§aCreated Cumulative Points account.");
-										DonationPoints.log.info("Created Cumulative Points account for " + s.getName());
-									}
-								} catch (SQLException ex) {
-									ex.printStackTrace();
-								}
-							} else if (args.length == 3) {
-								if (!s.hasPermission("donationpoints.cumulative.create.others")) {
-									s.sendMessage("§cYou don't have permission to do that!");
-								} ResultSet create2 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + args[2] + "';");
-								try {
-									if (create2.next()) {
-										do {
-											s.sendMessage("§cWe already found a Cumulative Points account for " + args[2]);
-											s.sendMessage("§cThere is no need to create a new one.");
-										} while (create2.next());
-									} else if (!create2.next()) {
-										DBConnection.sql.modifyQuery("INSERT INTO points_cumulative(player, balance) VALUES ('" + args[2] + "', 0)");
-										s.sendMessage("§aCreated Cumulative Points account for §3" + args[2]);
-										DonationPoints.log.info(s.getName() + " has created a Cumulative Points account for " + args[2]);
-									}
-								} catch (SQLException ex) {
-									ex.printStackTrace();
-								}
-							}
-						} else if (args[1].equalsIgnoreCase("give")) {
-							if (!s.hasPermission("donationpoints.cumulative.give")) {
-								s.sendMessage("§cYou don't have permission to do that!");
-							}
-							ResultSet give1 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + args[2] + "';");
-							try {
-								if (give1.next()) {
-									do {
-										DBConnection.sql.modifyQuery("UPDATE points_cumulative SET balance = balance + " + args[3] + " WHERE player = '" + args[2] + "';");
-										s.sendMessage("§aYou have given §3" + args[3] + "§a cumulative points to §3" + args[2]);
-									} while (give1.next());
-								} else if (!give1.next()) {
-									s.sendMessage("§cThat player does not have a Cumulative Poitns account.");
-									if (s.hasPermission("donationpoints.cumulative.create.others")) {
-										s.sendMessage("§cCreate one with:§3 /dp c create " + args[2]);
-									}
-								}
-							} catch (SQLException ex) {
-								ex.printStackTrace();
-							}
-						} else if (args[1].equalsIgnoreCase("take")) {
-							if (!s.hasPermission("donationpoints.cumulative.take")) {
-								s.sendMessage("§cYou don't have permission to do that!");
-							}
-							ResultSet take1 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + args[2] + "';");
-							try {
-								if (take1.next()) {
-									do {
-										DBConnection.sql.modifyQuery("UPDATE points_cumulative SET balance = balance - " + args[3] + " WHERE player = '" + args[2] + "';");
-										s.sendMessage("§aYou have taken §3" + args[3] + "§a cumulative points from §3" + args[2]);
-									} while (take1.next());
-								} else if (!take1.next()) {
-									s.sendMessage("§cThat player does not have a Cumulative Points account to take from.");
-									if (s.hasPermission("donationpoints.cumulative.create.others")) {
-										s.sendMessage("§cCreate one with:§3 /dp c create " + args[2]);
-									}
-								}
-							} catch (SQLException ex) {
-								ex.printStackTrace();
-							}
-						} else if (args[1].equalsIgnoreCase("set")) {
-							if (!s.hasPermission("donationpoints.cumulative.set")) {
-								s.sendMessage("§cYou don't have permission to do that!");
-							}
-							ResultSet set1 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + args[2] + "';");
-							try {
-								if (set1.next()) {
-									do {
-										DBConnection.sql.modifyQuery("UPDATE points_cumulative SET balance = " + args[3] + " WHERE player = '" + args[2] + "';");
-										s.sendMessage("§aYou have set §3" + args[2] + "'s §acumulative points balance to §3" + args[3]);
-									} while (set1.next());
-								} else if (!set1.next()) {
-									s.sendMessage("§cThat player does not have a Cumulative Points account.");
-									if (s.hasPermission("donationpoints.cumulative.create.others")) {
-										s.sendMessage("§cCreate one with:§3 / dp c create " + args[2]);
-									}
-								}
-							} catch (SQLException ex) {
-								ex.printStackTrace();
-							}
-//						} else if (args[1].equalsIgnoreCase("check")) {
-//							if (!s.hasPermission("donationpoints.cumulative.check")) {
-//								s.sendMessage("§cYou don't have permission to do that!");
-//							}
-//							ResultSet cbalance = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player = '" + s.getName() + "';");
-//							String desiredPackage = args[2];
-//							double desiredPackagePrice = plugin.getCumulativeConfig().getDouble("packages." + desiredPackage + ".price");
-						}
-					}
 				} else {
 					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
 				} return true;

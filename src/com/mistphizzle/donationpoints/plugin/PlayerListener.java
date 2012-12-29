@@ -79,32 +79,11 @@ public class PlayerListener implements Listener {
 			p.sendMessage("§cPerhaps it's time for an update?");
 		}
 	}
-	
-	@EventHandler
-	public void playercumulativecheck(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		// Will get to this later.
-	}
 
 	@EventHandler
 	public void AutoCreateAccount(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		String user = p.getName();
-		if (plugin.getConfig().getBoolean("General.EnableCumulativePoints", true) && plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) { {
-			ResultSet rs3 = DBConnection.sql.readQuery("SELECT balance FROM points_cumulative WHERE player ='" + user + "';");
-			try {
-				if (rs3.next()) {
-					do {
-
-					} while (rs3.next());
-				} else if (!rs3.next()) {
-					DBConnection.sql.modifyQuery("INSERT INTO points_cumulative(player, balance) VALUES ('" + user + "', 0)");
-					plugin.log.info("Created Cumulative Points account for " + user);
-				}
-			} catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-		}
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
 			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + user + "';");
 			try {
@@ -119,7 +98,6 @@ public class PlayerListener implements Listener {
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-		}
 		}
 	}
 }
