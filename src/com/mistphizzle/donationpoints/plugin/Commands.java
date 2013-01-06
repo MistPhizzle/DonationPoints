@@ -89,6 +89,7 @@ public class Commands {
 						return true;
 					}
 					else {
+						Double transferamount = Double.parseDouble(args[2]);
 						//        0        1     2
 						// /dp transfer player amount
 						ResultSet pbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';");
@@ -102,7 +103,14 @@ public class Commands {
 							if (!target1.next()) {
 								s.sendMessage("§cThat player does not have a DonationPoints account.");
 							} else {
+								if (transferamount > pbal.getDouble("balance")) {
+									s.sendMessage("§cYou don't have enough points to transfer.");
+									return true;
+								}
 								s.sendMessage("We'll process stuff here soon");
+								// Testing to make sure variables are working :p
+								s.sendMessage("You have a balance of " + pbal.getDouble("balance"));
+								s.sendMessage("You are trying to give " + transferamount);
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
