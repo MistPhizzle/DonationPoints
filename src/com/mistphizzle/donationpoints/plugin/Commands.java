@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 
 public class Commands {
 
@@ -65,9 +66,50 @@ public class Commands {
 					}
 					if (s.hasPermission("donationpoints.balance")) {
 						s.sendMessage("§3/dp balance§f - Checks your points balance.");
+					} if (s.hasPermission("donationpoints.transfer")) {
+						s.sendMessage("§3/dp transfer <player> <amount>§f - Transfer your points to another player.");
 					} else {
 						s.sendMessage("§cYou don't have permission for any DonationPoints Basic Commands.");
 					}
+				} else if (args[0].equalsIgnoreCase("transfer")) {
+					if (!plugin.getConfig().getBoolean("General.Transferrable")) {
+						s.sendMessage("§cThis server does not allow DonationPoints to be transferred.");
+						return true;
+					}
+					if (!s.hasPermission("donationpoints.transfer")) {
+						s.sendMessage("§cYou don't have permission to do that!");
+						return true;
+					}
+					if (!(s instanceof Player)) {
+						s.sendMessage("§cThis command can only be performed by players.");
+						return true;
+					}
+					if (args.length < 3) {
+						s.sendMessage("§cNot enough arguments.");
+						return true;
+					}
+					else {
+						//        0        1     2
+						// /dp transfer player amount
+						ResultSet pbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';");
+						ResultSet tbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1] + "';");
+						ResultSet player1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName() + "';");
+						ResultSet target1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1] + "';");
+						try {
+							if (!player1.next()) {
+								s.sendMessage("§cYou don't have a DonationPoints account.");
+							}
+							if (!target1.next()) {
+								s.sendMessage("§cThat player does not have a DonationPoints account.");
+							} else {
+								s.sendMessage("We'll process stuff here soon");
+							}
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+
+
 				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
 					plugin.reloadConfig();
 					try {

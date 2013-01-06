@@ -6,6 +6,7 @@ General:
   AutoCheckForUpdates: true
   AutoCreateAccounts: true
   SignMessage: Premium
+  Transferrable: false
 #MySQL Login Information. After you put the info in, restart your server.
 #You'll get a confirmation message if you can successfully connect.
 MySQL:
