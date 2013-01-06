@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
@@ -67,7 +68,7 @@ public class Commands {
 					if (s.hasPermission("donationpoints.balance")) {
 						s.sendMessage("§3/dp balance§f - Checks your points balance.");
 					} if (s.hasPermission("donationpoints.transfer")) {
-						s.sendMessage("§3/dp transfer <player> <amount>§f - Transfer your points to another player.");
+						s.sendMessage("§3/dp transfer <player> <amount>§f - Transfer Points.");
 					} else {
 						s.sendMessage("§cYou don't have permission for any DonationPoints Basic Commands.");
 					}
@@ -92,6 +93,7 @@ public class Commands {
 						Double transferamount = Double.parseDouble(args[2]);
 						//        0        1     2
 						// /dp transfer player amount
+						Player target = Bukkit.getPlayer(args[1]);
 						ResultSet pbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';");
 						ResultSet tbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1] + "';");
 						ResultSet player1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName() + "';");
@@ -102,15 +104,19 @@ public class Commands {
 							}
 							if (!target1.next()) {
 								s.sendMessage("§cThat player does not have a DonationPoints account.");
+							} if (target == s) {
+								s.sendMessage("§cYou can't send points to yourself!");
 							} else {
 								if (transferamount > pbal.getDouble("balance")) {
 									s.sendMessage("§cYou don't have enough points to transfer.");
 									return true;
 								}
-								s.sendMessage("We'll process stuff here soon");
-								// Testing to make sure variables are working :p
-								s.sendMessage("You have a balance of " + pbal.getDouble("balance"));
-								s.sendMessage("You are trying to give " + transferamount);
+								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1] + "';");
+								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + s.getName() + "';");
+								s.sendMessage("§aYou have sent §3" + transferamount + "§a to §3" + args[1]);
+								if (target.isOnline()) {
+									target.sendMessage("§aYou have received §3" + transferamount + "§a from §3" + s.getName());
+								}
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
