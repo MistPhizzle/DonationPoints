@@ -106,7 +106,7 @@ public class DonationPoints extends JavaPlugin {
 		if (!configFile.exists()) {
 			configFile.getParentFile().mkdirs();
 			copy(getResource("config.yml"), configFile);
-			log.info("Config not found. Generaing.");
+			log.info("Config not found. Generating.");
 		}
 	}
 
