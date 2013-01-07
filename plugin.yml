@@ -20,6 +20,7 @@ permissions:
       donationpoints.take: true
       donationpoints.set: true
       donationpoints.update: true
+      donationpoints.sign.break: true
       donationpoints.reload: true
       donationpoints.version: true
       donationpoints.user: true
