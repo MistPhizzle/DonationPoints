@@ -93,7 +93,7 @@ public class Commands {
 						Double transferamount = Double.parseDouble(args[2]);
 						//        0        1     2
 						// /dp transfer player amount
-						Player target = Bukkit.getPlayer(args[1]);
+						final Player target = Bukkit.getPlayer(args[1]);
 						ResultSet pbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';");
 						ResultSet tbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1] + "';");
 						ResultSet player1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName() + "';");
@@ -114,8 +114,10 @@ public class Commands {
 								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1] + "';");
 								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + s.getName() + "';");
 								s.sendMessage("§aYou have sent §3" + transferamount + "§a to §3" + args[1]);
-								if (target.isOnline()) {
-									target.sendMessage("§aYou have received §3" + transferamount + "§a from §3" + s.getName());
+								for (Player player: Bukkit.getOnlinePlayers()) {
+									if (player.getName().equalsIgnoreCase(args[1])) {
+										player.sendMessage("§aYou have received §3" + transferamount + "§a from §3" + s.getName());
+									}
 								}
 							}
 						} catch (SQLException e) {
