@@ -44,7 +44,7 @@ public class PlayerListener implements Listener {
 				if (player.hasPermission("donationpoints.sign.use")) {
 					String purchasedPack = s.getLine(1);
 					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
-					String username = player.getName();
+					String username = player.getName().toLowerCase();
 					ResultSet playerBalance1 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + username + "';");
 					try {
 						while (playerBalance1.next()) {

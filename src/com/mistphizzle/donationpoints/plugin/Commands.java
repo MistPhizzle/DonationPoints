@@ -118,10 +118,10 @@ public class Commands {
 								}
 								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
 								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + s.getName().toLowerCase() + "';");
-								s.sendMessage("§aYou have sent §3" + transferamount + "§a to §3" + args[1].toLowerCase());
+								s.sendMessage("§aYou have sent §3" + transferamount + "§a Donation Points to §3" + args[1].toLowerCase());
 								for (Player player: Bukkit.getOnlinePlayers()) {
 									if (player.getName().equalsIgnoreCase(args[1])) {
-										player.sendMessage("§aYou have received §3" + transferamount + "§aDonation Points from §3" + s.getName().toLowerCase());
+										player.sendMessage("§aYou have received §3" + transferamount + "§a Donation Points from §3" + s.getName().toLowerCase());
 									}
 								}
 							}
