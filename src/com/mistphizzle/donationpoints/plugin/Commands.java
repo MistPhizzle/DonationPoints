@@ -93,11 +93,11 @@ public class Commands {
 						Double transferamount = Double.parseDouble(args[2]);
 						//        0        1     2
 						// /dp transfer player amount
-						final Player target = Bukkit.getPlayer(args[1]);
-						ResultSet pbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';");
-						ResultSet tbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1] + "';");
-						ResultSet player1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName() + "';");
-						ResultSet target1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1] + "';");
+						final Player target = Bukkit.getPlayer(args[1].toLowerCase());
+						ResultSet pbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName().toLowerCase().toLowerCase() + "';");
+						ResultSet tbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
+						ResultSet player1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
+						ResultSet target1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
 						try {
 							if (!player1.next()) {
 								s.sendMessage("§cYou don't have a DonationPoints account.");
@@ -111,12 +111,12 @@ public class Commands {
 									s.sendMessage("§cYou don't have enough points to transfer.");
 									return true;
 								}
-								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1] + "';");
-								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + s.getName() + "';");
-								s.sendMessage("§aYou have sent §3" + transferamount + "§a to §3" + args[1]);
+								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
+								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + s.getName().toLowerCase() + "';");
+								s.sendMessage("§aYou have sent §3" + transferamount + "§a to §3" + args[1].toLowerCase());
 								for (Player player: Bukkit.getOnlinePlayers()) {
 									if (player.getName().equalsIgnoreCase(args[1])) {
-										player.sendMessage("§aYou have received §3" + transferamount + "§a from §3" + s.getName());
+										player.sendMessage("§aYou have received §3" + transferamount + "§a from §3" + s.getName().toLowerCase());
 									}
 								}
 							}
@@ -136,7 +136,7 @@ public class Commands {
 					s.sendMessage("§aConfig / Packages reloaded.");
 				} else if (args[0].equalsIgnoreCase("balance") && s.hasPermission("donationpoints.balance")) {
 					if (args.length == 1) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName() + "';");
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
 						try {
 							if (rs2.next()) {
 								do {
@@ -150,14 +150,14 @@ public class Commands {
 							e.printStackTrace();
 						}
 					} else if (args.length == 2 && s.hasPermission("donationpoints.balance.others")) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1] + "';");
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
 						try {
 							if (rs2.next()) {
 								do {
-									s.sendMessage("§a" + args[1] + " has §3 " + rs2.getDouble("balance") + "§a points.");
+									s.sendMessage("§a" + args[1].toLowerCase() + " has §3 " + rs2.getDouble("balance") + "§a points.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
-								s.sendMessage("§cWas unable to find a balance for §a " + args[1]);	
+								s.sendMessage("§cWas unable to find a balance for §a " + args[1].toLowerCase());	
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
@@ -165,47 +165,47 @@ public class Commands {
 					}
 				} else if (args[0].equalsIgnoreCase("create") && s.hasPermission("donationpoints.create")) {
 					if (args.length == 1) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName() + "';");
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
 						try {
 							if (rs2.next()) {
 								do {
 									s.sendMessage("§cA balance was found for you already. We will not create a new one.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
-								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + s.getName() + "', 0)");
+								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + s.getName().toLowerCase() + "', 0)");
 								s.sendMessage("§aYour account has been created.");
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
 					} if (args.length == 2 && s.hasPermission("donationpoints.create.others")) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1] + "';");
+						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
 						try {
 							if (rs2.next()) {
 								do {
-									s.sendMessage("§3" + args[1] + " §calready has a balance.");
+									s.sendMessage("§3" + args[1].toLowerCase() + " §calready has a balance.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
-								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + args[1] + "', 0)");
-								s.sendMessage("§aCreated an account for §3" + args[1]);
+								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + args[1].toLowerCase() + "', 0)");
+								s.sendMessage("§aCreated an account for §3" + args[1].toLowerCase());
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("give") && args.length == 3 && s.hasPermission("donationpoints.give")) {
-					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1] + "';");
-					s.sendMessage("§aYou have given §3" + args[1] + " §aa total of §3" + args[2] + " §apoints.");
-				} else if (args[0].equalsIgnoreCase("take") && args.length ==3 && s.hasPermission("donationpoints.take")) {
-					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + args[1] + "';");
-					s.sendMessage("§aYou have taken §3" + args[2] + "§a points from §3" + args[1]);
+					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
+					s.sendMessage("§aYou have given §3" + args[1].toLowerCase() + " §aa total of §3" + args[2] + " §apoints.");
+				} else if (args[0].equalsIgnoreCase("take") && args.length == 3 && s.hasPermission("donationpoints.take")) {
+					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
+					s.sendMessage("§aYou have taken §3" + args[2] + "§a points from §3" + args[1].toLowerCase());
 				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
-					if (PlayerListener.purchases.containsKey(s.getName())) {
-						String pack2 = PlayerListener.purchases.get(s.getName());
+					if (PlayerListener.purchases.containsKey(s.getName().toLowerCase())) {
+						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
-						//						DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
+						//						DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName().toLowerCase() + "';");
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
-						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT * FROM points_transactions WHERE player = '" + s.getName() + "' AND package = '" + pack2 + "';");
+						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT * FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
 						if (plugin.getConfig().getBoolean("General.UseLimits")) {
 							try {
 								numberpurchased.last();
@@ -216,19 +216,19 @@ public class Commands {
 								} else if (size < limit) {
 									List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 									for (String cmd : commands) {
-										plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+										plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
 									}
-									DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
+									DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName().toLowerCase() + "';");
 									s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
 									s.sendMessage("§aYour balance has been updated.");
 									s.sendMessage("§aTransaction Complete.");
-									PlayerListener.purchases.remove(s.getName());
+									PlayerListener.purchases.remove(s.getName().toLowerCase());
 									if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-										DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")");
-										DonationPoints.log.info(s.getName() + " has made a purchase. It has been logged to points_transactions.");
+										DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName().toLowerCase() + "', '" + pack2 + "', " + price2 + ")");
+										DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase. It has been logged to points_transactions.");
 
 									} else {
-										plugin.log.info(s.getName() + " has made a purchase and it has not been logged to points_transactions.");
+										plugin.log.info(s.getName().toLowerCase() + " has made a purchase and it has not been logged to points_transactions.");
 									}
 								}
 							} catch (SQLException e) {
@@ -237,26 +237,26 @@ public class Commands {
 						} else {
 							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 							for (String cmd : commands) {
-								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
 							}
-							DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName() + "';");
+							DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName().toLowerCase() + "';");
 							s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
 							s.sendMessage("§aYour balance has been updated.");
 							s.sendMessage("§aTransaction Complete.");
-							PlayerListener.purchases.remove(s.getName());
+							PlayerListener.purchases.remove(s.getName().toLowerCase());
 							if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-								DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName() + "', '" + pack2 + "', " + price2 + ")");
-								plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. It has been logged to points_transactions.");
+								DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName().toLowerCase() + "', '" + pack2 + "', " + price2 + ")");
+								plugin.log.info("[DonationPoints] " + s.getName().toLowerCase() + " has made a purchase. It has been logged to points_transactions.");
 							} else {
-								plugin.log.info("[DonationPoints] " + s.getName() + " has made a purchase. Not logged to points_transactions.");
+								plugin.log.info("[DonationPoints] " + s.getName().toLowerCase() + " has made a purchase. Not logged to points_transactions.");
 							}
 						}
 					} else {
 						s.sendMessage("§cDoesn't look like you have started a transaction.");
 					}
 				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
-					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1] + "';");
-					s.sendMessage("§aYou have set §3" + args[1] + "'s §abalance to §3" + args[2]);
+					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
+					s.sendMessage("§aYou have set §3" + args[1].toLowerCase() + "'s §abalance to §3" + args[2]);
 				} else if (args[0].equalsIgnoreCase("update")) {
 					if (!plugin.getConfig().getBoolean("General.AutoCheckForUpdates") && s.hasPermission("donationpoints.update")) {
 						s.sendMessage("§cThis server does not have the Update Checker for DonationPoints enabled.");

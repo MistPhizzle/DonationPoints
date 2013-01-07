@@ -25,6 +25,9 @@ public final class DBConnection {
 			((MySQLConnection) sql).open();
 			DonationPoints.log.info("[DonationPoints] Etablishing Database Connection...");
 
+			DonationPoints.log.info("Making sure all data is correct.");
+			sql.modifyQuery("UPDATE points_players SET player = lower(player)");
+			
 			if (!sql.tableExists("points_players")) {
 				DonationPoints.log.info("Creating points_players table.");
 				String query = "CREATE TABLE IF NOT EXISTS `points_players` ("

@@ -86,7 +86,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void AutoCreateAccount(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		String user = p.getName();
+		String user = p.getName().toLowerCase();
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
 			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + user + "';");
 			try {
