@@ -107,16 +107,21 @@ public class Commands {
 							} if (target == s) {
 								s.sendMessage("§cYou can't send points to yourself!");
 							} else {
-								if (transferamount > pbal.getDouble("balance")) {
-									s.sendMessage("§cYou don't have enough points to transfer.");
-									return true;
+								while (pbal.next()) {
+									if (transferamount > pbal.getDouble("balance")) {
+										s.sendMessage("§cYou don't have enough points to transfer.");
+										return true;
+									} if (transferamount == 0) {
+										s.sendMessage("§cYou can't transfer nothing.");
+										return true;
+									}
 								}
 								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
 								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + s.getName().toLowerCase() + "';");
 								s.sendMessage("§aYou have sent §3" + transferamount + "§a to §3" + args[1].toLowerCase());
 								for (Player player: Bukkit.getOnlinePlayers()) {
 									if (player.getName().equalsIgnoreCase(args[1])) {
-										player.sendMessage("§aYou have received §3" + transferamount + "§a from §3" + s.getName().toLowerCase());
+										player.sendMessage("§aYou have received §3" + transferamount + "§aDonation Points from §3" + s.getName().toLowerCase());
 									}
 								}
 							}
@@ -154,7 +159,7 @@ public class Commands {
 						try {
 							if (rs2.next()) {
 								do {
-									s.sendMessage("§a" + args[1].toLowerCase() + " has §3 " + rs2.getDouble("balance") + "§a points.");
+									s.sendMessage("§a" + args[1].toLowerCase() + " has §3" + rs2.getDouble("balance") + "§a points.");
 								} while (rs2.next());
 							} else if (!rs2.next()) {
 								s.sendMessage("§cWas unable to find a balance for §a " + args[1].toLowerCase());	
