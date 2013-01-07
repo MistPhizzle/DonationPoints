@@ -57,7 +57,7 @@ public class SignListener implements Listener {
 				e.setCancelled(true);
 				block.breakNaturally();
 			} if (e.getLine(1).isEmpty()) {
-				p.sendMessage("§cYou didn't enter a packag eon the second line!");
+				p.sendMessage("§cYou didn't enter a package on the second line!");
 				e.setCancelled(true);
 				block.breakNaturally();
 			} else {
