@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerListener implements Listener {
-	
+
 	public static String SignMessage;
 
 	public static DonationPoints plugin;
@@ -32,41 +32,42 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		Block block = event.getClickedBlock();
 		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-		if (!player.hasPermission("donationpoints.sign.use")) {
-			player.sendMessage("§cYou don't have permission to use the DonationPoints signs.");
-		}
 		if (block.getState() instanceof Sign) {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-					&& block.getType() == Material.WALL_SIGN
-					&& player.hasPermission("donationpoints.sign.use")) {
-				String purchasedPack = s.getLine(1);
-				Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
-				String username = player.getName();
-				ResultSet playerBalance1 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + username + "';");
-				try {
-					while (playerBalance1.next()) {
-						Double newbalance = playerBalance1.getDouble("balance");
+					&& block.getType() == Material.WALL_SIGN) {
+				if (!player.hasPermission("donationpoints.sign.use")) {
+					player.sendMessage("§cYou don't have permission to use the DonationPoints signs.");
+				}
+				if (player.hasPermission("donationpoints.sign.use")) {
+					String purchasedPack = s.getLine(1);
+					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
+					String username = player.getName();
+					ResultSet playerBalance1 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + username + "';");
+					try {
+						while (playerBalance1.next()) {
+							Double newbalance = playerBalance1.getDouble("balance");
 
-						if (!(newbalance >= price)) {
-							player.sendMessage("§cYou don't have enough points for this package.");
-						} else if (newbalance >= price) {
-							purchases.put(username, purchasedPack);
-							if (purchases.containsKey(username)) {
-								player.sendMessage("§aType §3/dp confirm §a to purchase §3" + purchasedPack + "§a for §3" + price + "§a points.");
-							} else {
-								player.sendMessage("Hashmap / other error.");
+							if (!(newbalance >= price)) {
+								player.sendMessage("§cYou don't have enough points for this package.");
+							} else if (newbalance >= price) {
+								purchases.put(username, purchasedPack);
+								if (purchases.containsKey(username)) {
+									player.sendMessage("§aType §3/dp confirm §a to purchase §3" + purchasedPack + "§a for §3" + price + "§a points.");
+								} else {
+									player.sendMessage("Hashmap / other error.");
+								}
 							}
 						}
+						event.setUseItemInHand(Result.DENY);
+						event.setUseInteractedBlock(Result.DENY);
+					} catch (SQLException ex) {
+						ex.printStackTrace();
+						player.sendMessage("§4Something went wrong with your transaction and it was not completed.");
+						player.sendMessage("§4Please contact an Administrator as soon as possible.");
 					}
-					event.setUseItemInHand(Result.DENY);
-					event.setUseInteractedBlock(Result.DENY);
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-					player.sendMessage("§4Something went wrong with your transaction and it was not completed.");
-					player.sendMessage("§4Please contact an Administrator as soon as possible.");
 				}
 			}
 		}
