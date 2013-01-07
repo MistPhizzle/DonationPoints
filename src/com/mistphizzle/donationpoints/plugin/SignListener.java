@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.block.Sign;
 
@@ -17,6 +18,20 @@ public class SignListener implements Listener {
 		plugin = instance;
 	}
 
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent e) {
+		Player player = e.getPlayer();
+		Block block = e.getBlock();
+		
+		if (block.getState() instanceof Sign) {
+			Sign s = (Sign) block.getState();
+			String signline1 = s.getLine(0);
+			if (signline1.equalsIgnoreCase("[" + SignMessage + "]") && !player.hasPermission("donationpoints.sign.break")) {
+				player.sendMessage("§cYou don't have permission to break a DonationPoints sign.");
+				e.setCancelled(true);
+			}
+		}
+	}
 	@EventHandler
 	public void onSignChance(SignChangeEvent e) {
 		if (e.isCancelled()) return;

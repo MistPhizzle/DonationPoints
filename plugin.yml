@@ -22,9 +22,11 @@ permissions:
       donationpoints.update: true
       donationpoints.reload: true
       donationpoints.version: true
+      donationpoints.user: true
   donationpoints.user:
     default: op
     children:
+      donationpoints.transfer: true
       donationpoints.sign.use: true
       donationpoints.create: true
       donationpoints.balance: true
