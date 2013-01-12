@@ -141,18 +141,12 @@ public class Commands {
 					s.sendMessage("§aConfig / Packages reloaded.");
 				} else if (args[0].equalsIgnoreCase("balance") && s.hasPermission("donationpoints.balance")) {
 					if (args.length == 1) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
-						try {
-							if (rs2.next()) {
-								do {
-									s.sendMessage("§aYou currently have §3" + rs2.getDouble("balance") + "§a points.");
-								} while (rs2.next());
-							} else if (!rs2.next()) {
-								s.sendMessage("§cYour balance can't be found!");
-								s.sendMessage("§cCreate an account using: §3/dp create");
-							}
-						} catch (SQLException e) {
-							e.printStackTrace();
+						Double balance = Methods.getBalance((Player) s);
+						if (balance == null) {
+						 s.sendMessage("§cYour balance can't be found!");
+						 s.sendMessage("§cCreate an account using: §3/dp create");
+						} else {
+							s.sendMessage("§aYou currently have: §3" + balance + " points.");
 						}
 					} else if (args.length == 2 && s.hasPermission("donationpoints.balance.others")) {
 						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");

@@ -1,8 +1,5 @@
 package com.mistphizzle.donationpoints.plugin;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.mistphizzle.donationpoints.sql.Database;
 import com.mistphizzle.donationpoints.sql.MySQLConnection;
 import com.mistphizzle.donationpoints.sql.SQLite;

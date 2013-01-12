@@ -65,6 +65,7 @@ public class DonationPoints extends JavaPlugin {
 		DBConnection.port = config.getInt("MySQL.port", 3306);
 		DBConnection.engine = config.getString("MySQL.engine", "sqlite");
 		DBConnection.sqlite_db = config.getString("MySQL.SQLiteDB", "donationpoints.db");
+		Methods.engine = config.getString("MySQL.engine", "sqlite");
 
 		// Other Variables.
 		PlayerListener.SignMessage = config.getString("General.SignMessage");
