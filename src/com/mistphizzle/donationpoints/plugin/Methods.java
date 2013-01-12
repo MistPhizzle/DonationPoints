@@ -56,5 +56,14 @@ public class Methods {
 	public static void removePoints (Double amount, String string) {
 		DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + amount + " WHERE player = '" + string.toLowerCase() + "';");
 	}
+	public static void setPoints (Double amount, String string) {
+		DBConnection.sql.modifyQuery("UPDATE points_players SET balance = " + amount + " WHERE player = '" + string.toLowerCase() + "';");
+	}
+	
+	public static Double getPackagePrice(String packageName, Double price) {
+		plugin.getConfig().getDouble("packages." + packageName + "price");
+		return price;
+		
+	}
 
 }

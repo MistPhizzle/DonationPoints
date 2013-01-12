@@ -232,20 +232,23 @@ public class Commands {
 						s.sendMessage("§cDoesn't look like you have started a transaction.");
 					}
 				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
-					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
-					s.sendMessage("§aYou have set §3" + args[1].toLowerCase() + "'s §abalance to §3" + args[2]);
+					String target = args[1].toLowerCase();
+					Double amount = Double.parseDouble(args[2]);
+					Methods.setPoints(amount, target);
+					s.sendMessage("§aYou have set §3" + target + "'s §abalance to §3" + amount + " points.");
 				} else if (args[0].equalsIgnoreCase("update")) {
-					if (!plugin.getConfig().getBoolean("General.AutoCheckForUpdates") && s.hasPermission("donationpoints.update")) {
+					if (!s.hasPermission("donationpoints.update")) {
+						s.sendMessage("§cYou don't have permission to do that!");
+						return true;
+					}
+					if (!plugin.getConfig().getBoolean("General.AutoCheckForUpdates")) {
 						s.sendMessage("§cThis server does not have the Update Checker for DonationPoints enabled.");
-						s.sendMessage("§cChange the value in the config to true for this to work.");
-					} else if (s.hasPermission("donationpoints.update") && UpdateChecker.updateNeeded()) {
+					} else if (UpdateChecker.updateNeeded()) {
 						s.sendMessage("§eYour server is not running the same version of DonationPoints as the latest file on Bukkit!");
 						s.sendMessage("§ePerhaps it's time to upgrade?");
-					} else if (s.hasPermission("donationpoints.update") && !UpdateChecker.updateNeeded()) {
+					} else if (!UpdateChecker.updateNeeded()) {
 						s.sendMessage("§eYou are running the same DonationPoints version as the one on Bukkit!");
 						s.sendMessage("§eNo need for an update at this time. :)");
-					} else {
-						s.sendMessage("§cYou don't have permission for that.");
 					}
 				} else if (args[0].equalsIgnoreCase("package") && args[1].equalsIgnoreCase("info") && s.hasPermission("donationpoints.package.info")) {
 					String packName = args[2];
