@@ -141,56 +141,76 @@ public class Commands {
 					s.sendMessage("§aConfig / Packages reloaded.");
 				} else if (args[0].equalsIgnoreCase("balance") && s.hasPermission("donationpoints.balance")) {
 					if (args.length == 1) {
-						Double balance = Methods.getBalance((Player) s);
-						if (balance == null) {
-						 s.sendMessage("§cYour balance can't be found!");
-						 s.sendMessage("§cCreate an account using: §3/dp create");
+						if (!Methods.hasAccount(s.getName())) {
+							s.sendMessage("§cYou don't have an account.");
 						} else {
+							Double balance = Methods.getBalance(s.getName());
 							s.sendMessage("§aYou currently have: §3" + balance + " points.");
 						}
 					} else if (args.length == 2 && s.hasPermission("donationpoints.balance.others")) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
-						try {
-							if (rs2.next()) {
-								do {
-									s.sendMessage("§a" + args[1].toLowerCase() + " has §3" + rs2.getDouble("balance") + "§a points.");
-								} while (rs2.next());
-							} else if (!rs2.next()) {
-								s.sendMessage("§cWas unable to find a balance for §a " + args[1].toLowerCase());	
-							}
-						} catch (SQLException e) {
-							e.printStackTrace();
+						String string = args[1];
+						if (!Methods.hasAccount(string)) {
+							s.sendMessage("§3" + string + "§c does not have an account.");
+						} else {
+							Double balance = Methods.getBalance(string);
+							s.sendMessage("§3" + string + "§a has a balance of: §3" + balance + " points.");
 						}
+//						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
+//						try {
+//							if (rs2.next()) {
+//								do {
+//									s.sendMessage("§a" + args[1].toLowerCase() + " has §3" + rs2.getDouble("balance") + "§a points.");
+//								} while (rs2.next());
+//							} else if (!rs2.next()) {
+//								s.sendMessage("§cWas unable to find a balance for §a " + args[1].toLowerCase());	
+//							}
+//						} catch (SQLException e) {
+//							e.printStackTrace();
+//						}
 					}
 				} else if (args[0].equalsIgnoreCase("create") && s.hasPermission("donationpoints.create")) {
 					if (args.length == 1) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
-						try {
-							if (rs2.next()) {
-								do {
-									s.sendMessage("§cA balance was found for you already. We will not create a new one.");
-								} while (rs2.next());
-							} else if (!rs2.next()) {
-								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + s.getName().toLowerCase() + "', 0)");
-								s.sendMessage("§aYour account has been created.");
-							}
-						} catch (SQLException e) {
-							e.printStackTrace();
+						String string = s.getName();
+						if (!Methods.hasAccount(string)) {
+							Methods.createAccount(string);
+							s.sendMessage("§aAn account has been created.");
+						} else {
+							s.sendMessage("§cYou already have an account.");
 						}
+//						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
+//						try {
+//							if (rs2.next()) {
+//								do {
+//									s.sendMessage("§cA balance was found for you already. We will not create a new one.");
+//								} while (rs2.next());
+//							} else if (!rs2.next()) {
+//								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + s.getName().toLowerCase() + "', 0)");
+//								s.sendMessage("§aYour account has been created.");
+//							}
+//						} catch (SQLException e) {
+//							e.printStackTrace();
+//						}
 					} if (args.length == 2 && s.hasPermission("donationpoints.create.others")) {
-						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
-						try {
-							if (rs2.next()) {
-								do {
-									s.sendMessage("§3" + args[1].toLowerCase() + " §calready has a balance.");
-								} while (rs2.next());
-							} else if (!rs2.next()) {
-								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + args[1].toLowerCase() + "', 0)");
-								s.sendMessage("§aCreated an account for §3" + args[1].toLowerCase());
-							}
-						} catch (SQLException e) {
-							e.printStackTrace();
+						//ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
+						String string = args[1];
+						if (!Methods.hasAccount(string)) {
+							Methods.createAccount(string);
+							s.sendMessage("§aAn account has been created for: §3" + string.toLowerCase());
+						} else if (Methods.hasAccount(string)) {
+							s.sendMessage("§3" + string + "§c already has an account.");
 						}
+//						try {
+//							if (rs2.next()) {
+//								do {
+//									s.sendMessage("§3" + args[1].toLowerCase() + " §calready has a balance.");
+//								} while (rs2.next());
+//							} else if (!rs2.next()) {
+//								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + args[1].toLowerCase() + "', 0)");
+//								s.sendMessage("§aCreated an account for §3" + args[1].toLowerCase());
+//							}
+//						} catch (SQLException e) {
+//							e.printStackTrace();
+//						}
 					}
 				} else if (args[0].equalsIgnoreCase("give") && args.length == 3 && s.hasPermission("donationpoints.give")) {
 					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");

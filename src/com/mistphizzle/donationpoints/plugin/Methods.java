@@ -15,9 +15,9 @@ public class Methods {
 	
 	public static String engine;
 	
-	public static Double getBalance(Player p) {
+	public static Double getBalance(String string) {
 		if (engine.equalsIgnoreCase("mysql") | engine.equalsIgnoreCase("sqlite")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + p.getName().toLowerCase() + "';");
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + string.toLowerCase() + "';");
 			try {
 				if (rs2.next()) {
 					Double balance = rs2.getDouble("balance");
@@ -30,12 +30,11 @@ public class Methods {
 		return null;
 	}
 	
-	public static boolean hasAccount(Player p) {
+	public static boolean hasAccount(String string) {
 		if (engine.equalsIgnoreCase("mysql") | engine.equalsIgnoreCase("sqlite")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_player WHERE player = '" + p.getName().toLowerCase() + "';");
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + string.toLowerCase() + "';");
 			try {
 				if (rs2.next()) {
-					String player = rs2.getString("player");
 					return true;
 				} else {
 					return false;
@@ -44,10 +43,10 @@ public class Methods {
 				e.printStackTrace();
 			}
 		}
-		return false;
+		return true;
 	}
-	public static void createAccountForSelf(Player p) {
-			DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + p.getName().toLowerCase() + "', 0)");
+	public static void createAccount(String string) {
+			DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + string.toLowerCase() + "', 0)");
 	}
 
 }
