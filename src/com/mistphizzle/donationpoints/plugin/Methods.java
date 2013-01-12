@@ -2,15 +2,14 @@ package com.mistphizzle.donationpoints.plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.bukkit.entity.Player;
+import java.util.List;
 
 public class Methods {
 	
 	public static DonationPoints plugin;
 	
 	public Methods(DonationPoints instance) {
-		this.plugin = instance;
+		Methods.plugin = instance;
 	}
 	
 	public static String engine;
@@ -60,10 +59,7 @@ public class Methods {
 		DBConnection.sql.modifyQuery("UPDATE points_players SET balance = " + amount + " WHERE player = '" + string.toLowerCase() + "';");
 	}
 	
-	public static Double getPackagePrice(String packageName, Double price) {
-		plugin.getConfig().getDouble("packages." + packageName + "price");
-		return price;
-		
+	public static void logTransaction(String player, Double price, String packageName) {
+		DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + player.toLowerCase() + "', '" + packageName + "', " + price + ")");
 	}
-
 }

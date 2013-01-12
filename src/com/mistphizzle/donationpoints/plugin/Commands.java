@@ -177,35 +177,31 @@ public class Commands {
 					Methods.removePoints(takeamount, target);
 					s.sendMessage("§aYou have taken §3" + takeamount + "§a points from §3" + target);
 				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
-					if (PlayerListener.purchases.containsKey(s.getName().toLowerCase())) {
+					String sender = s.getName().toLowerCase();
+					if (PlayerListener.purchases.containsKey(sender)) {
 						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
-						//						DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName().toLowerCase() + "';");
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
-						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT * FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
+						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT (*) AS size FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
 						if (plugin.getConfig().getBoolean("General.UseLimits")) {
 							try {
-								numberpurchased.last();
-								int size = numberpurchased.getRow();
-
+								int size = numberpurchased.getInt("size");
 								if (size >= limit) {
-									s.sendMessage("§cYou can't purchase §3" + pack2 + "§c because you have reached the limit.");
+									s.sendMessage("§cYou can't purchase §3" + pack2 + "§c because you have reached the limit of §3" + limit);
 								} else if (size < limit) {
 									List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 									for (String cmd : commands) {
-										plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
+										plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
 									}
-									DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName().toLowerCase() + "';");
-									s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
-									s.sendMessage("§aYour balance has been updated.");
-									s.sendMessage("§aTransaction Complete.");
+									Methods.removePoints(price2, sender);
+									s.sendMessage("§aYou have just purchased: §3" + pack2 + "§a for §3" + price2 + " points");
+									s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
 									PlayerListener.purchases.remove(s.getName().toLowerCase());
 									if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-										DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName().toLowerCase() + "', '" + pack2 + "', " + price2 + ")");
-										DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase. It has been logged to points_transactions.");
-
+										Methods.logTransaction(sender, price2, pack2);
+										DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase. It has been logged to the points_transactions table.");
 									} else {
-										plugin.log.info(s.getName().toLowerCase() + " has made a purchase and it has not been logged to points_transactions.");
+										DonationPoints.log.info(s.getName().toLowerCase() + " has purchased " + pack2);
 									}
 								}
 							} catch (SQLException e) {
@@ -214,22 +210,21 @@ public class Commands {
 						} else {
 							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 							for (String cmd : commands) {
-								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
+								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
 							}
-							DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + price2 + " WHERE player = '" + s.getName().toLowerCase() + "';");
-							s.sendMessage("§aYou have just purchased §3" + pack2 + "§a for §3" + price2 + "§a points.");
-							s.sendMessage("§aYour balance has been updated.");
-							s.sendMessage("§aTransaction Complete.");
+							Methods.removePoints(price2, sender);
+							s.sendMessage("§aYou have just purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
+							s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
 							PlayerListener.purchases.remove(s.getName().toLowerCase());
 							if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-								DBConnection.sql.modifyQuery("INSERT INTO points_transactions(player, package, price) VALUES ('" + s.getName().toLowerCase() + "', '" + pack2 + "', " + price2 + ")");
-								plugin.log.info("[DonationPoints] " + s.getName().toLowerCase() + " has made a purchase. It has been logged to points_transactions.");
+								Methods.logTransaction(sender, price2, pack2);
+								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase. It has been logged to the points_transactions table.");
 							} else {
-								plugin.log.info("[DonationPoints] " + s.getName().toLowerCase() + " has made a purchase. Not logged to points_transactions.");
+								DonationPoints.log.info(s.getName().toLowerCase() + " has purchased " + pack2);
 							}
 						}
 					} else {
-						s.sendMessage("§cDoesn't look like you have started a transaction.");
+						s.sendMessage("§cIt doesn't look like you've started a transaction.");
 					}
 				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
 					String target = args[1].toLowerCase();
