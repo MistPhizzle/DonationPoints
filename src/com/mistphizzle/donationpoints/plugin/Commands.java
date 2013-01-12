@@ -90,47 +90,38 @@ public class Commands {
 						return true;
 					}
 					else {
-						Double transferamount = Double.parseDouble(args[2]);
+						// Double transferamount = Double.parseDouble(args[2]);
 						//        0        1     2
 						// /dp transfer player amount
-						final Player target = Bukkit.getPlayer(args[1].toLowerCase());
-						ResultSet pbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + s.getName().toLowerCase().toLowerCase() + "';");
-						ResultSet tbal = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
-						ResultSet player1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
-						ResultSet target1 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
-						try {
-							if (!player1.next()) {
-								s.sendMessage("§cYou don't have a DonationPoints account.");
+						// final Player target = Bukkit.getPlayer(args[1].toLowerCase());
+						String sender = s.getName();
+						String target = args[1];
+						Double transferamount = Double.parseDouble(args[2]);
+						if (!Methods.hasAccount(sender)) {
+							s.sendMessage("§cYou don't have a DonationPoints account.");
+						}
+						if (!Methods.hasAccount(target)) {
+							s.sendMessage("§cThat player does not have a DonationPoints account.");
+						} if (target.equalsIgnoreCase(sender)) {
+							s.sendMessage("§cYou can't transfer points to yourself.");
+						} else {
+							if (transferamount > Methods.getBalance(sender)) {
+								s.sendMessage("§cYou don't have enough points to transfer.");
+								return true;
+							} if (transferamount == 0) {
+								s.sendMessage("§cYou can't transfer 0 points.");
+								return true;
 							}
-							if (!target1.next()) {
-								s.sendMessage("§cThat player does not have a DonationPoints account.");
-							} if (target == s) {
-								s.sendMessage("§cYou can't send points to yourself!");
-							} else {
-								while (pbal.next()) {
-									if (transferamount > pbal.getDouble("balance")) {
-										s.sendMessage("§cYou don't have enough points to transfer.");
-										return true;
-									} if (transferamount == 0) {
-										s.sendMessage("§cYou can't transfer nothing.");
-										return true;
-									}
-								}
-								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
-								DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + s.getName().toLowerCase() + "';");
-								s.sendMessage("§aYou have sent §3" + transferamount + "§a Donation Points to §3" + args[1].toLowerCase());
-								for (Player player: Bukkit.getOnlinePlayers()) {
-									if (player.getName().equalsIgnoreCase(args[1])) {
-										player.sendMessage("§aYou have received §3" + transferamount + "§a Donation Points from §3" + s.getName().toLowerCase());
-									}
-								}
+						}
+						Methods.addPoints(transferamount, target);
+						Methods.removePoints(transferamount, sender);
+						s.sendMessage("§aYou have sent §3" + transferamount + " points §ato §3" + target.toLowerCase() + ".");
+						for (Player player: Bukkit.getOnlinePlayers()) {
+							if (player.getName().equalsIgnoreCase(args[1])) {
+								player.sendMessage("§aYou have received §3" + transferamount + " points §afrom §3" + sender.toLowerCase() + ".");
 							}
-						} catch (SQLException e) {
-							e.printStackTrace();
 						}
 					}
-
-
 				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
 					plugin.reloadConfig();
 					try {
@@ -155,18 +146,6 @@ public class Commands {
 							Double balance = Methods.getBalance(string);
 							s.sendMessage("§3" + string + "§a has a balance of: §3" + balance + " points.");
 						}
-//						ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
-//						try {
-//							if (rs2.next()) {
-//								do {
-//									s.sendMessage("§a" + args[1].toLowerCase() + " has §3" + rs2.getDouble("balance") + "§a points.");
-//								} while (rs2.next());
-//							} else if (!rs2.next()) {
-//								s.sendMessage("§cWas unable to find a balance for §a " + args[1].toLowerCase());	
-//							}
-//						} catch (SQLException e) {
-//							e.printStackTrace();
-//						}
 					}
 				} else if (args[0].equalsIgnoreCase("create") && s.hasPermission("donationpoints.create")) {
 					if (args.length == 1) {
@@ -177,19 +156,6 @@ public class Commands {
 						} else {
 							s.sendMessage("§cYou already have an account.");
 						}
-//						ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + s.getName().toLowerCase() + "';");
-//						try {
-//							if (rs2.next()) {
-//								do {
-//									s.sendMessage("§cA balance was found for you already. We will not create a new one.");
-//								} while (rs2.next());
-//							} else if (!rs2.next()) {
-//								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + s.getName().toLowerCase() + "', 0)");
-//								s.sendMessage("§aYour account has been created.");
-//							}
-//						} catch (SQLException e) {
-//							e.printStackTrace();
-//						}
 					} if (args.length == 2 && s.hasPermission("donationpoints.create.others")) {
 						//ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
 						String string = args[1];
@@ -199,25 +165,17 @@ public class Commands {
 						} else if (Methods.hasAccount(string)) {
 							s.sendMessage("§3" + string + "§c already has an account.");
 						}
-//						try {
-//							if (rs2.next()) {
-//								do {
-//									s.sendMessage("§3" + args[1].toLowerCase() + " §calready has a balance.");
-//								} while (rs2.next());
-//							} else if (!rs2.next()) {
-//								DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + args[1].toLowerCase() + "', 0)");
-//								s.sendMessage("§aCreated an account for §3" + args[1].toLowerCase());
-//							}
-//						} catch (SQLException e) {
-//							e.printStackTrace();
-//						}
 					}
 				} else if (args[0].equalsIgnoreCase("give") && args.length == 3 && s.hasPermission("donationpoints.give")) {
-					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
-					s.sendMessage("§aYou have given §3" + args[1].toLowerCase() + " §aa total of §3" + args[2] + " §apoints.");
+					Double addamount = Double.parseDouble(args[2]);
+					String target = args[1].toLowerCase();
+					Methods.addPoints(addamount, target);
+					s.sendMessage("§aYou have given §3" + target + " §aa total of §3" + addamount + " §apoints.");
 				} else if (args[0].equalsIgnoreCase("take") && args.length == 3 && s.hasPermission("donationpoints.take")) {
-					DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + args[2] + " WHERE player = '" + args[1].toLowerCase() + "';");
-					s.sendMessage("§aYou have taken §3" + args[2] + "§a points from §3" + args[1].toLowerCase());
+					Double takeamount = Double.parseDouble(args[2]);
+					String target = args[1].toLowerCase();
+					Methods.removePoints(takeamount, target);
+					s.sendMessage("§aYou have taken §3" + takeamount + "§a points from §3" + target);
 				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
 					if (PlayerListener.purchases.containsKey(s.getName().toLowerCase())) {
 						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());

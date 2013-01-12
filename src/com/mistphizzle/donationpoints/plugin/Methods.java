@@ -48,5 +48,13 @@ public class Methods {
 	public static void createAccount(String string) {
 			DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + string.toLowerCase() + "', 0)");
 	}
+	
+	public static void addPoints (Double amount, String string) {
+		DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance + " + amount + " WHERE player = '" + string.toLowerCase() + "';");
+	}
+	
+	public static void removePoints (Double amount, String string) {
+		DBConnection.sql.modifyQuery("UPDATE points_players SET balance = balance - " + amount + " WHERE player = '" + string.toLowerCase() + "';");
+	}
 
 }
