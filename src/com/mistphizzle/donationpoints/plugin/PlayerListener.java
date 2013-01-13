@@ -45,29 +45,17 @@ public class PlayerListener implements Listener {
 					String purchasedPack = s.getLine(1);
 					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 					String username = player.getName().toLowerCase();
-					ResultSet playerBalance1 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + username + "';");
-					try {
-						while (playerBalance1.next()) {
-							Double newbalance = playerBalance1.getDouble("balance");
-
-							if (!(newbalance >= price)) {
-								player.sendMessage("§cYou don't have enough points for this package.");
-							} else if (newbalance >= price) {
-								purchases.put(username, purchasedPack);
-								if (purchases.containsKey(username)) {
-									player.sendMessage("§aType §3/dp confirm §a to purchase §3" + purchasedPack + "§a for §3" + price + "§a points.");
-								} else {
-									player.sendMessage("Hashmap / other error.");
-								}
-							}
+					Double balance = Methods.getBalance(username);
+					if (!(balance >= price)) {
+						player.sendMessage("§cYou don't have enough points for this package.");	
+					} else if (balance >= price) {
+						purchases.put(username, purchasedPack);
+						if (purchases.containsKey(username)) {
+							player.sendMessage("§aType §3/dp confirm §ato purchase §3" + purchasedPack + "§a for §3" + price + " points§a.");
 						}
+					}
 						event.setUseItemInHand(Result.DENY);
 						event.setUseInteractedBlock(Result.DENY);
-					} catch (SQLException ex) {
-						ex.printStackTrace();
-						player.sendMessage("§4Something went wrong with your transaction and it was not completed.");
-						player.sendMessage("§4Please contact an Administrator as soon as possible.");
-					}
 				}
 			}
 		}
@@ -88,18 +76,9 @@ public class PlayerListener implements Listener {
 		Player p = e.getPlayer();
 		String user = p.getName().toLowerCase();
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM points_players WHERE player = '" + user + "';");
-			try {
-				if (rs2.next()) {
-					do {
-						// Does nothing because the player already has an account.
-					} while (rs2.next());
-				} else if (!rs2.next()) {
-					DBConnection.sql.modifyQuery("INSERT INTO points_players(player, balance) VALUES ('" + user + "', 0)");
-					plugin.log.info("Created an account for " + user);
-				}
-			} catch (SQLException ex) {
-				ex.printStackTrace();
+			if (!Methods.hasAccount(user)) {
+				Methods.createAccount(user);
+				plugin.log.info("Created an account for " + user);
 			}
 		}
 	}
