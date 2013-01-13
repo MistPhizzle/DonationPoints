@@ -99,11 +99,14 @@ public class Commands {
 						Double transferamount = Double.parseDouble(args[2]);
 						if (!Methods.hasAccount(sender)) {
 							s.sendMessage("§cYou don't have a DonationPoints account.");
+							return true;
 						}
 						if (!Methods.hasAccount(target)) {
 							s.sendMessage("§cThat player does not have a DonationPoints account.");
+							return true;
 						} if (target.equalsIgnoreCase(sender)) {
 							s.sendMessage("§cYou can't transfer points to yourself.");
+							return true;
 						} else {
 							if (transferamount > Methods.getBalance(sender)) {
 								s.sendMessage("§cYou don't have enough points to transfer.");
