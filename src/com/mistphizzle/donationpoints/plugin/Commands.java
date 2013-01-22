@@ -185,11 +185,14 @@ public class Commands {
 						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
-						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT * FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
+						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND PACKAGE = '" + pack2 + "';");
+//						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT * FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
 						if (plugin.getConfig().getBoolean("General.UseLimits")) {
 							try {
-								numberpurchased.last();
-								int size = numberpurchased.getRow();
+								// numberpurchased.last();
+								int size = numberpurchased.getInt("size");
+								s.sendMessage("Size: " + size);
+								// numberpurchased.beforeFirst();
 								if (size >= limit) {
 									s.sendMessage("§cYou can't purchase §3" + pack2 + "§c because you have reached the limit of §3" + limit);
 								} else if (size < limit) {

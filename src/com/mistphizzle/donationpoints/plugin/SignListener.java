@@ -53,12 +53,12 @@ public class SignListener implements Listener {
 				block.breakNaturally();
 				e.setCancelled(true);
 			} if (plugin.getConfig().getString("packages." + pack) == null) {
-				p.sendMessage("§cThat package does not exist.");
 				e.setCancelled(true);
+				p.sendMessage("§cThat package does not exist.");
 				block.breakNaturally();
 			} if (e.getLine(1).isEmpty()) {
-				p.sendMessage("§cYou didn't enter a package on the second line!");
 				e.setCancelled(true);
+				p.sendMessage("§cYou didn't enter a package on the second line!");
 				block.breakNaturally();
 			} else {
 				p.sendMessage("§aYou have created a DonationPoints sign.");
