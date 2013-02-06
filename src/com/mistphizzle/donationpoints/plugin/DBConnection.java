@@ -1,13 +1,8 @@
 package com.mistphizzle.donationpoints.plugin;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.mistphizzle.donationpoints.sql.Database;
 import com.mistphizzle.donationpoints.sql.MySQLConnection;
 import com.mistphizzle.donationpoints.sql.SQLite;
-import com.mysql.jdbc.Connection;
 
 public final class DBConnection {
 
@@ -39,7 +34,7 @@ public final class DBConnection {
 						+ " PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
-			
+
 			if (!sql.tableExists("points_transactions")) {
 				DonationPoints.log.info("Creating points_transactions table");
 				String query = "CREATE TABLE IF NOT EXISTS `points_transactions` ("
@@ -47,19 +42,6 @@ public final class DBConnection {
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
 						+ "`price` double,"
-						+ "PRIMARY KEY (id));";
-				sql.modifyQuery(query);
-			}
-			
-			if (!sql.tableExists("dp_purchases")) {
-				DonationPoints.log.info("Creating dp_purchases table.");
-				String query = "CREATE TABLE IF NOT EXISTS `dp_purchases` ("
-						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
-						+ "`player` TEXT(32),"
-						+ "`package` TEXT(255),"
-						+ "`price` double,"
-						+ "`date` STRING(255),"
-						+ "`expired` TEXT(32),"
 						+ "PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}

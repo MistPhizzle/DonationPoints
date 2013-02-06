@@ -17,3 +17,21 @@ MySQL:
   username: root
   password: 
   database: minecraft
+packages:
+  # These are the 'default' packages. PLEASE change these.
+  # Use '%player' where you would like the player's name to go.
+  # You can run as many commands as you wish.
+  # Please make sure no field below is blank.
+  God:
+    price: 500
+    description: This will give you god mode.
+    limit: 3
+    commands:
+    - god %player
+    - say %player has received god mode.
+  kick:
+    price: 1000
+    description: This will kick the player.
+    limit: 1
+    commands:
+    - kick %player

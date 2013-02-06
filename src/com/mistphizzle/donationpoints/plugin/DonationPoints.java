@@ -22,9 +22,6 @@ public class DonationPoints extends JavaPlugin {
 	// Configs
 	File configFile;
 	FileConfiguration config;
-	
-	FileConfiguration packageConfig;
-	File packageConfigFile;
 
 	// Commands
 	Commands cmd;
@@ -43,8 +40,7 @@ public class DonationPoints extends JavaPlugin {
 
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
-		packageConfigFile = new File(getDataFolder(), "packages.yml");
-		
+
 		// Use firstRun() method
 		try {
 			firstRun();
@@ -54,7 +50,6 @@ public class DonationPoints extends JavaPlugin {
 
 		// Declare FileConfigurations, load.
 		config = new YamlConfiguration();
-		packageConfig = new YamlConfiguration();
 		loadYamls();
 
 		// Events
@@ -115,16 +110,11 @@ public class DonationPoints extends JavaPlugin {
 			copy(getResource("config.yml"), configFile);
 			log.info("Config not found. Generating.");
 		}
-		if (!packageConfigFile.exists()) {
-			packageConfigFile.getParentFile().mkdirs();
-			copy(getResource("packages.yml"), packageConfigFile);
-		}
 	}
 
 	private void loadYamls() {
 		try {
 			config.load(configFile);
-			config.load(packageConfigFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -148,7 +138,7 @@ public class DonationPoints extends JavaPlugin {
 	public void saveYamls() {
 		try {
 			config.save(configFile);
-			config.save(packageConfigFile);
+			config.save(configFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -156,26 +146,6 @@ public class DonationPoints extends JavaPlugin {
 
 	public static DonationPoints getInstance() {
 		return instance;
-	}
-	
-	public FileConfiguration getPackagesConfig() {
-		if (packageConfig == null) {
-			reloadPackageConfig();
-		}
-		return packageConfig;
-	}
-	
-	public void reloadPackageConfig() {
-		if (packageConfigFile == null) {
-			packageConfigFile = new File(getDataFolder(), "packages.yml");
-		}
-		packageConfig = YamlConfiguration.loadConfiguration(packageConfigFile);
-		
-		InputStream defConfigStream = getResource("packages.yml");
-		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-			packageConfig.setDefaults(defConfig);
-		}
 	}
 
 }
