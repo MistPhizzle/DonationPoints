@@ -78,7 +78,7 @@ public class Commands {
 						return true;
 					}
 					if (!s.hasPermission("donationpoints.transfer")) {
-						s.sendMessage("§cYou don't have permission to do that!");
+						Methods.noPermissionMessage(s);
 						return true;
 					}
 					if (!(s instanceof Player)) {
@@ -90,10 +90,6 @@ public class Commands {
 						return true;
 					}
 					else {
-						// Double transferamount = Double.parseDouble(args[2]);
-						//        0        1     2
-						// /dp transfer player amount
-						// final Player target = Bukkit.getPlayer(args[1].toLowerCase());
 						String sender = s.getName();
 						String target = args[1];
 						Double transferamount = Double.parseDouble(args[2]);
@@ -127,6 +123,7 @@ public class Commands {
 					}
 				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
 					plugin.reloadConfig();
+					plugin.reloadPackageConfig();
 					try {
 						plugin.firstRun();
 					} catch (Exception ex) {
@@ -240,7 +237,7 @@ public class Commands {
 					s.sendMessage("§aYou have set §3" + target + "'s §abalance to §3" + amount + " points.");
 				} else if (args[0].equalsIgnoreCase("update")) {
 					if (!s.hasPermission("donationpoints.update")) {
-						s.sendMessage("§cYou don't have permission to do that!");
+						Methods.noPermissionMessage(s);
 						return true;
 					}
 					if (!plugin.getConfig().getBoolean("General.AutoCheckForUpdates")) {

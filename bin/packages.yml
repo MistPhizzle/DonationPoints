@@ -1,0 +1,22 @@
+packages:
+  God:
+    price: 500
+    description: This will turn on GodMode when you claim it.
+    enablelimits: true
+    limit: 1
+    immediate: false
+    expire: 0
+    commands:
+    - god %player
+    - say %player has received God Mode!
+    expirecommands:
+    - god %player
+    - say %player access to God Mode has expired.
+  Kick:
+    price: 500
+    description: This will kick the player immediately.
+    enablelimits: false
+    immediate: true
+    expire 0
+    commands:
+    - kick %player
