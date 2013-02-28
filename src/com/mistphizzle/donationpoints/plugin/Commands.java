@@ -238,20 +238,6 @@ public class Commands {
 					Double amount = Double.parseDouble(args[2]);
 					Methods.setPoints(amount, target);
 					s.sendMessage("§aYou have set §3" + target + "'s §abalance to §3" + amount + " points.");
-				} else if (args[0].equalsIgnoreCase("update")) {
-					if (!s.hasPermission("donationpoints.update")) {
-						s.sendMessage("§cYou don't have permission to do that!");
-						return true;
-					}
-					if (!plugin.getConfig().getBoolean("General.AutoCheckForUpdates")) {
-						s.sendMessage("§cThis server does not have the Update Checker for DonationPoints enabled.");
-					} else if (UpdateChecker.updateNeeded()) {
-						s.sendMessage("§eYour server is not running the same version of DonationPoints as the latest file on Bukkit!");
-						s.sendMessage("§ePerhaps it's time to upgrade?");
-					} else if (!UpdateChecker.updateNeeded()) {
-						s.sendMessage("§eYou are running the same DonationPoints version as the one on Bukkit!");
-						s.sendMessage("§eNo need for an update at this time. :)");
-					}
 				} else if (args[0].equalsIgnoreCase("package") && args[1].equalsIgnoreCase("info") && s.hasPermission("donationpoints.package.info")) {
 					String packName = args[2];
 					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");

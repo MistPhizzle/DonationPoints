@@ -3,7 +3,6 @@
 General:
   LogTransactions: true
   UseLimits: false
-  AutoCheckForUpdates: true
   AutoCreateAccounts: true
   SignMessage: Premium
   Transferrable: false

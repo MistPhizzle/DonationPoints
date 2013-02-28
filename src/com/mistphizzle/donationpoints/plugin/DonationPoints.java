@@ -15,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class DonationPoints extends JavaPlugin {
 
 	protected static Logger log;
-	protected UpdateChecker updateChecker;
 
 	public static DonationPoints instance;
 
@@ -86,15 +85,6 @@ public class DonationPoints extends JavaPlugin {
 			// Failed to submit stats.
 		}
 
-		// Run Update Checker, log it to console.
-		if (getConfig().getBoolean("General.AutoCheckForUpdates", true)) {
-
-			this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/server-mods/donationpoints/files.rss");
-			if (UpdateChecker.updateNeeded()) {
-				this.log.info("[DonationPoints] A new version is available: " + this.updateChecker.getVersion());
-				this.log.info("[DonationPoints] Get it from: " + this.updateChecker.getLink());
-			}
-		}
 
 	}
 
