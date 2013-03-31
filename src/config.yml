@@ -1,7 +1,6 @@
 # This is the default configuration for DonationPoints.
 # Change any information you wish unless documented otherwise not to do so.
 General:
-  LogTransactions: true
   UseLimits: false
   AutoCreateAccounts: true
   SignMessage: Premium
