@@ -1,6 +1,10 @@
 package com.mistphizzle.donationpoints.plugin;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -63,15 +67,15 @@ public class PlayerListener implements Listener {
 							player.sendMessage("§aType §3/dp confirm §ato purchase §3" + purchasedPack + "§a for §3" + price + " points§a.");
 						}
 					}
-						event.setUseItemInHand(Result.DENY);
-						event.setUseInteractedBlock(Result.DENY);
+					event.setUseItemInHand(Result.DENY);
+					event.setUseInteractedBlock(Result.DENY);
 				}
 			}
 		}
 	}
 
 	@EventHandler
-	public void AutoCreateAccount(PlayerJoinEvent e) {
+	public void PlayerJoinEvent(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		String user = p.getName().toLowerCase();
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
@@ -79,6 +83,23 @@ public class PlayerListener implements Listener {
 				Methods.createAccount(user);
 				plugin.log.info("Created an account for " + user);
 			}
+		}
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
+		try {
+			if (rs2.next()) {
+				String pack2 = rs2.getString("package");
+
+				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
+				for (String cmd : commands) {
+					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
+				}
+				p.sendMessage("§cYour package: §3" + pack2 + "§c has expired.");
+				DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
+			} else if (!rs2.next()) {
+				p.sendMessage("§cYou do not have any packages set to expire today.");
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
 		}
 	}
 }
