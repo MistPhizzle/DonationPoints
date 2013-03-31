@@ -33,6 +33,18 @@ public class PlayerListener implements Listener {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
+					&& event.getAction().equals(Action.LEFT_CLICK_BLOCK)
+					&& block.getType() == Material.WALL_SIGN) {
+				if (!player.hasPermission("donationpoints.sign.use")) {
+					player.sendMessage("§cYou don't have permission to use DonationPoints signs.");
+				}
+				if (player.hasPermission("donationpoints.sign.use")) {
+					String purchasedPack = s.getLine(1);
+					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
+					player.sendMessage("§7Right Clicking §athis sign will allow you to purchase §3" + purchasedPack + "§a for §3" + price + "§a.");
+				}
+			}
+			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
 					&& block.getType() == Material.WALL_SIGN) {
 				if (!player.hasPermission("donationpoints.sign.use")) {
