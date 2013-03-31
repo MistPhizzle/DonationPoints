@@ -69,6 +69,8 @@ public class Commands {
 						s.sendMessage("§3/dp balance§f - Checks your points balance.");
 					} if (s.hasPermission("donationpoints.transfer")) {
 						s.sendMessage("§3/dp transfer <player> <amount>§f - Transfer Points.");
+					} if (s.hasPermission("donationpoints.purchase")) {
+						s.sendMessage("§3/dp purchase <package>§f - Purchase a package.");
 					} else {
 						s.sendMessage("§cYou don't have permission for any DonationPoints Basic Commands.");
 					}
@@ -238,14 +240,24 @@ public class Commands {
 					Double amount = Double.parseDouble(args[2]);
 					Methods.setPoints(amount, target);
 					s.sendMessage("§aYou have set §3" + target + "'s §abalance to §3" + amount + " points.");
-				} else if (args[0].equalsIgnoreCase("package") && args[1].equalsIgnoreCase("info") && s.hasPermission("donationpoints.package.info")) {
-					String packName = args[2];
-					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-					String description = plugin.getConfig().getString("packages." + packName + ".description");
-					s.sendMessage("-----§e" + packName + " Info§f-----");
-					s.sendMessage("§aPackage Name:§3 " + packName);
-					s.sendMessage("§aPrice:§3 " + price + "0");
-					s.sendMessage("§aDescription:§3 " + description);
+				} else if (args[0].equalsIgnoreCase("package")) {
+					if (args.length != 3) {
+						s.sendMessage("§cYou have supplied an improper number of arguments.");
+					if (args[1].equalsIgnoreCase("info")) {
+						if (!s.hasPermission("donationpoints.package.info")) {
+							s.sendMessage("§cYou don't have permission to do that!");
+							return true;
+						}
+						String packName = args[2];
+						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+						String description = plugin.getConfig().getString("packages." + packName + ".description");
+						s.sendMessage("-----§e" + packName + " Info§f-----");
+						s.sendMessage("§aPackage Name:§3 " + packName);
+						s.sendMessage("§aPrice:§3 " + price + "0");
+						s.sendMessage("§aDescription:§3 " + description);
+					}
+				}
+					
 				} else if (args[0].equalsIgnoreCase("purchase")) {
 					if (args.length < 2) {
 						s.sendMessage("§cNot Enough Arguments.");
