@@ -71,7 +71,7 @@ public class DonationPoints extends JavaPlugin {
 		SignListener.SignMessage = config.getString("General.SignMessage");
 		
 		DBConnection.init();
-		DBConnection.sql.modifyQuery("UPDATE points_players SET player = lower(player)");
+		DBConnection.sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
 
 		// Register Commands
 

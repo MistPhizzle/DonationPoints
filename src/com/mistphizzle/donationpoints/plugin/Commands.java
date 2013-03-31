@@ -162,7 +162,6 @@ public class Commands {
 							s.sendMessage("§cYou already have an account.");
 						}
 					} if (args.length == 2 && s.hasPermission("donationpoints.create.others")) {
-						//ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM points_players WHERE player = '" + args[1].toLowerCase() + "';");
 						String string = args[1];
 						if (!Methods.hasAccount(string)) {
 							Methods.createAccount(string);
@@ -187,8 +186,7 @@ public class Commands {
 						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
-						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND PACKAGE = '" + pack2 + "';");
-//						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT * FROM points_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
+						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM dp_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND PACKAGE = '" + pack2 + "';");
 						if (plugin.getConfig().getBoolean("General.UseLimits")) {
 							try {
 								// numberpurchased.last();
@@ -206,12 +204,8 @@ public class Commands {
 									s.sendMessage("§aYou have just purchased: §3" + pack2 + "§a for §3" + price2 + " points");
 									s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
 									PlayerListener.purchases.remove(s.getName().toLowerCase());
-									if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-										Methods.logTransaction(sender, price2, pack2);
-										DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase. It has been logged to the points_transactions table.");
-									} else {
-										DonationPoints.log.info(s.getName().toLowerCase() + " has purchased " + pack2);
-									}
+									Methods.logTransaction(sender, price2, pack2);
+									DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 								}
 							} catch (SQLException e) {
 								e.printStackTrace();
@@ -225,12 +219,8 @@ public class Commands {
 							s.sendMessage("§aYou have just purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
 							s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
 							PlayerListener.purchases.remove(s.getName().toLowerCase());
-							if (plugin.getConfig().getBoolean("General.LogTransactions", true)) {
-								Methods.logTransaction(sender, price2, pack2);
-								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase. It has been logged to the points_transactions table.");
-							} else {
-								DonationPoints.log.info(s.getName().toLowerCase() + " has purchased " + pack2);
-							}
+							Methods.logTransaction(sender, price2, pack2);
+							DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 						}
 					} else {
 						s.sendMessage("§cIt doesn't look like you've started a transaction.");
@@ -243,21 +233,21 @@ public class Commands {
 				} else if (args[0].equalsIgnoreCase("package")) {
 					if (args.length != 3) {
 						s.sendMessage("§cYou have supplied an improper number of arguments.");
-					if (args[1].equalsIgnoreCase("info")) {
-						if (!s.hasPermission("donationpoints.package.info")) {
-							s.sendMessage("§cYou don't have permission to do that!");
-							return true;
+						if (args[1].equalsIgnoreCase("info")) {
+							if (!s.hasPermission("donationpoints.package.info")) {
+								s.sendMessage("§cYou don't have permission to do that!");
+								return true;
+							}
+							String packName = args[2];
+							Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+							String description = plugin.getConfig().getString("packages." + packName + ".description");
+							s.sendMessage("-----§e" + packName + " Info§f-----");
+							s.sendMessage("§aPackage Name:§3 " + packName);
+							s.sendMessage("§aPrice:§3 " + price + "0");
+							s.sendMessage("§aDescription:§3 " + description);
 						}
-						String packName = args[2];
-						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-						String description = plugin.getConfig().getString("packages." + packName + ".description");
-						s.sendMessage("-----§e" + packName + " Info§f-----");
-						s.sendMessage("§aPackage Name:§3 " + packName);
-						s.sendMessage("§aPrice:§3 " + price + "0");
-						s.sendMessage("§aDescription:§3 " + description);
 					}
-				}
-					
+
 				} else if (args[0].equalsIgnoreCase("purchase")) {
 					if (args.length < 2) {
 						s.sendMessage("§cNot Enough Arguments.");
