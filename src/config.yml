@@ -1,12 +1,7 @@
-# This is the default configuration for DonationPoints.
-# Change any information you wish unless documented otherwise not to do so.
 General:
-  UseLimits: false
   AutoCreateAccounts: true
   SignMessage: Premium
   Transferrable: false
-#MySQL Login Information. After you put the info in, restart your server.
-#You'll get a confirmation message if you can successfully connect.
 MySQL:
   engine: sqlite
   SQLiteDB: donationpoints.db
@@ -16,10 +11,6 @@ MySQL:
   password: 
   database: minecraft
 packages:
-  # These are the 'default' packages. PLEASE change these.
-  # Use '%player' where you would like the player's name to go.
-  # You can run as many commands as you wish.
-  # Please make sure no field below is blank.
   God:
     price: 500
     description: This will give you god mode.
