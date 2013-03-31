@@ -37,7 +37,12 @@ packages:
   kick:
     price: 1000
     description: This will kick the player.
-    haslimit: true
+    haslimit: false
     limit: 1
+    activateimmediately: true
+    expires: false
+    expiretime: 1
     commands:
     - kick %player
+    expirecommands:
+    - say %player -- Your kick as expired.
