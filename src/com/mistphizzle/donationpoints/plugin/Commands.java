@@ -246,6 +246,33 @@ public class Commands {
 					s.sendMessage("§aPackage Name:§3 " + packName);
 					s.sendMessage("§aPrice:§3 " + price + "0");
 					s.sendMessage("§aDescription:§3 " + description);
+				} else if (args[0].equalsIgnoreCase("purchase")) {
+					if (args.length < 2) {
+						s.sendMessage("§cNot Enough Arguments.");
+						s.sendMessage("§cCorrect Usage: §a/dp purchase <package>");
+						return true;
+					} if (!s.hasPermission("donationpoints.purchase")) {
+						s.sendMessage("§cYou don't have permission to do that");
+						return true;
+					} else {
+						String packName = args[1];
+						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+						if (price == null) {
+							s.sendMessage("§cPackage not found.");
+							return true;
+						} else {
+							String username = s.getName().toLowerCase();
+							Double balance = Methods.getBalance(username);
+							if (!(balance >= price)) {
+								s.sendMessage("§cYou do not have enough points to purchase that package.");
+							} else if (balance >= price) {
+								PlayerListener.purchases.put(username, packName);
+								if (PlayerListener.purchases.containsKey(username)) {
+									s.sendMessage("§aType §3/dp confirm §ato purchase §3" + packName + "§a for §3" + price + " points§a.");
+								}
+							}
+						}
+					}
 				} else if (args[0].equalsIgnoreCase("version") && s.hasPermission("donationpoints.version")) {
 					s.sendMessage("§aThis server is running §eDonationPoints §aversion §3" + plugin.getDescription().getVersion());
 				} else {

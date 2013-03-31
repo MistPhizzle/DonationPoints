@@ -1,7 +1,5 @@
 package com.mistphizzle.donationpoints.plugin;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -25,7 +23,6 @@ public class PlayerListener implements Listener {
 	}
 
 	public static HashMap<String, String> purchases = new HashMap();
-	public static HashMap<String, String> purchasedPack = new HashMap();
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
