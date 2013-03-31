@@ -2,14 +2,21 @@ package com.mistphizzle.donationpoints.plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.text.ParseException;
+
+import org.bukkit.entity.Player;
+
 
 public class Methods {
 	
-	public static DonationPoints plugin;
+	static DonationPoints plugin;
 	
 	public Methods(DonationPoints instance) {
-		Methods.plugin = instance;
+		this.plugin = instance;
 	}
 	
 	public static String engine;
@@ -59,7 +66,28 @@ public class Methods {
 		DBConnection.sql.modifyQuery("UPDATE dp_players SET balance = " + amount + " WHERE player = '" + string.toLowerCase() + "';");
 	}
 	
-	public static void logTransaction(String player, Double price, String packageName) {
-		DBConnection.sql.modifyQuery("INSERT INTO dp_transactions(player, package, price) VALUES ('" + player.toLowerCase() + "', '" + packageName + "', " + price + ")");
+	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired) {
+		DBConnection.sql.modifyQuery("INSERT INTO dp_transactions(player, package, price, date, activated, expires, expiredate, expired) VALUES ('" + player.toLowerCase() + "', '" + packageName + "', " + price + ", '" + date + "', '" + activated + "', '" + expires + "', '" + expiredate + "', '" + expired + "')");
 	}
+	
+	public static boolean NeedActive(String player, String packageName) {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + player.toLowerCase() + "' AND package = '" + packageName + "' AND activated = 'false';");
+		try {
+			if (rs2.next()) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	public static String getCurrentDate() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		return dateFormat.format(date);
+	}
+	
 }

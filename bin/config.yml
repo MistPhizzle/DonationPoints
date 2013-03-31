@@ -23,6 +23,7 @@ packages:
   God:
     price: 500
     description: This will give you god mode.
+    haslimit: true
     limit: 3
     activateimmediately: false
     expires: true
@@ -36,6 +37,7 @@ packages:
   kick:
     price: 1000
     description: This will kick the player.
+    haslimit: true
     limit: 1
     commands:
     - kick %player

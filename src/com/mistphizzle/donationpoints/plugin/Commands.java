@@ -2,6 +2,9 @@ package com.mistphizzle.donationpoints.plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -19,6 +22,8 @@ public class Commands {
 		this.plugin = instance;
 		init();
 	}
+
+
 
 	private void init() {
 		PluginCommand donationpoints = plugin.getCommand("donationpoints");
@@ -182,49 +187,127 @@ public class Commands {
 					s.sendMessage("§aYou have taken §3" + takeamount + "§a points from §3" + target);
 				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
 					String sender = s.getName().toLowerCase();
-					if (PlayerListener.purchases.containsKey(sender)) {
+					if (!PlayerListener.purchases.containsKey(sender)) {
+						s.sendMessage("§cYou have not started a purchase.");
+					} else if (PlayerListener.purchases.containsKey(sender)) {
 						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
+						String date = Methods.getCurrentDate();
+						String expiredate = getExpireDate(pack2);
+						Boolean haslimit = plugin.getConfig().getBoolean("packages." + pack2 + ".haslimit");
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
-						ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM dp_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND PACKAGE = '" + pack2 + "';");
-						if (plugin.getConfig().getBoolean("General.UseLimits")) {
+						Boolean activateimmediately = plugin.getConfig().getBoolean("packages." + pack2 + ".activateimmediately");
+						Boolean expires = plugin.getConfig().getBoolean("packages." + pack2 + ".expires");
+						
+						if (Methods.NeedActive(sender, pack2)) {
+							s.sendMessage("§cYou have already purchased §3" + pack2 + "§c but it is not activated.");
+							s.sendMessage("§cUse the command: §3/dp activate " + pack2);
+							return true;
+						}
+						if (haslimit.equals(false) && activateimmediately.equals(false)) {
+							Methods.removePoints(price2, sender);
+							s.sendMessage("§aYou have purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
+							s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
+							Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
+							DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
+							s.sendMessage("§aTo activate your package, use: §3/dp activate " + pack2);
+							return true;
+						} if (haslimit.equals(false) && activateimmediately.equals(true)) {
+							if (activateimmediately.equals(true)) {
+								List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+								for (String cmd : commands) {
+									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
+								}
+								Methods.removePoints(price2, sender);
+								s.sendMessage("§aYou have purchased §3" + pack2 + "§a for §3" + price2 + " points");
+								s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
+								s.sendMessage("§aYour package has been activated.");
+							} if (expires.equals(true)) {
+								Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
+								s.sendMessage("§aYour package is set to expire on: §3" + expiredate);
+								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
+								return true;
+							} else if (expires.equals(false)) {
+								Methods.logTransaction(sender, price2, pack2, date, "true", "false", null, null);
+								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
+								return true;
+							} return true;
+						} else if (haslimit.equals(true)) {
+							ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM dp_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
 							try {
-								// numberpurchased.last();
 								int size = numberpurchased.getInt("size");
-								s.sendMessage("Size: " + size);
-								// numberpurchased.beforeFirst();
 								if (size >= limit) {
-									s.sendMessage("§cYou can't purchase §3" + pack2 + "§c because you have reached the limit of §3" + limit);
+									s.sendMessage("§cYou can't purchase the package §3" + pack2 + ". §aYou have reached the limit of §3" + limit + " §apurchases.");
 								} else if (size < limit) {
-									List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
-									for (String cmd : commands) {
-										plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
+									if (activateimmediately.equals(true)) {
+										List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+										for (String cmd : commands) {
+											plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
+										}
+										Methods.removePoints(price2, sender);
+										s.sendMessage("§aYou have purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
+										s.sendMessage("§aYour new balance is: §3" + Methods.getBalance(sender));
+										PlayerListener.purchases.remove(s.getName().toLowerCase());
+										s.sendMessage("§aYour package has been activated.");
+										if (expires.equals(true)) {
+											Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
+											s.sendMessage("§aYour package is set to expire on: §3" + expiredate);
+											DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
+											return true;
+										} else if (expires.equals(false)) {
+											Methods.logTransaction(sender, price2, pack2, date, "true", "false", expiredate, "false");
+											DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
+											return true;
+										} return true;
 									}
-									Methods.removePoints(price2, sender);
-									s.sendMessage("§aYou have just purchased: §3" + pack2 + "§a for §3" + price2 + " points");
-									s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
-									PlayerListener.purchases.remove(s.getName().toLowerCase());
-									Methods.logTransaction(sender, price2, pack2);
-									DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
+									if (activateimmediately.equals(false))  {
+										Methods.removePoints(price2, sender);
+										s.sendMessage("§aYou have purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
+										s.sendMessage("§aYour new balance is: §3" + Methods.getBalance(sender));
+										PlayerListener.purchases.remove(s.getName().toLowerCase());
+										s.sendMessage("§aTo activate your package, use: §3/dp activate " + pack2);
+										if (expires.equals(true)) {
+											Methods.logTransaction(sender, price2, pack2, date, "false", "true", null, "false");
+										} else if (expires.equals(false)) {
+											Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
+										}
+										DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
+										return true;
+									}
 								}
 							} catch (SQLException e) {
 								e.printStackTrace();
 							}
-						} else {
-							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
-							for (String cmd : commands) {
-								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
-							}
-							Methods.removePoints(price2, sender);
-							s.sendMessage("§aYou have just purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
-							s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
-							PlayerListener.purchases.remove(s.getName().toLowerCase());
-							Methods.logTransaction(sender, price2, pack2);
-							DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 						}
-					} else {
-						s.sendMessage("§cIt doesn't look like you've started a transaction.");
 					}
+				} else if (args[0].equalsIgnoreCase("activate")) {
+					if (!s.hasPermission("donationpoints.activate")) {
+						s.sendMessage("§cYou don't have permission to do that!");
+						return true;
+					}
+					Player player = (Player) s;
+					String pack2 = args[1];
+					String expiredate = getExpireDate(pack2);
+					String sender = s.getName();
+					Boolean expires = plugin.getConfig().getBoolean("packages." + pack2 + ".expires");
+
+					if (Methods.NeedActive(sender, pack2)) {
+						DBConnection.sql.modifyQuery("UPDATE dp_transactions SET activated = 'true'");
+						s.sendMessage("§3" + pack2 + " §ahas been activated.");
+						List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+						for (String cmd : commands) {
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
+						}
+						if (expires.equals(true)) {
+							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expiredate = '" + expiredate + "';");
+							s.sendMessage("§aYour package is set to expire on: §3" + expiredate);
+						}
+						return true;
+					}
+					if (!Methods.NeedActive(sender, pack2)) {
+						s.sendMessage("§cYou do not have a §3" + pack2 + "§c that needs to be activated.");
+					}
+
 				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
 					String target = args[1].toLowerCase();
 					Double amount = Double.parseDouble(args[2]);
@@ -284,4 +367,21 @@ public class Commands {
 		}; donationpoints.setExecutor(exe);
 	}
 
+	public String getExpireDate(String packagename) {
+		int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
+		if (!(days == 0)) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			try {
+				c.setTime(sdf.parse(Methods.getCurrentDate()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			c.add(Calendar.DATE, days);
+			String exp = sdf.format(c.getTime());
+			return exp;
+		}
+		return null;
+	}
 }
