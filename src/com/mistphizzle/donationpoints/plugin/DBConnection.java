@@ -25,9 +25,14 @@ public final class DBConnection {
 			DonationPoints.log.info("Making sure all data is correct.");
 			sql.modifyQuery("UPDATE points_players SET player = lower(player)");
 			
-			if (!sql.tableExists("points_players")) {
-				DonationPoints.log.info("Creating points_players table.");
-				String query = "CREATE TABLE IF NOT EXISTS `points_players` ("
+			if (sql.tableExists("points_players")) {
+				DonationPoints.log.info("Renaming points_players to dp_players");
+				sql.modifyQuery("RENAME TABLE points_players TO dp_players");
+			}
+			
+			if (!sql.tableExists("dp_players")) {
+				DonationPoints.log.info("Creating dp_players table.");
+				String query = "CREATE TABLE IF NOT EXISTS `dp_players` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
 						+ "`player` TEXT(32),"
 						+ "`balance` double,"
@@ -35,13 +40,18 @@ public final class DBConnection {
 				sql.modifyQuery(query);
 			}
 
-			if (!sql.tableExists("points_transactions")) {
-				DonationPoints.log.info("Creating points_transactions table");
-				String query = "CREATE TABLE IF NOT EXISTS `points_transactions` ("
+			if (!sql.tableExists("dp_transactions")) {
+				DonationPoints.log.info("Creating dp_transactions table");
+				String query = "CREATE TABLE IF NOT EXISTS `dp_transactions` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
 						+ "`price` double,"
+						+ "`date` STRING(32),"
+						+ "`activated` STRING(32),"
+						+ "`expires` STRING(32),"
+						+ "`expiredate` STRING(32),"
+						+ "`expired` STRING(32),"
 						+ "PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
@@ -54,21 +64,32 @@ public final class DBConnection {
 		} else if (engine.equalsIgnoreCase("sqlite")) {
 			sql = new SQLite(DonationPoints.log, "[DonationPoints] Establishing SQLite Connection.", sqlite_db, DonationPoints.getInstance().getDataFolder().getAbsolutePath());
 			((SQLite) sql).open();
+			
+			if (sql.tableExists("points_players")) {
+				DonationPoints.log.info("Renaming points_players to dp_players");
+				sql.modifyQuery("RENAME TABLE points_players TO dp_players");
+			}
 
-			if (!sql.tableExists("points_players")) {
-				DonationPoints.log.info("Creating points_players table.");
-				String query = "CREATE TABLE `points_players` ("
+			if (!sql.tableExists("dp_players")) {
+				DonationPoints.log.info("Creating dp_players table.");
+				String query = "CREATE TABLE `dp_players` ("
 						+ "`player` TEXT(32),"
 						+ "`balance` DOUBLE(255));";
 				sql.modifyQuery(query);
 			}
 
-			if (!sql.tableExists("points_transactions")) {
-				DonationPoints.log.info("Creating points_transactions table.");
-				String query = "CREATE TABLE `points_transactions` ("
+			if (!sql.tableExists("dp_transactions")) {
+				DonationPoints.log.info("Creating dp_transactions table.");
+				String query = "CREATE TABLE `dp_transactions` ("
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
-						+ "`price` DOUBLE(255));";
+						+ "`price` DOUBLE(255),"
+						+ "`date` STRING(32),"
+						+ "`activated` STRING(32),"
+						+ "`expires` STRING(32),"
+						+ "`expiredate` STRING(32),"
+						+ "`expired` STRING(32));";
+				
 				sql.modifyQuery(query);
 			}
 		} else {

@@ -25,9 +25,15 @@ packages:
     price: 500
     description: This will give you god mode.
     limit: 3
+    activateimmediately: false
+    expires: true
+    expiretime: 1
     commands:
     - god %player
     - say %player has received god mode.
+    expirecommands:
+    - god %player
+    - say %player -- Your god mode has expired.
   kick:
     price: 1000
     description: This will kick the player.
