@@ -23,7 +23,7 @@ public final class DBConnection {
 			DonationPoints.log.info("[DonationPoints] Etablishing Database Connection...");
 
 			DonationPoints.log.info("Making sure all data is correct.");
-			sql.modifyQuery("UPDATE points_players SET player = lower(player)");
+			sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
 			
 			if (sql.tableExists("points_players")) {
 				DonationPoints.log.info("Renaming points_players to dp_players");
