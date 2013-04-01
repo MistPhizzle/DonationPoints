@@ -68,7 +68,7 @@ public class Methods {
 	}
 	
 	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired) {
-		DBConnection.sql.modifyQuery("INSERT INTO dp_transactions(player, package, price, date, activated, expires, expiredate, expired) VALUES ('" + player.toLowerCase() + "', '" + packageName + "', " + price + ", '" + date + "', '" + activated + "', '" + expires + "', '" + expiredate + "', '" + expired + "')");
+		DBConnection.sql.modifyQuery("INSERT INTO dp_transactions(player, package, price, date, activated, expires, expiredate, expired) VALUES ('" + player + "', '" + packageName + "', " + price + ", '" + date + "', '" + activated + "', '" + expires + "', '" + expiredate + "', '" + expired + "')");
 	}
 	
 	public static boolean NeedActive(String player, String packageName) {
