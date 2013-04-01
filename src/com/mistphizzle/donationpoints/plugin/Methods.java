@@ -20,10 +20,9 @@ public class Methods {
 		this.plugin = instance;
 	}
 	
-	public static String engine;
 	
 	public static Double getBalance(String string) {
-		if (engine.equalsIgnoreCase("mysql") | engine.equalsIgnoreCase("sqlite")) {
+		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
 			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM dp_players WHERE player = '" + string.toLowerCase() + "';");
 			try {
 				if (rs2.next()) {
@@ -38,7 +37,7 @@ public class Methods {
 	}
 	
 	public static boolean hasAccount(String string) {
-		if (engine.equalsIgnoreCase("mysql") | engine.equalsIgnoreCase("sqlite")) {
+		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
 			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM dp_players WHERE player = '" + string.toLowerCase() + "';");
 			try {
 				if (rs2.next()) {
@@ -91,4 +90,7 @@ public class Methods {
 		return dateFormat.format(date);
 	}
 	
+	public static String colorize(String message) {
+        return message.replaceAll("(?i)&([a-fk-or0-9])", "\u00A7$1");
+    }
 }
