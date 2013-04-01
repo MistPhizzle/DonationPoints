@@ -419,7 +419,7 @@ public class Commands {
 					} else {
 						String packName = args[1];
 						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-						if (price == null) {
+						if (price == 0) {
 							s.sendMessage(Prefix + InvalidPackage);
 							return true;
 						} else {
