@@ -27,7 +27,9 @@ public class SignListener implements Listener {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]") && !player.hasPermission("donationpoints.sign.break")) {
-				player.sendMessage("§cYou don't have permission to break a DonationPoints sign.");
+				if (!player.hasPermission("donationpoints.sign.break")) {
+					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+				}
 				e.setCancelled(true);
 			}
 		}
@@ -46,22 +48,22 @@ public class SignListener implements Listener {
 		if (line1.equalsIgnoreCase("[" + SignMessage + "]") && !p.hasPermission("donationpoints.sign.create")) {
 			e.setCancelled(true);
 			block.breakNaturally();
-			p.sendMessage("§cYou don't have permission to create DonationPoints signs.");
+			p.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 		} else if (p.hasPermission("donationpoints.sign.create") && line1.equalsIgnoreCase("[" + SignMessage + "]")) {
 			if (block.getType() == Material.SIGN_POST) {
-				p.sendMessage("§cDonationPoints signs must be placed on a wall.");
+				p.sendMessage(Commands.Prefix + "§cDonationPoints signs must be placed on a wall.");
 				block.breakNaturally();
 				e.setCancelled(true);
 			} if (plugin.getConfig().getString("packages." + pack) == null) {
 				e.setCancelled(true);
-				p.sendMessage("§cThat package does not exist.");
+				p.sendMessage(Commands.Prefix + Commands.InvalidPackage);
 				block.breakNaturally();
 			} if (e.getLine(1).isEmpty()) {
 				e.setCancelled(true);
-				p.sendMessage("§cYou didn't enter a package on the second line!");
+				p.sendMessage(Commands.Prefix + Commands.InvalidPackage);
 				block.breakNaturally();
 			} else {
-				p.sendMessage("§aYou have created a DonationPoints sign.");
+				p.sendMessage(Commands.Prefix + "§cYou have created a DonationPoints sign.");
 			}
 		} 
 	}

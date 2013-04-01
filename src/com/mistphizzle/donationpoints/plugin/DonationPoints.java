@@ -24,8 +24,6 @@ public class DonationPoints extends JavaPlugin {
 	// Configs
 	File configFile;
 	FileConfiguration config;
-	File messageConfigFile;
-	FileConfiguration messageConfig;
 
 	// Commands
 	Commands cmd;
@@ -44,7 +42,6 @@ public class DonationPoints extends JavaPlugin {
 
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
-		messageConfigFile = new File(getDataFolder(), "messages.yml");
 
 		// Use firstRun() method
 		try {
@@ -55,7 +52,6 @@ public class DonationPoints extends JavaPlugin {
 
 		// Declare FileConfigurations, load.
 		config = new YamlConfiguration();
-		messageConfig = new YamlConfiguration();
 		loadYamls();
 
 		// Events
@@ -76,6 +72,37 @@ public class DonationPoints extends JavaPlugin {
 		// Other Variables.
 		PlayerListener.SignMessage = config.getString("General.SignMessage");
 		SignListener.SignMessage = config.getString("General.SignMessage");
+		
+		//String Variables
+		Commands.Prefix = getConfig().getString("messages.Prefix");
+		Commands.InvalidArguments = getConfig().getString("messages.InvalidArguments");
+		Commands.noPermissionMessage = getConfig().getString("messages.NoPermission");
+		Commands.NoCommandExists = getConfig().getString("messages.NoCommandExists");
+		Commands.ExpireDate = getConfig().getString("messages.ExpireDate");
+		Commands.DPTake = getConfig().getString("messages.DPTake");
+		Commands.DPGive = getConfig().getString("messages.DPGive");
+		Commands.DPConfirm = getConfig().getString("messages.DPConfirm");
+		Commands.DPActivate = getConfig().getString("messages.DPActivate");
+		Commands.DPSuccessfulActivation = getConfig().getString("messages.DPSuccessfulActivation");
+		Commands.DPFailedActivation = getConfig().getString("messages.DPFailedActivation");
+		Commands.NoAccount = getConfig().getString("messages.NoAccount");
+		Commands.AccountCreated = getConfig().getString("messages.AccountCreated");
+		Commands.NoTransfer = getConfig().getString("messages.NoTransfer");
+		Commands.TransferOff = getConfig().getString("messages.TransferOff");
+		Commands.TransferSent = getConfig().getString("messages.TransferSent");
+		Commands.TransferReceive = getConfig().getString("messages.TransferReceive");
+		Commands.PlayerOnly = getConfig().getString("messages.PlayerOnly");
+		Commands.PlayerBalance = getConfig().getString("messages.PlayerBalance");
+		Commands.OtherBalance = getConfig().getString("messages.OtherBalance");
+		Commands.ReloadSuccessful = getConfig().getString("messages.ReloadSuccessful");
+		Commands.AccountAlreadyExists = getConfig().getString("messages.AccountAlreadyExists");
+		Commands.PurchaseSuccessful = getConfig().getString("messages.PurchaseSuccessful");
+		Commands.PackageActivated = getConfig().getString("messages.PackageActivated");
+		Commands.NeedActivation = getConfig().getString("messages.NeedActivation");
+		Commands.LimitReached = getConfig().getString("messages.LimitReached");
+		Commands.DPSet = getConfig().getString("messages.DPSet");
+		Commands.InvalidPackage = getConfig().getString("messages.InvalidPackage");
+		Commands.NotEnoughPoints = getConfig().getString("messages.NotEnoughPoints");
 
 		DBConnection.init();
 		DBConnection.sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
@@ -114,7 +141,6 @@ public class DonationPoints extends JavaPlugin {
 			}
 		}
 
-
 	}
 
 	@Override
@@ -129,17 +155,11 @@ public class DonationPoints extends JavaPlugin {
 			copy(getResource("config.yml"), configFile);
 			log.info("Config not found. Generating.");
 		}
-		if (!messageConfigFile.exists()) {
-			messageConfigFile.getParentFile().mkdirs();
-			copy(getResource("messages.yml"), messageConfigFile);
-			log.info("messages.yml not found, generating...");
-		}
 	}
 
 	private void loadYamls() {
 		try {
 			config.load(configFile);
-			config.load(messageConfigFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -163,7 +183,6 @@ public class DonationPoints extends JavaPlugin {
 	public void saveYamls() {
 		try {
 			config.save(configFile);
-			config.save(messageConfigFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -173,35 +192,8 @@ public class DonationPoints extends JavaPlugin {
 		return instance;
 	}
 
-	public FileConfiguration getMessageConfig() {
-		if (messageConfig == null) {
-			reloadMessageConfig();
-		}
-		return messageConfig;
-	}
-
-	public void reloadMessageConfig() {
-		if (messageConfigFile == null) {
-			messageConfigFile = new File(getDataFolder(), "messages.yml");
-		}
-		messageConfig = YamlConfiguration.loadConfiguration(messageConfigFile);
-
-		InputStream defConfigStream = getResource("messages.yml");
-		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-			messageConfig.setDefaults(defConfig);
-		}
-	}
-
-	public void saveMessageConfig() {
-		if (messageConfig == null || messageConfigFile == null) {
-			return;
-		}
-		try {
-			messageConfig.save(messageConfigFile);
-		} catch (IOException ex) {
-			this.log.info("Could not save config to " + messageConfigFile);
-		}
+	public void configReload() {
+		reloadConfig();
 	}
 
 

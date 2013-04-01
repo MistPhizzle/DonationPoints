@@ -23,7 +23,37 @@ public class Commands {
 		init();
 	}
 
-
+	// Strings
+	static String Prefix;
+	static String noPermissionMessage;
+	static String InvalidArguments;
+	static String NoCommandExists;
+	static String DPConfirm;
+	static String DPActivate;
+	static String DPSuccessfulActivation;
+	static String DPFailedActivation;
+	static String ExpireDate;
+	static String DPGive;
+	static String DPTake;
+	static String NoAccount;
+	static String AccountCreated;
+	static String TransferOff;
+	static String NoTransfer;
+	static String TransferSent;
+	static String TransferReceive;
+	static String PlayerOnly;
+	static String ReloadSuccessful;
+	static String PlayerBalance;
+	static String OtherBalance;
+	static String AccountAlreadyExists;
+	static String NoPurchaseStarted;
+	static String NeedActivation;
+	static String PurchaseSuccessful;
+	static String LimitReached;
+	static String PackageActivated;
+	static String DPSet;
+	static String NotEnoughPoints;
+	static String InvalidPackage;
 
 	private void init() {
 		PluginCommand donationpoints = plugin.getCommand("donationpoints");
@@ -81,19 +111,19 @@ public class Commands {
 					}
 				} else if (args[0].equalsIgnoreCase("transfer")) {
 					if (!plugin.getConfig().getBoolean("General.Transferrable")) {
-						s.sendMessage("§cThis server does not allow DonationPoints to be transferred.");
+						s.sendMessage(Prefix + TransferOff);
 						return true;
 					}
 					if (!s.hasPermission("donationpoints.transfer")) {
-						s.sendMessage("§cYou don't have permission to do that!");
+						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
 					if (!(s instanceof Player)) {
-						s.sendMessage("§cThis command can only be performed by players.");
+						s.sendMessage(Prefix + PlayerOnly);
 						return true;
 					}
 					if (args.length < 3) {
-						s.sendMessage("§cNot enough arguments.");
+						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
 					else {
@@ -101,30 +131,31 @@ public class Commands {
 						String target = args[1];
 						Double transferamount = Double.parseDouble(args[2]);
 						if (!Methods.hasAccount(sender)) {
-							s.sendMessage("§cYou don't have a DonationPoints account.");
+							s.sendMessage(Prefix + NoAccount.replace("%player", sender));
 							return true;
 						}
 						if (!Methods.hasAccount(target)) {
-							s.sendMessage("§cThat player does not have a DonationPoints account.");
+							s.sendMessage(Prefix + NoAccount.replace("%player", target));
 							return true;
 						} if (target.equalsIgnoreCase(sender)) {
-							s.sendMessage("§cYou can't transfer points to yourself.");
+							s.sendMessage(Prefix + NoTransfer);
 							return true;
 						} else {
 							if (transferamount > Methods.getBalance(sender)) {
-								s.sendMessage("§cYou don't have enough points to transfer.");
+								s.sendMessage(Prefix + NoTransfer);
 								return true;
 							} if (transferamount == 0) {
-								s.sendMessage("§cYou can't transfer 0 points.");
+								s.sendMessage(Prefix + NoTransfer);
 								return true;
 							}
 						}
 						Methods.addPoints(transferamount, target);
 						Methods.removePoints(transferamount, sender);
-						s.sendMessage("§aYou have sent §3" + transferamount + " points §ato §3" + target + ".");
+						String transferamount2 = transferamount.toString();
+						s.sendMessage(Prefix + TransferSent.replace("%player", target).replace("%amount", transferamount2));
 						for (Player player: Bukkit.getOnlinePlayers()) {
 							if (player.getName().equalsIgnoreCase(args[1])) {
-								player.sendMessage("§aYou have received §3" + transferamount + " points §afrom §3" + sender + ".");
+								player.sendMessage(Prefix + TransferReceive.replace("%player", sender).replace("%amount", transferamount2));
 							}
 						}
 					}
@@ -135,56 +166,95 @@ public class Commands {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
-					s.sendMessage("§aConfig / Packages reloaded.");
-				} else if (args[0].equalsIgnoreCase("balance") && s.hasPermission("donationpoints.balance")) {
+					s.sendMessage(Prefix + ReloadSuccessful);
+				} else if (args[0].equalsIgnoreCase("balance")) {
+					if (!s.hasPermission("donationpoints.balance")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
 					if (args.length == 1) {
 						if (!Methods.hasAccount(s.getName())) {
-							s.sendMessage("§cYou don't have an account.");
+							s.sendMessage(Prefix + NoAccount.replace("%player", s.getName()));
 						} else {
 							Double balance = Methods.getBalance(s.getName());
-							s.sendMessage("§aYou currently have: §3" + balance + " points.");
+							String balance2 = balance.toString();
+							s.sendMessage(Prefix + PlayerBalance.replace("%amount", balance2));
 						}
-					} else if (args.length == 2 && s.hasPermission("donationpoints.balance.others")) {
+					} else if (args.length == 2) {
+						if (!s.hasPermission("donationpoints.balance.others")) {
+							s.sendMessage(Prefix + noPermissionMessage);
+							return true;
+						}
 						String string = args[1];
 						if (!Methods.hasAccount(string)) {
-							s.sendMessage("§3" + string + "§c does not have an account.");
+							s.sendMessage(Prefix + NoAccount.replace("%player", string));
 						} else {
 							Double balance = Methods.getBalance(string);
-							s.sendMessage("§3" + string + "§a has a balance of: §3" + balance + " points.");
+							String balance2 = balance.toString();
+							s.sendMessage(Prefix + OtherBalance.replace("%player", string).replace("%amount", balance2));
 						}
 					}
-				} else if (args[0].equalsIgnoreCase("create") && s.hasPermission("donationpoints.create")) {
+				} else if (args[0].equalsIgnoreCase("create")) {
+					if (!s.hasPermission("donationpoints.create")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
 					if (args.length == 1) {
 						String string = s.getName();
 						if (!Methods.hasAccount(string)) {
 							Methods.createAccount(string);
-							s.sendMessage("§aAn account has been created.");
+							s.sendMessage(Prefix + AccountCreated.replace("%player", string));
 						} else {
-							s.sendMessage("§cYou already have an account.");
+							s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", string));
 						}
-					} if (args.length == 2 && s.hasPermission("donationpoints.create.others")) {
+					} if (args.length == 2) {
+						if (!s.hasPermission("donationpoints.create.others")) {
+							s.sendMessage(Prefix + noPermissionMessage);
+						}
 						String string = args[1];
 						if (!Methods.hasAccount(string)) {
 							Methods.createAccount(string);
-							s.sendMessage("§aAn account has been created for: §3" + string.toLowerCase());
+							s.sendMessage(Prefix + AccountCreated.replace("%player", string));
 						} else if (Methods.hasAccount(string)) {
-							s.sendMessage("§3" + string + "§c already has an account.");
+							s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", string));
 						}
 					}
-				} else if (args[0].equalsIgnoreCase("give") && args.length == 3 && s.hasPermission("donationpoints.give")) {
+				} else if (args[0].equalsIgnoreCase("give")) {
+					if (!s.hasPermission("donationpoints.give")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
+					if (args.length != 3) {
+						s.sendMessage(Prefix + InvalidArguments);
+						return true;
+					}
 					Double addamount = Double.parseDouble(args[2]);
 					String target = args[1].toLowerCase();
 					Methods.addPoints(addamount, target);
-					s.sendMessage("§aYou have given §3" + target + " §aa total of §3" + addamount + " §apoints.");
-				} else if (args[0].equalsIgnoreCase("take") && args.length == 3 && s.hasPermission("donationpoints.take")) {
+					String addamount2 = addamount.toString();
+					s.sendMessage(Prefix + DPGive.replace("%amount", addamount2).replace("%player", target));
+				} else if (args[0].equalsIgnoreCase("take")) {
+					if (args.length != 3) {
+						s.sendMessage(Prefix + InvalidArguments);
+						return true;
+					}
+					if (!s.hasPermission("donationpoints.take")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
 					Double takeamount = Double.parseDouble(args[2]);
 					String target = args[1].toLowerCase();
 					Methods.removePoints(takeamount, target);
-					s.sendMessage("§aYou have taken §3" + takeamount + "§a points from §3" + target);
-				} else if (args[0].equalsIgnoreCase("confirm") && s.hasPermission("donationpoints.confirm")) {
+					String takeamount2 = takeamount.toString();
+					s.sendMessage(Prefix + DPTake.replace("%amount", takeamount2).replace("%player", target));
+				} else if (args[0].equalsIgnoreCase("confirm")) {
+					if (!s.hasPermission("donationpoints.confirm")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
 					String sender = s.getName().toLowerCase();
 					if (!PlayerListener.purchases.containsKey(sender)) {
-						s.sendMessage("§cYou have not started a purchase.");
+						s.sendMessage(Prefix + NoPurchaseStarted);
 					} else if (PlayerListener.purchases.containsKey(sender)) {
 						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
@@ -194,19 +264,19 @@ public class Commands {
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
 						Boolean activateimmediately = plugin.getConfig().getBoolean("packages." + pack2 + ".activateimmediately");
 						Boolean expires = plugin.getConfig().getBoolean("packages." + pack2 + ".expires");
-						
+
 						if (Methods.NeedActive(sender, pack2)) {
-							s.sendMessage("§cYou have already purchased §3" + pack2 + "§c but it is not activated.");
-							s.sendMessage("§cUse the command: §3/dp activate " + pack2);
+							s.sendMessage(Prefix + NeedActivation.replace("%pack", pack2));
+							s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 							return true;
 						}
 						if (haslimit.equals(false) && activateimmediately.equals(false)) {
 							Methods.removePoints(price2, sender);
-							s.sendMessage("§aYou have purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
-							s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
+							String price3 = price2.toString();
+							s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 							Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
 							DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
-							s.sendMessage("§aTo activate your package, use: §3/dp activate " + pack2);
+							s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 							return true;
 						} if (haslimit.equals(false) && activateimmediately.equals(true)) {
 							if (activateimmediately.equals(true)) {
@@ -215,12 +285,12 @@ public class Commands {
 									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
 								}
 								Methods.removePoints(price2, sender);
-								s.sendMessage("§aYou have purchased §3" + pack2 + "§a for §3" + price2 + " points");
-								s.sendMessage("§aYour new balance is: " + Methods.getBalance(sender));
-								s.sendMessage("§aYour package has been activated.");
+								String price3 = price2.toString();
+								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+								s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 							} if (expires.equals(true)) {
 								Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
-								s.sendMessage("§aYour package is set to expire on: §3" + expiredate);
+								s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 								return true;
 							} else if (expires.equals(false)) {
@@ -233,21 +303,22 @@ public class Commands {
 							try {
 								int size = numberpurchased.getInt("size");
 								if (size >= limit) {
-									s.sendMessage("§cYou can't purchase the package §3" + pack2 + ". §aYou have reached the limit of §3" + limit + " §apurchases.");
+									String limit2 = String.valueOf(limit);
+									s.sendMessage(Prefix + LimitReached.replace("%pack", pack2).replace("%limit", limit2));
 								} else if (size < limit) {
 									if (activateimmediately.equals(true)) {
 										List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 										for (String cmd : commands) {
 											plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
 										}
+										String price3 = price2.toString();
 										Methods.removePoints(price2, sender);
-										s.sendMessage("§aYou have purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
-										s.sendMessage("§aYour new balance is: §3" + Methods.getBalance(sender));
+										s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
-										s.sendMessage("§aYour package has been activated.");
+										s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 										if (expires.equals(true)) {
 											Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
-											s.sendMessage("§aYour package is set to expire on: §3" + expiredate);
+											s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 											DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 											return true;
 										} else if (expires.equals(false)) {
@@ -258,10 +329,10 @@ public class Commands {
 									}
 									if (activateimmediately.equals(false))  {
 										Methods.removePoints(price2, sender);
-										s.sendMessage("§aYou have purchased: §3" + pack2 + "§a for §3" + price2 + " points.");
-										s.sendMessage("§aYour new balance is: §3" + Methods.getBalance(sender));
+										String price3 = price2.toString();
+										s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
-										s.sendMessage("§aTo activate your package, use: §3/dp activate " + pack2);
+										s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 										if (expires.equals(true)) {
 											Methods.logTransaction(sender, price2, pack2, date, "false", "true", null, "false");
 										} else if (expires.equals(false)) {
@@ -278,7 +349,11 @@ public class Commands {
 					}
 				} else if (args[0].equalsIgnoreCase("activate")) {
 					if (!s.hasPermission("donationpoints.activate")) {
-						s.sendMessage("§cYou don't have permission to do that!");
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
+					if (args.length != 2) {
+						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
 					Player player = (Player) s;
@@ -289,95 +364,104 @@ public class Commands {
 
 					if (Methods.NeedActive(sender, pack2)) {
 						DBConnection.sql.modifyQuery("UPDATE dp_transactions SET activated = 'true'");
-						s.sendMessage("§3" + pack2 + " §ahas been activated.");
+						s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 						List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 						for (String cmd : commands) {
 							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
 						}
 						if (expires.equals(true)) {
 							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expiredate = '" + expiredate + "';");
-							s.sendMessage("§aYour package is set to expire on: §3" + expiredate);
+							s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("expiredate", expiredate));
 						}
 						return true;
 					}
 					if (!Methods.NeedActive(sender, pack2)) {
-						s.sendMessage("§cYou do not have a §3" + pack2 + "§c that needs to be activated.");
+						s.sendMessage(Prefix + DPFailedActivation.replace("%pack", pack2));
 					}
 
-				} else if (args[0].equalsIgnoreCase("set") && s.hasPermission("donationpoints.set")) {
+				} else if (args[0].equalsIgnoreCase("set")) {
+					if (args.length != 3) {
+						s.sendMessage(Prefix + InvalidArguments);
+						return true;
+					}
+					if (!s.hasPermission("donationpoints.set")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+					}
 					String target = args[1].toLowerCase();
 					Double amount = Double.parseDouble(args[2]);
 					Methods.setPoints(amount, target);
-					s.sendMessage("§aYou have set §3" + target + "'s §abalance to §3" + amount + " points.");
-				} else if (args[0].equalsIgnoreCase("package")) {
+					String amount2 = amount.toString();
+					s.sendMessage(Prefix + DPSet.replace("%player", target).replace("%amount", amount2));
+				} else if (args[0].equalsIgnoreCase("package") && args[1].equalsIgnoreCase("info")) {
 					if (args.length != 3) {
-						s.sendMessage("§cYou have supplied an improper number of arguments.");
-						if (args[1].equalsIgnoreCase("info")) {
-							if (!s.hasPermission("donationpoints.package.info")) {
-								s.sendMessage("§cYou don't have permission to do that!");
-								return true;
-							}
-							String packName = args[2];
-							Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-							String description = plugin.getConfig().getString("packages." + packName + ".description");
-							s.sendMessage("-----§e" + packName + " Info§f-----");
-							s.sendMessage("§aPackage Name:§3 " + packName);
-							s.sendMessage("§aPrice:§3 " + price + "0");
-							s.sendMessage("§aDescription:§3 " + description);
-						}
-					}
-
-				} else if (args[0].equalsIgnoreCase("purchase")) {
-					if (args.length < 2) {
-						s.sendMessage("§cNot Enough Arguments.");
-						s.sendMessage("§cCorrect Usage: §a/dp purchase <package>");
+						s.sendMessage(Prefix + InvalidArguments);
 						return true;
-					} if (!s.hasPermission("donationpoints.purchase")) {
-						s.sendMessage("§cYou don't have permission to do that");
+					}
+					if (!s.hasPermission("donationpoints.package.info")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
+					String packName = args[2];
+					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+					String description = plugin.getConfig().getString("packages." + packName + ".description");
+					s.sendMessage("-----§e" + packName + " Info§f-----");
+					s.sendMessage("§aPackage Name:§3 " + packName);
+					s.sendMessage("§aPrice:§3 " + price + "0");
+					s.sendMessage("§aDescription:§3 " + description);
+				} else if (args[0].equalsIgnoreCase("purchase")) {
+				if (args.length < 2) {
+					s.sendMessage(Prefix + InvalidArguments);
+					return true;
+				} if (!s.hasPermission("donationpoints.purchase")) {
+					s.sendMessage(Prefix + noPermissionMessage);
+					return true;
+				} else {
+					String packName = args[1];
+					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+					if (price == null) {
+						s.sendMessage(Prefix + InvalidPackage);
 						return true;
 					} else {
-						String packName = args[1];
-						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-						if (price == null) {
-							s.sendMessage("§cPackage not found.");
-							return true;
-						} else {
-							String username = s.getName().toLowerCase();
-							Double balance = Methods.getBalance(username);
-							if (!(balance >= price)) {
-								s.sendMessage("§cYou do not have enough points to purchase that package.");
-							} else if (balance >= price) {
-								PlayerListener.purchases.put(username, packName);
-								if (PlayerListener.purchases.containsKey(username)) {
-									s.sendMessage("§aType §3/dp confirm §ato purchase §3" + packName + "§a for §3" + price + " points§a.");
-								}
+						String username = s.getName().toLowerCase();
+						Double balance = Methods.getBalance(username);
+						if (!(balance >= price)) {
+							s.sendMessage(Prefix + NotEnoughPoints);
+						} else if (balance >= price) {
+							PlayerListener.purchases.put(username, packName);
+							if (PlayerListener.purchases.containsKey(username)) {
+								String price2 = price.toString();
+								s.sendMessage(Prefix + DPConfirm.replace("%pack", packName).replace("%amount", price2));
 							}
 						}
 					}
-				} else if (args[0].equalsIgnoreCase("version") && s.hasPermission("donationpoints.version")) {
-					s.sendMessage("§aThis server is running §eDonationPoints §aversion §3" + plugin.getDescription().getVersion());
-				} else {
-					s.sendMessage("Not a valid DonationPoints command / Not Enough Permissions.");
-				} return true;
-			}
-		}; donationpoints.setExecutor(exe);
-	}
-
-	public String getExpireDate(String packagename) {
-		int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
-		if (!(days == 0)) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			Calendar c = Calendar.getInstance();
-			try {
-				c.setTime(sdf.parse(Methods.getCurrentDate()));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-
-			c.add(Calendar.DATE, days);
-			String exp = sdf.format(c.getTime());
-			return exp;
+				}
+			} else if (args[0].equalsIgnoreCase("version")) {
+				if (!s.hasPermission("donationpoints.version")) {
+					s.sendMessage(Prefix + noPermissionMessage);
+				}
+				s.sendMessage(Prefix + plugin.getDescription().getVersion());
+			} else {
+				s.sendMessage(Prefix + NoCommandExists);
+			} return true;
 		}
-		return null;
+	}; donationpoints.setExecutor(exe);
+}
+
+public String getExpireDate(String packagename) {
+	int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
+	if (!(days == 0)) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar c = Calendar.getInstance();
+		try {
+			c.setTime(sdf.parse(Methods.getCurrentDate()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		c.add(Calendar.DATE, days);
+		String exp = sdf.format(c.getTime());
+		return exp;
 	}
+	return null;
+}
 }

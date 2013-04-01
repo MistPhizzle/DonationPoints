@@ -41,19 +41,19 @@ public class PlayerListener implements Listener {
 					&& event.getAction().equals(Action.LEFT_CLICK_BLOCK)
 					&& block.getType() == Material.WALL_SIGN) {
 				if (!player.hasPermission("donationpoints.sign.use")) {
-					player.sendMessage("§cYou don't have permission to use DonationPoints signs.");
+					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 				}
 				if (player.hasPermission("donationpoints.sign.use")) {
 					String purchasedPack = s.getLine(1);
 					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
-					player.sendMessage("§7Right Clicking §athis sign will allow you to purchase §3" + purchasedPack + "§a for §3" + price + "§a.");
+					player.sendMessage(Commands.Prefix + "§cRight Clicking this sign will allow you to purchase §3" + purchasedPack + "§c for §3" + price + "§c.");
 				}
 			}
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
 					&& block.getType() == Material.WALL_SIGN) {
 				if (!player.hasPermission("donationpoints.sign.use")) {
-					player.sendMessage("§cYou don't have permission to use the DonationPoints signs.");
+					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 				}
 				if (player.hasPermission("donationpoints.sign.use")) {
 					String purchasedPack = s.getLine(1);
@@ -61,11 +61,12 @@ public class PlayerListener implements Listener {
 					String username = player.getName().toLowerCase();
 					Double balance = Methods.getBalance(username);
 					if (!(balance >= price)) {
-						player.sendMessage("§cYou don't have enough points for this package.");	
+						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
 					} else if (balance >= price) {
 						purchases.put(username, purchasedPack);
 						if (purchases.containsKey(username)) {
-							player.sendMessage("§aType §3/dp confirm §ato purchase §3" + purchasedPack + "§a for §3" + price + " points§a.");
+							String price2 = price.toString();
+							player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
 						}
 					}
 					event.setUseItemInHand(Result.DENY);
@@ -94,10 +95,8 @@ public class PlayerListener implements Listener {
 				for (String cmd : commands) {
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
 				}
-				p.sendMessage("§cYour package: §3" + pack2 + "§c has expired.");
 				DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
 			} else if (!rs2.next()) {
-				p.sendMessage("§cYou do not have any packages set to expire today.");
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
