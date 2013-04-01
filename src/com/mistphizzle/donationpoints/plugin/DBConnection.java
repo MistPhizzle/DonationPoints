@@ -22,13 +22,13 @@ public final class DBConnection {
 			((MySQLConnection) sql).open();
 			DonationPoints.log.info("[DonationPoints] Etablishing Database Connection...");
 
-			DonationPoints.log.info("Making sure all data is correct.");
-			sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
-			
 			if (sql.tableExists("points_players")) {
 				DonationPoints.log.info("Renaming points_players to dp_players");
 				sql.modifyQuery("RENAME TABLE points_players TO dp_players");
 			}
+			
+			DonationPoints.log.info("Making sure all data is correct.");
+			sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
 			
 			if (!sql.tableExists("dp_players")) {
 				DonationPoints.log.info("Creating dp_players table.");
