@@ -97,10 +97,6 @@ public class Commands {
 						return true;
 					}
 					else {
-						// Double transferamount = Double.parseDouble(args[2]);
-						//        0        1     2
-						// /dp transfer player amount
-						// final Player target = Bukkit.getPlayer(args[1].toLowerCase());
 						String sender = s.getName();
 						String target = args[1];
 						Double transferamount = Double.parseDouble(args[2]);
@@ -125,10 +121,10 @@ public class Commands {
 						}
 						Methods.addPoints(transferamount, target);
 						Methods.removePoints(transferamount, sender);
-						s.sendMessage("§aYou have sent §3" + transferamount + " points §ato §3" + target.toLowerCase() + ".");
+						s.sendMessage("§aYou have sent §3" + transferamount + " points §ato §3" + target + ".");
 						for (Player player: Bukkit.getOnlinePlayers()) {
 							if (player.getName().equalsIgnoreCase(args[1])) {
-								player.sendMessage("§aYou have received §3" + transferamount + " points §afrom §3" + sender.toLowerCase() + ".");
+								player.sendMessage("§aYou have received §3" + transferamount + " points §afrom §3" + sender + ".");
 							}
 						}
 					}
@@ -216,7 +212,7 @@ public class Commands {
 							if (activateimmediately.equals(true)) {
 								List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 								for (String cmd : commands) {
-									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
+									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
 								}
 								Methods.removePoints(price2, sender);
 								s.sendMessage("§aYou have purchased §3" + pack2 + "§a for §3" + price2 + " points");
@@ -296,7 +292,7 @@ public class Commands {
 						s.sendMessage("§3" + pack2 + " §ahas been activated.");
 						List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 						for (String cmd : commands) {
-							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender.toLowerCase()));
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
 						}
 						if (expires.equals(true)) {
 							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expiredate = '" + expiredate + "';");
