@@ -24,6 +24,8 @@ public class DonationPoints extends JavaPlugin {
 	// Configs
 	File configFile;
 	FileConfiguration config;
+	File messageConfigFile;
+	FileConfiguration messageConfig;
 
 	// Commands
 	Commands cmd;
@@ -42,6 +44,7 @@ public class DonationPoints extends JavaPlugin {
 
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
+		messageConfigFile = new File(getDataFolder(), "messages.yml");
 
 		// Use firstRun() method
 		try {
@@ -52,6 +55,7 @@ public class DonationPoints extends JavaPlugin {
 
 		// Declare FileConfigurations, load.
 		config = new YamlConfiguration();
+		messageConfig = new YamlConfiguration();
 		loadYamls();
 
 		// Events
@@ -125,11 +129,17 @@ public class DonationPoints extends JavaPlugin {
 			copy(getResource("config.yml"), configFile);
 			log.info("Config not found. Generating.");
 		}
+		if (!messageConfigFile.exists()) {
+			messageConfigFile.getParentFile().mkdirs();
+			copy(getResource("messages.yml"), messageConfigFile);
+			log.info("messages.yml not found, generating...");
+		}
 	}
 
 	private void loadYamls() {
 		try {
 			config.load(configFile);
+			config.load(messageConfigFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -153,7 +163,7 @@ public class DonationPoints extends JavaPlugin {
 	public void saveYamls() {
 		try {
 			config.save(configFile);
-			config.save(configFile);
+			config.save(messageConfigFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -162,5 +172,38 @@ public class DonationPoints extends JavaPlugin {
 	public static DonationPoints getInstance() {
 		return instance;
 	}
+
+	public FileConfiguration getMessageConfig() {
+		if (messageConfig == null) {
+			reloadMessageConfig();
+		}
+		return messageConfig;
+	}
+
+	public void reloadMessageConfig() {
+		if (messageConfigFile == null) {
+			messageConfigFile = new File(getDataFolder(), "messages.yml");
+		}
+		messageConfig = YamlConfiguration.loadConfiguration(messageConfigFile);
+
+		InputStream defConfigStream = getResource("messages.yml");
+		if (defConfigStream != null) {
+			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+			messageConfig.setDefaults(defConfig);
+		}
+	}
+
+	public void saveMessageConfig() {
+		if (messageConfig == null || messageConfigFile == null) {
+			return;
+		}
+		try {
+			messageConfig.save(messageConfigFile);
+		} catch (IOException ex) {
+			this.log.info("Could not save config to " + messageConfigFile);
+		}
+	}
+
+
 
 }
