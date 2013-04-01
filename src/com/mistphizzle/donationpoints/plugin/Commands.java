@@ -301,6 +301,7 @@ public class Commands {
 						} else if (haslimit.equals(true)) {
 							ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM dp_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
 							try {
+								numberpurchased.next();
 								int size = numberpurchased.getInt("size");
 								if (size >= limit) {
 									String limit2 = String.valueOf(limit);
@@ -409,59 +410,59 @@ public class Commands {
 					s.sendMessage("§aPrice:§3 " + price + "0");
 					s.sendMessage("§aDescription:§3 " + description);
 				} else if (args[0].equalsIgnoreCase("purchase")) {
-				if (args.length < 2) {
-					s.sendMessage(Prefix + InvalidArguments);
-					return true;
-				} if (!s.hasPermission("donationpoints.purchase")) {
-					s.sendMessage(Prefix + noPermissionMessage);
-					return true;
-				} else {
-					String packName = args[1];
-					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-					if (price == null) {
-						s.sendMessage(Prefix + InvalidPackage);
+					if (args.length < 2) {
+						s.sendMessage(Prefix + InvalidArguments);
+						return true;
+					} if (!s.hasPermission("donationpoints.purchase")) {
+						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					} else {
-						String username = s.getName().toLowerCase();
-						Double balance = Methods.getBalance(username);
-						if (!(balance >= price)) {
-							s.sendMessage(Prefix + NotEnoughPoints);
-						} else if (balance >= price) {
-							PlayerListener.purchases.put(username, packName);
-							if (PlayerListener.purchases.containsKey(username)) {
-								String price2 = price.toString();
-								s.sendMessage(Prefix + DPConfirm.replace("%pack", packName).replace("%amount", price2));
+						String packName = args[1];
+						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+						if (price == null) {
+							s.sendMessage(Prefix + InvalidPackage);
+							return true;
+						} else {
+							String username = s.getName().toLowerCase();
+							Double balance = Methods.getBalance(username);
+							if (!(balance >= price)) {
+								s.sendMessage(Prefix + NotEnoughPoints);
+							} else if (balance >= price) {
+								PlayerListener.purchases.put(username, packName);
+								if (PlayerListener.purchases.containsKey(username)) {
+									String price2 = price.toString();
+									s.sendMessage(Prefix + DPConfirm.replace("%pack", packName).replace("%amount", price2));
+								}
 							}
 						}
 					}
-				}
-			} else if (args[0].equalsIgnoreCase("version")) {
-				if (!s.hasPermission("donationpoints.version")) {
-					s.sendMessage(Prefix + noPermissionMessage);
-				}
-				s.sendMessage(Prefix + plugin.getDescription().getVersion());
-			} else {
-				s.sendMessage(Prefix + NoCommandExists);
-			} return true;
-		}
-	}; donationpoints.setExecutor(exe);
-}
-
-public String getExpireDate(String packagename) {
-	int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
-	if (!(days == 0)) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar c = Calendar.getInstance();
-		try {
-			c.setTime(sdf.parse(Methods.getCurrentDate()));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		c.add(Calendar.DATE, days);
-		String exp = sdf.format(c.getTime());
-		return exp;
+				} else if (args[0].equalsIgnoreCase("version")) {
+					if (!s.hasPermission("donationpoints.version")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+					}
+					s.sendMessage(Prefix + plugin.getDescription().getVersion());
+				} else {
+					s.sendMessage(Prefix + NoCommandExists);
+				} return true;
+			}
+		}; donationpoints.setExecutor(exe);
 	}
-	return null;
-}
+
+	public String getExpireDate(String packagename) {
+		int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
+		if (!(days == 0)) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			try {
+				c.setTime(sdf.parse(Methods.getCurrentDate()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			c.add(Calendar.DATE, days);
+			String exp = sdf.format(c.getTime());
+			return exp;
+		}
+		return null;
+	}
 }
