@@ -42,17 +42,17 @@ public final class DBConnection {
 
 			if (!sql.tableExists("dp_transactions")) {
 				DonationPoints.log.info("Creating dp_transactions table");
-				String query = "CREATE TABLE IF NOT EXISTS `dp_transactions` ("
+				String query = "CREATE TABLE `dp_transactions` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
 						+ "`price` double,"
-						+ "`date` STRING(32),"
-						+ "`activated` STRING(32),"
-						+ "`expires` STRING(32),"
-						+ "`expiredate` STRING(32),"
-						+ "`expired` STRING(32),"
-						+ "PRIMARY KEY (id));";
+						+ "`date` VARCHAR(32),"
+						+ "`activated` VARCHAR(32),"
+						+ "`expires` VARCHAR(32),"
+						+ "`expiredate` VARCHAR(32),"
+						+ "`expired` VARCHAR(32),"
+						+ " PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
 			/*
