@@ -271,10 +271,15 @@ public class Commands {
 							return true;
 						}
 						if (haslimit.equals(false) && activateimmediately.equals(false)) {
-							Methods.removePoints(price2, sender);
-							String price3 = price2.toString();
-							s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
-							Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
+							if (!s.hasPermission("donationpoints.free")) {
+								Methods.removePoints(price2, sender);
+								String price3 = price2.toString();
+								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+								Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
+							}
+							if (s.hasPermission("donationpoints.free")) {
+								s.sendMessage(Prefix + "§cpurchase successful.");
+							}
 							DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
 							s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 							return true;
@@ -284,9 +289,14 @@ public class Commands {
 								for (String cmd : commands) {
 									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
 								}
-								Methods.removePoints(price2, sender);
-								String price3 = price2.toString();
-								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+								if (!s.hasPermission("donationpoints.free")) {
+									Methods.removePoints(price2, sender);
+									String price3 = price2.toString();
+									s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+								}
+								if (s.hasPermission("donationpoints.free")) {
+									s.sendMessage(Prefix + "§cpurchase successful.");
+								}
 								s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 							} if (expires.equals(true)) {
 								Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
@@ -313,8 +323,14 @@ public class Commands {
 											plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
 										}
 										String price3 = price2.toString();
-										Methods.removePoints(price2, sender);
-										s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+										if (!s.hasPermission("donationpoints.free")) {
+											Methods.removePoints(price2, sender);
+											s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+
+										}
+										if (s.hasPermission("donationpoints.free")) {
+											s.sendMessage(Prefix + "§cpurchase successful.");
+										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 										if (expires.equals(true)) {
@@ -329,9 +345,14 @@ public class Commands {
 										} return true;
 									}
 									if (activateimmediately.equals(false))  {
-										Methods.removePoints(price2, sender);
-										String price3 = price2.toString();
-										s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+										if (!s.hasPermission("donationpoints.free")) {
+											Methods.removePoints(price2, sender);
+											String price3 = price2.toString();
+											s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+										}
+										if (s.hasPermission("donationpoints.free")) {
+											s.sendMessage(Prefix + "§cpurchase successful.");
+										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 										if (expires.equals(true)) {
@@ -372,7 +393,7 @@ public class Commands {
 						}
 						if (expires.equals(true)) {
 							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expiredate = '" + expiredate + "';");
-							s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("expiredate", expiredate));
+							s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 						}
 						return true;
 					}
@@ -425,9 +446,14 @@ public class Commands {
 						} else {
 							String username = s.getName().toLowerCase();
 							Double balance = Methods.getBalance(username);
-							if (!(balance >= price)) {
+							if (s.hasPermission("donationpoints.free")) {
+								PlayerListener.purchases.put(username, packName);
+								s.sendMessage(Prefix + "§cUse §3/dp confirm §cto confirm.");
+								return true;
+							} if (!(balance >= price)) {
 								s.sendMessage(Prefix + NotEnoughPoints);
-							} else if (balance >= price) {
+								return true;
+							} if (balance >= price) {
 								PlayerListener.purchases.put(username, packName);
 								if (PlayerListener.purchases.containsKey(username)) {
 									String price2 = price.toString();

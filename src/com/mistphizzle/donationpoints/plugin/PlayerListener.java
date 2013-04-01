@@ -60,13 +60,21 @@ public class PlayerListener implements Listener {
 					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 					String username = player.getName().toLowerCase();
 					Double balance = Methods.getBalance(username);
-					if (!(balance >= price)) {
-						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
-					} else if (balance >= price) {
+					if (player.hasPermission("donationpoints.free")) {
 						purchases.put(username, purchasedPack);
 						if (purchases.containsKey(username)) {
 							String price2 = price.toString();
-							player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
+							player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
+						}
+					} else {
+						if (!(balance >= price)) {
+							player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+						} else if (balance >= price) {
+							purchases.put(username, purchasedPack);
+							if (purchases.containsKey(username)) {
+								String price2 = price.toString();
+								player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
+							}
 						}
 					}
 					event.setUseItemInHand(Result.DENY);
@@ -90,7 +98,7 @@ public class PlayerListener implements Listener {
 		try {
 			if (rs2.next()) {
 				String pack2 = rs2.getString("package");
-				
+
 				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
 				for (String cmd : commands) {
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
