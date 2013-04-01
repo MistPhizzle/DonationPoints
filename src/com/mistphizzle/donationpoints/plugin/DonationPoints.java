@@ -5,6 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -69,7 +72,7 @@ public class DonationPoints extends JavaPlugin {
 		// Other Variables.
 		PlayerListener.SignMessage = config.getString("General.SignMessage");
 		SignListener.SignMessage = config.getString("General.SignMessage");
-		
+
 		DBConnection.init();
 		DBConnection.sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
 
@@ -83,6 +86,28 @@ public class DonationPoints extends JavaPlugin {
 			metrics.start();
 		} catch (IOException e) {
 			// Failed to submit stats.
+		}
+
+		if (getConfig().getBoolean("General.ExpireOnStartup")) {
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE expired = 'false' AND expiredate = '" + Methods.getCurrentDate() + "';");
+			try {
+				if (rs2.next()) {
+					String pack2 = rs2.getString("package");
+					String user = rs2.getString("player");
+
+					List<String> commands = getConfig().getStringList("packages." + pack2 + ".expirecommands");
+					for (String cmd : commands) {
+						getServer().dispatchCommand(getServer().getConsoleSender(), cmd.replace("%player", user));
+					}
+					DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
+					log.info("Some packages were expired.");
+				} else if (!rs2.next()) {
+					log.info("There were no packages to expire.");
+
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
 		}
 
 

@@ -2,6 +2,7 @@ package com.mistphizzle.donationpoints.plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class PlayerListener implements Listener {
 		try {
 			if (rs2.next()) {
 				String pack2 = rs2.getString("package");
-
+				
 				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
 				for (String cmd : commands) {
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));

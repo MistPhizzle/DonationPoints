@@ -2,6 +2,7 @@ General:
   AutoCreateAccounts: true
   SignMessage: Premium
   Transferrable: false
+  ExpireOnStartup: false
 MySQL:
   engine: sqlite
   SQLiteDB: donationpoints.db
