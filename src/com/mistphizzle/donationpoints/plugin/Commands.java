@@ -387,6 +387,11 @@ public class Commands {
 					ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + sender + "' AND package = '" + pack2 + "' AND activated = 'false';");
 					try {
 						if(rs2.next()) {
+							if (ActualPrice == 0) {
+								s.sendMessage(Prefix + DPFailedActivation.replace("%pack", pack2));
+								s.sendMessage(Prefix + "§cPackage names are case sensitive.");
+								return true;
+							}
 							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET activated = 'true' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
 							s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
