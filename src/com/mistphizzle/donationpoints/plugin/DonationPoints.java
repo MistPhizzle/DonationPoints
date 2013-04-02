@@ -93,6 +93,7 @@ public class DonationPoints extends JavaPlugin {
 		Commands.PlayerOnly = Methods.colorize(getConfig().getString("messages.PlayerOnly"));
 		Commands.PlayerBalance = Methods.colorize(getConfig().getString("messages.PlayerBalance"));
 		Commands.OtherBalance = Methods.colorize(getConfig().getString("messages.OtherBalance"));
+		Commands.NoPurchaseStarted = Methods.colorize(getConfig().getString("messages.NoPurchaseStarted"));
 		Commands.ReloadSuccessful = Methods.colorize(getConfig().getString("messages.ReloadSuccessful"));
 		Commands.AccountAlreadyExists = Methods.colorize(getConfig().getString("messages.AccountAlreadyExists"));
 		Commands.PurchaseSuccessful = Methods.colorize(getConfig().getString("messages.PurchaseSuccessful"));

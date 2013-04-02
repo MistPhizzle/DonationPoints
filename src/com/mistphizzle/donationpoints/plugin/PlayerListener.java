@@ -87,11 +87,11 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void PlayerJoinEvent(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		String user = p.getName().toLowerCase();
+		String user = p.getName();
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
-			if (!Methods.hasAccount(user)) {
-				Methods.createAccount(user);
-				plugin.log.info("Created an account for " + user);
+			if (!Methods.hasAccount(user.toLowerCase())) {
+				Methods.createAccount(user.toLowerCase());
+				plugin.log.info("Created an account for " + user.toLowerCase());
 			}
 		}
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");

@@ -252,10 +252,10 @@ public class Commands {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
-					String sender = s.getName().toLowerCase();
-					if (!PlayerListener.purchases.containsKey(sender)) {
+					String sender = s.getName();
+					if (!PlayerListener.purchases.containsKey(s.getName().toLowerCase())) {
 						s.sendMessage(Prefix + NoPurchaseStarted);
-					} else if (PlayerListener.purchases.containsKey(sender)) {
+					} else if (PlayerListener.purchases.containsKey(s.getName().toLowerCase())) {
 						String pack2 = PlayerListener.purchases.get(s.getName().toLowerCase());
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
 						String date = Methods.getCurrentDate();
@@ -378,27 +378,33 @@ public class Commands {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
-					Player player = (Player) s;
 					String pack2 = args[1];
 					String expiredate = getExpireDate(pack2);
 					String sender = s.getName();
 					Boolean expires = plugin.getConfig().getBoolean("packages." + pack2 + ".expires");
+					Double ActualPrice = plugin.getConfig().getDouble("packages." + pack2 + ".price");
 
-					if (Methods.NeedActive(sender, pack2)) {
-						DBConnection.sql.modifyQuery("UPDATE dp_transactions SET activated = 'true'");
-						s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
-						List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
-						for (String cmd : commands) {
-							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
+					ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + sender + "' AND package = '" + pack2 + "' AND activated = 'false';");
+					try {
+						if(rs2.next()) {
+							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET activated = 'true' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
+							s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
+							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+							for (String cmd : commands) {
+								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
+							}
+
+							if (expires.equals(true)) {
+								DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expiredate = '" + expiredate + "' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
+								s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
+							} return true;
+						} if (!rs2.next()) {
+							s.sendMessage(Prefix + DPFailedActivation.replace("%pack", pack2));
+							s.sendMessage(Prefix + "§cPackage names are case sensitive.");
+							return true;
 						}
-						if (expires.equals(true)) {
-							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expiredate = '" + expiredate + "';");
-							s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
-						}
-						return true;
-					}
-					if (!Methods.NeedActive(sender, pack2)) {
-						s.sendMessage(Prefix + DPFailedActivation.replace("%pack", pack2));
+					} catch (SQLException e) {
+						e.printStackTrace();
 					}
 
 				} else if (args[0].equalsIgnoreCase("set")) {
@@ -431,7 +437,7 @@ public class Commands {
 					s.sendMessage("§aPrice:§3 " + price + "0");
 					s.sendMessage("§aDescription:§3 " + description);
 				} else if (args[0].equalsIgnoreCase("purchase")) {
-					if (args.length < 2) {
+					if (args.length != 2) {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					} if (!s.hasPermission("donationpoints.purchase")) {
@@ -443,23 +449,23 @@ public class Commands {
 						if (price == 0) {
 							s.sendMessage(Prefix + InvalidPackage);
 							return true;
-						} else {
-							String username = s.getName().toLowerCase();
-							Double balance = Methods.getBalance(username);
-							if (s.hasPermission("donationpoints.free")) {
-								PlayerListener.purchases.put(username, packName);
-								s.sendMessage(Prefix + "§cUse §3/dp confirm §cto confirm.");
-								return true;
-							} if (!(balance >= price)) {
-								s.sendMessage(Prefix + NotEnoughPoints);
-								return true;
-							} if (balance >= price) {
-								PlayerListener.purchases.put(username, packName);
-								if (PlayerListener.purchases.containsKey(username)) {
-									String price2 = price.toString();
-									s.sendMessage(Prefix + DPConfirm.replace("%pack", packName).replace("%amount", price2));
-								}
-							}
+						}
+						String username = s.getName();
+						Double balance = Methods.getBalance(username.toLowerCase());
+						if (s.hasPermission("donationpoints.free")) {
+							PlayerListener.purchases.put(username.toLowerCase(), packName);
+							s.sendMessage(Prefix + "§cUse §3/dp confirm §cto confirm.");
+							return true;
+						}
+						if (!(balance >= price)) {
+							s.sendMessage(Prefix + NotEnoughPoints);
+							return true;
+						}
+						PlayerListener.purchases.put(username.toLowerCase(), packName);
+						if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+							String price2 = price.toString();
+							s.sendMessage(Prefix + DPConfirm.replace("%pack", packName).replace("%amount", price2));
+							return true;
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("version")) {

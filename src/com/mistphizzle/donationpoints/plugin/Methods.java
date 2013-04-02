@@ -23,7 +23,7 @@ public class Methods {
 	
 	public static Double getBalance(String string) {
 		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM dp_players WHERE player = '" + string.toLowerCase() + "';");
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM dp_players WHERE player LIKE '" + string.toLowerCase() + "';");
 			try {
 				if (rs2.next()) {
 					Double balance = rs2.getDouble("balance");
@@ -71,7 +71,7 @@ public class Methods {
 	}
 	
 	public static boolean NeedActive(String player, String packageName) {
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + player.toLowerCase() + "' AND package = '" + packageName + "' AND activated = 'false';");
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player LIKE '" + player + "' AND package = '" + packageName + "' AND activated = 'false';");
 		try {
 			if (rs2.next()) {
 				return true;
