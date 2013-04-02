@@ -3,6 +3,7 @@ General:
   SignMessage: Premium
   Transferrable: false
   ExpireOnStartup: false
+  AutoFillSigns: true
 MySQL:
   engine: sqlite
   SQLiteDB: donationpoints.db

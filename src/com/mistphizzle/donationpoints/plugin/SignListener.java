@@ -63,6 +63,10 @@ public class SignListener implements Listener {
 				p.sendMessage(Commands.Prefix + Commands.InvalidPackage);
 				block.breakNaturally();
 			} else {
+				if (plugin.getConfig().getBoolean("General.AutoFillSigns", true)) {
+					Double price = plugin.getConfig().getDouble("packages." + pack + ".price");
+					e.setLine(2, (price + " Points"));
+				}
 				p.sendMessage(Commands.Prefix + "§cYou have created a DonationPoints sign.");
 			}
 		} 
