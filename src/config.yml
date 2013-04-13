@@ -4,6 +4,7 @@ General:
   Transferrable: false
   ExpireOnStartup: false
   AutoFillSigns: true
+  SignSpecificPermissions: false
 MySQL:
   engine: sqlite
   SQLiteDB: donationpoints.db
