@@ -425,7 +425,7 @@ public class Commands {
 					Methods.setPoints(amount, target);
 					String amount2 = amount.toString();
 					s.sendMessage(Prefix + DPSet.replace("%player", target).replace("%amount", amount2));
-				} else if (args[0].equalsIgnoreCase("package") && args[1].equalsIgnoreCase("info")) {
+				} else if (args[0].equalsIgnoreCase("package")) {
 					if (args.length != 3) {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
@@ -434,6 +434,7 @@ public class Commands {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
+					if (args[1].equalsIgnoreCase("info")) {
 					String packName = args[2];
 					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
 					String description = plugin.getConfig().getString("packages." + packName + ".description");
@@ -441,6 +442,7 @@ public class Commands {
 					s.sendMessage("§aPackage Name:§3 " + packName);
 					s.sendMessage("§aPrice:§3 " + price + "0");
 					s.sendMessage("§aDescription:§3 " + description);
+					}
 				} else if (args[0].equalsIgnoreCase("purchase")) {
 					if (args.length != 2) {
 						s.sendMessage(Prefix + InvalidArguments);
