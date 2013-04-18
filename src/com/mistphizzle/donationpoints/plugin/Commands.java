@@ -513,6 +513,8 @@ public class Commands {
 						s.sendMessage(Prefix + noPermissionMessage);
 					}
 					s.sendMessage(Prefix + plugin.getDescription().getVersion());
+					s.sendMessage(Prefix + "http://dev.bukkit.org/server-mods/DonationPoints");
+					s.sendMessage(Prefix + "Created by: MistPhizzle");
 				} else {
 					s.sendMessage(Prefix + NoCommandExists);
 				} return true;
