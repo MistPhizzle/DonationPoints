@@ -69,7 +69,7 @@ public class PlayerListener implements Listener {
 							if (DonationPoints.permission.has(player, "donationpoints.free")) {
 								purchases.put(username, purchasedPack);
 								if (purchases.containsKey(username)) {
-									player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
+									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%amount", "0.00").replace("%pack", purchasedPack));
 								}
 							} if (!DonationPoints.permission.has(player, "donationpoints.free")) {
 								if (!(balance >= price)) {
