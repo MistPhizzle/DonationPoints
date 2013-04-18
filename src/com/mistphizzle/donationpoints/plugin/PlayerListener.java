@@ -57,7 +57,7 @@ public class PlayerListener implements Listener {
 				}
 				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					String purchasedPack = s.getLine(1);
-					if (plugin.getConfig().getBoolean("General.SignSpecificPermissions", true)) {
+					if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
 						if (!DonationPoints.permission.has(player, "donationpoints.sign.use." + purchasedPack)) {
 							player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 							return;
@@ -85,7 +85,7 @@ public class PlayerListener implements Listener {
 							}
 						}
 
-					} if (!plugin.getConfig().getBoolean("General.SignSpecificPermissions")) {
+					} if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
 						Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 						String username = player.getName().toLowerCase();
 						Double balance = Methods.getBalance(username);

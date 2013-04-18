@@ -41,7 +41,6 @@ public class SignListener implements Listener {
 		Player p = e.getPlayer();
 		String line1 = e.getLine(0);
 		Block block = e.getBlock();
-		Sign s = (Sign) block.getState();
 		String pack = e.getLine(1);
 
 		// Permissions

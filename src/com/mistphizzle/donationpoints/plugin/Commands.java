@@ -282,7 +282,7 @@ public class Commands {
 								Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
 							}
 							if (DonationPoints.permission.has(s, "donationpoints.free")) {
-								s.sendMessage(Prefix + "§cpurchase successful.");
+								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", "0.00"));
 							}
 							DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
 							s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
@@ -299,7 +299,7 @@ public class Commands {
 									s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 								}
 								if (DonationPoints.permission.has(s, "donationpoints.free")) {
-									s.sendMessage(Prefix + "§cpurchase successful.");
+									s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", "0.00"));
 								}
 								s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 							} if (expires.equals(true)) {
@@ -333,7 +333,7 @@ public class Commands {
 
 										}
 										if (DonationPoints.permission.has(s, "donationpoints.free")) {
-											s.sendMessage(Prefix + "§cpurchase successful.");
+											s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", "0.00"));
 										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
@@ -355,7 +355,7 @@ public class Commands {
 											s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 										}
 										if (DonationPoints.permission.has(s, "donationpoints.free")) {
-											s.sendMessage(Prefix + "§cpurchase successful.");
+											s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", "0.00"));
 										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
@@ -439,13 +439,13 @@ public class Commands {
 						return true;
 					}
 					if (args[1].equalsIgnoreCase("info")) {
-					String packName = args[2];
-					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-					String description = plugin.getConfig().getString("packages." + packName + ".description");
-					s.sendMessage("-----§e" + packName + " Info§f-----");
-					s.sendMessage("§aPackage Name:§3 " + packName);
-					s.sendMessage("§aPrice:§3 " + price + "0");
-					s.sendMessage("§aDescription:§3 " + description);
+						String packName = args[2];
+						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+						String description = plugin.getConfig().getString("packages." + packName + ".description");
+						s.sendMessage("-----§e" + packName + " Info§f-----");
+						s.sendMessage("§aPackage Name:§3 " + packName);
+						s.sendMessage("§aPrice:§3 " + price + "0");
+						s.sendMessage("§aDescription:§3 " + description);
 					}
 				} else if (args[0].equalsIgnoreCase("purchase")) {
 					if (args.length != 2) {
@@ -463,20 +463,49 @@ public class Commands {
 						}
 						String username = s.getName();
 						Double balance = Methods.getBalance(username.toLowerCase());
-						if (DonationPoints.permission.has(s, "donationpoints.free")) {
-							PlayerListener.purchases.put(username.toLowerCase(), packName);
-							s.sendMessage(Prefix + "§cUse §3/dp confirm §cto confirm.");
-							return true;
-						}
-						if (!(balance >= price)) {
-							s.sendMessage(Prefix + NotEnoughPoints);
-							return true;
-						}
-						PlayerListener.purchases.put(username.toLowerCase(), packName);
-						if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-							String price2 = price.toString();
-							s.sendMessage(Prefix + DPConfirm.replace("%pack", packName).replace("%amount", price2));
-							return true;
+
+						if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
+							if (!DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
+								s.sendMessage(Prefix + noPermissionMessage);
+								return true;
+							}
+							if (DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
+								if (DonationPoints.permission.has(s, "donationpoints.free")) {
+									PlayerListener.purchases.put(username.toLowerCase(), packName);
+									if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+										s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
+									}
+								} if (!DonationPoints.permission.has(s, "donationpoints.free")) {
+									if (!(balance >= price)) {
+										s.sendMessage(Prefix + NotEnoughPoints);
+									} else if (balance >= price) {
+										PlayerListener.purchases.put(username.toLowerCase(), packName);
+										if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+											String price2 = price.toString();
+											s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
+										}
+									}
+								}
+							}
+						} if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
+							if (DonationPoints.permission.has(s, "donationpoints.free")) {
+								PlayerListener.purchases.put(username.toLowerCase(), packName);
+								if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+									s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
+								} return true;
+							} else {
+								if (!(balance >= price)) {
+									s.sendMessage(Prefix + NotEnoughPoints);
+									return true;
+								} else if (balance >= price) {
+									PlayerListener.purchases.put(username.toLowerCase(), packName);
+									if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+										String price2 = price.toString();
+										s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
+										return true;
+									}
+								}
+							}
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("version")) {
@@ -508,5 +537,5 @@ public class Commands {
 		}
 		return null;
 	}
-	
+
 }
