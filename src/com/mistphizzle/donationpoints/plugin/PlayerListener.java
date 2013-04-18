@@ -40,10 +40,10 @@ public class PlayerListener implements Listener {
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.LEFT_CLICK_BLOCK)
 					&& block.getType() == Material.WALL_SIGN) {
-				if (!player.hasPermission("donationpoints.sign.use")) {
+				if (!DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 				}
-				if (player.hasPermission("donationpoints.sign.use")) {
+				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					String purchasedPack = s.getLine(1);
 					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 					player.sendMessage(Commands.Prefix + "§cRight Clicking this sign will allow you to purchase §3" + purchasedPack + "§c for §3" + price + "§c.");
@@ -52,43 +52,44 @@ public class PlayerListener implements Listener {
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
 					&& block.getType() == Material.WALL_SIGN) {
-				if (!player.hasPermission("donationpoints.sign.use")) {
+				if (!DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 				}
-				if (player.hasPermission("donationpoints.sign.use")) {
+				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					String purchasedPack = s.getLine(1);
 					if (plugin.getConfig().getBoolean("General.SignSpecificPermissions", true)) {
-						if (!player.hasPermission("donationpoints.sign.use." + purchasedPack)) {
+						if (!DonationPoints.permission.has(player, "donationpoints.sign.use." + purchasedPack)) {
 							player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 							return;
 						}
-						if (player.hasPermission("donationpoints.sign.use." + purchasedPack)) {
+						if (DonationPoints.permission.has(player, "donationpoints.sign.use." + purchasedPack)) {
 							Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 							String username = player.getName().toLowerCase();
 							Double balance = Methods.getBalance(username);
-							if (player.hasPermission("donationpoints.free")) {
+							if (DonationPoints.permission.has(player, "donationpoints.free")) {
 								purchases.put(username, purchasedPack);
 								if (purchases.containsKey(username)) {
-									String price2 = price.toString();
 									player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
-								} if (!player.hasPermission("donationpoints.free")) {
-									if (!(balance >= price)) {
-										player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
-									} else if (balance >= price) {
-										purchases.put(username, purchasedPack);
-										if (purchases.containsKey(username)) {
-											String price2 = price.toString();
-											player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
-										}
+								}
+							} if (!DonationPoints.permission.has(player, "donationpoints.free")) {
+								if (!(balance >= price)) {
+									player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+								} else if (balance >= price) {
+									purchases.put(username, purchasedPack);
+									if (purchases.containsKey(username)) {
+										String price2 = price.toString();
+										player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
 									}
+
 								}
 							}
 						}
+
 					} if (!plugin.getConfig().getBoolean("General.SignSpecificPermissions")) {
 						Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 						String username = player.getName().toLowerCase();
 						Double balance = Methods.getBalance(username);
-						if (player.hasPermission("donationpoints.free")) {
+						if (DonationPoints.permission.has(player, "donationpoints.free")) {
 							purchases.put(username, purchasedPack);
 							if (purchases.containsKey(username)) {
 								String price2 = price.toString();

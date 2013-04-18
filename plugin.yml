@@ -2,6 +2,7 @@ name: DonationPoints
 author: MistPhizzle
 version: 1.6.1
 main: com.mistphizzle.donationpoints.plugin.DonationPoints
+depend: [Vault]
 commands:
   donationpoints:
     usage: /<command>

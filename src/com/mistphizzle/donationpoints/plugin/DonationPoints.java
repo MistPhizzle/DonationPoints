@@ -10,9 +10,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DonationPoints extends JavaPlugin {
@@ -21,6 +24,15 @@ public class DonationPoints extends JavaPlugin {
 
 	public static DonationPoints instance;
 
+	public static Permission permission = null;
+	
+	private boolean setupPermissions() {
+		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+		if (permissionProvider != null) {
+			permission = permissionProvider.getProvider();
+		}
+		return (permission != null);
+	}
 	// Configs
 	File configFile;
 	FileConfiguration config;
@@ -49,6 +61,8 @@ public class DonationPoints extends JavaPlugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		setupPermissions();
 
 		// Declare FileConfigurations, load.
 		config = new YamlConfiguration();

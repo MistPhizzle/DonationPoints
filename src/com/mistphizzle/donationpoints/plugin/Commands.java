@@ -72,7 +72,7 @@ public class Commands {
 					// Packages Commands
 				} else if (args[0].equalsIgnoreCase("packages")) {
 					s.sendMessage("-----§4DonationPoints Package Commands§f-----");
-					if (s.hasPermission("donationpoints.package.info")) {
+					if (DonationPoints.permission.has(s, "donationpoints.package.info")) {
 						s.sendMessage("§3/dp package info <packageName>§f - Shows package information.");
 					} else {
 						s.sendMessage("§cYou don't have permission to use any of the packages commands.");
@@ -80,31 +80,31 @@ public class Commands {
 					// Admin Commands
 				} else if (args[0].equalsIgnoreCase("admin")) {
 					s.sendMessage("-----§4DonationPoints Admin Commands§f-----");
-					if (s.hasPermission("donationpoints.give")) {
+					if (DonationPoints.permission.has(s, "donationpoints.give")) {
 						s.sendMessage("§3/dp give <player> <amount>§f - Give points to a player.");
-					} if (s.hasPermission("donationpoints.take")) {
+					} if (DonationPoints.permission.has(s, "donationpoints.take")) {
 						s.sendMessage("§3/dp take <player> <amount>§f - Take points from a player.");
-					} if (s.hasPermission("donationpoints.set")) {
+					} if (DonationPoints.permission.has(s, "donationpoints.set")) {
 						s.sendMessage("§3/dp set <player> <amount>§f - Set a player's balance.");
-					} if (s.hasPermission("donationpoints.version")) {
+					} if (DonationPoints.permission.has(s, "donationpoints.version")) {
 						s.sendMessage("§3/dp version§f - Shows the version of the plugin you're running.");
-					} if (s.hasPermission("donationpoints.update")) {
+					} if (DonationPoints.permission.has(s, "donationpoints.update")) {
 						s.sendMessage("§3/dp update§f - Checks if there is an update available.");
-					} if (s.hasPermission("donationpoints.reload")) {
+					} if (DonationPoints.permission.has(s, "donationpoints.reload")) {
 						s.sendMessage("§3/dp reload§f - Reloads the Configuration / Packages.");
 					} else {
 						s.sendMessage("§cYou don't have any permission for ANY DonationPoints Admin Commands.");
 					}
 				} else if (args[0].equalsIgnoreCase("basic")) {
 					s.sendMessage("-----§4DonationPoints Basic Commands§f-----");
-					if (s.hasPermission("donationpoints.create")) {
+					if (DonationPoints.permission.has(s, "donationpoints.create")) {
 						s.sendMessage("§3/dp create§f - Creates a points account for you.");
 					}
-					if (s.hasPermission("donationpoints.balance")) {
+					if (DonationPoints.permission.has(s, "donationpoints.balance")) {
 						s.sendMessage("§3/dp balance§f - Checks your points balance.");
-					} if (s.hasPermission("donationpoints.transfer")) {
+					} if (DonationPoints.permission.has(s, "donationpoints.transfer")) {
 						s.sendMessage("§3/dp transfer <player> <amount>§f - Transfer Points.");
-					} if (s.hasPermission("donationpoints.purchase")) {
+					} if (DonationPoints.permission.has(s, "donationpoints.transfer")) {
 						s.sendMessage("§3/dp purchase <package>§f - Purchase a package.");
 					} else {
 						s.sendMessage("§cYou don't have permission for any DonationPoints Basic Commands.");
@@ -114,7 +114,7 @@ public class Commands {
 						s.sendMessage(Prefix + TransferOff);
 						return true;
 					}
-					if (!s.hasPermission("donationpoints.transfer")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.transfer")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -159,7 +159,11 @@ public class Commands {
 							}
 						}
 					}
-				} else if (args[0].equalsIgnoreCase("reload") && s.hasPermission("donationpoints.reload")) {
+				} else if (args[0].equalsIgnoreCase("reload")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.reload")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
 					plugin.reloadConfig();
 					try {
 						plugin.firstRun();
@@ -168,7 +172,7 @@ public class Commands {
 					}
 					s.sendMessage(Prefix + ReloadSuccessful);
 				} else if (args[0].equalsIgnoreCase("balance")) {
-					if (!s.hasPermission("donationpoints.balance")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.balance")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -181,7 +185,7 @@ public class Commands {
 							s.sendMessage(Prefix + PlayerBalance.replace("%amount", balance2));
 						}
 					} else if (args.length == 2) {
-						if (!s.hasPermission("donationpoints.balance.others")) {
+						if (!DonationPoints.permission.has(s, "donationpoints.balance.others")) {
 							s.sendMessage(Prefix + noPermissionMessage);
 							return true;
 						}
@@ -195,7 +199,7 @@ public class Commands {
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("create")) {
-					if (!s.hasPermission("donationpoints.create")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.create")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -208,7 +212,7 @@ public class Commands {
 							s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", string));
 						}
 					} if (args.length == 2) {
-						if (!s.hasPermission("donationpoints.create.others")) {
+						if (!DonationPoints.permission.has(s, "donationpoints.create.others")) {
 							s.sendMessage(Prefix + noPermissionMessage);
 						}
 						String string = args[1];
@@ -220,7 +224,7 @@ public class Commands {
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("give")) {
-					if (!s.hasPermission("donationpoints.give")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.give")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -238,7 +242,7 @@ public class Commands {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
-					if (!s.hasPermission("donationpoints.take")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.take")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -248,7 +252,7 @@ public class Commands {
 					String takeamount2 = takeamount.toString();
 					s.sendMessage(Prefix + DPTake.replace("%amount", takeamount2).replace("%player", target));
 				} else if (args[0].equalsIgnoreCase("confirm")) {
-					if (!s.hasPermission("donationpoints.confirm")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.confirm")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -271,13 +275,13 @@ public class Commands {
 							return true;
 						}
 						if (haslimit.equals(false) && activateimmediately.equals(false)) {
-							if (!s.hasPermission("donationpoints.free")) {
+							if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 								Methods.removePoints(price2, sender);
 								String price3 = price2.toString();
 								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 								Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
 							}
-							if (s.hasPermission("donationpoints.free")) {
+							if (DonationPoints.permission.has(s, "donationpoints.free")) {
 								s.sendMessage(Prefix + "§cpurchase successful.");
 							}
 							DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
@@ -289,12 +293,12 @@ public class Commands {
 								for (String cmd : commands) {
 									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
 								}
-								if (!s.hasPermission("donationpoints.free")) {
+								if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 									Methods.removePoints(price2, sender);
 									String price3 = price2.toString();
 									s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 								}
-								if (s.hasPermission("donationpoints.free")) {
+								if (DonationPoints.permission.has(s, "donationpoints.free")) {
 									s.sendMessage(Prefix + "§cpurchase successful.");
 								}
 								s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
@@ -323,12 +327,12 @@ public class Commands {
 											plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
 										}
 										String price3 = price2.toString();
-										if (!s.hasPermission("donationpoints.free")) {
+										if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 											Methods.removePoints(price2, sender);
 											s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 
 										}
-										if (s.hasPermission("donationpoints.free")) {
+										if (DonationPoints.permission.has(s, "donationpoints.free")) {
 											s.sendMessage(Prefix + "§cpurchase successful.");
 										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
@@ -345,12 +349,12 @@ public class Commands {
 										} return true;
 									}
 									if (activateimmediately.equals(false))  {
-										if (!s.hasPermission("donationpoints.free")) {
+										if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 											Methods.removePoints(price2, sender);
 											String price3 = price2.toString();
 											s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
 										}
-										if (s.hasPermission("donationpoints.free")) {
+										if (DonationPoints.permission.has(s, "donationpoints.free")) {
 											s.sendMessage(Prefix + "§cpurchase successful.");
 										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
@@ -370,7 +374,7 @@ public class Commands {
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("activate")) {
-					if (!s.hasPermission("donationpoints.activate")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.activate")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -417,7 +421,7 @@ public class Commands {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
-					if (!s.hasPermission("donationpoints.set")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.set")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 					}
 					String target = args[1].toLowerCase();
@@ -430,7 +434,7 @@ public class Commands {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
-					if (!s.hasPermission("donationpoints.package.info")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.package.info")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
@@ -447,7 +451,7 @@ public class Commands {
 					if (args.length != 2) {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
-					} if (!s.hasPermission("donationpoints.purchase")) {
+					} if (!DonationPoints.permission.has(s, "donationpoints.purchase")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					} else {
@@ -459,7 +463,7 @@ public class Commands {
 						}
 						String username = s.getName();
 						Double balance = Methods.getBalance(username.toLowerCase());
-						if (s.hasPermission("donationpoints.free")) {
+						if (DonationPoints.permission.has(s, "donationpoints.free")) {
 							PlayerListener.purchases.put(username.toLowerCase(), packName);
 							s.sendMessage(Prefix + "§cUse §3/dp confirm §cto confirm.");
 							return true;
@@ -476,7 +480,7 @@ public class Commands {
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("version")) {
-					if (!s.hasPermission("donationpoints.version")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.version")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 					}
 					s.sendMessage(Prefix + plugin.getDescription().getVersion());
@@ -504,4 +508,5 @@ public class Commands {
 		}
 		return null;
 	}
+	
 }

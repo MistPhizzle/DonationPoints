@@ -26,8 +26,8 @@ public class SignListener implements Listener {
 		if (block.getState() instanceof Sign) {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
-			if (signline1.equalsIgnoreCase("[" + SignMessage + "]") && !player.hasPermission("donationpoints.sign.break")) {
-				if (!player.hasPermission("donationpoints.sign.break")) {
+			if (signline1.equalsIgnoreCase("[" + SignMessage + "]") && !DonationPoints.permission.has(player, "donationpoints.sign.break")) {
+				if (!DonationPoints.permission.has(player, "donationpoints.sign.break")) {
 					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 				}
 				e.setCancelled(true);
@@ -45,11 +45,11 @@ public class SignListener implements Listener {
 		String pack = e.getLine(1);
 
 		// Permissions
-		if (line1.equalsIgnoreCase("[" + SignMessage + "]") && !p.hasPermission("donationpoints.sign.create")) {
+		if (line1.equalsIgnoreCase("[" + SignMessage + "]") && !DonationPoints.permission.has(p, "donationpoints.sign.create")) {
 			e.setCancelled(true);
 			block.breakNaturally();
 			p.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
-		} else if (p.hasPermission("donationpoints.sign.create") && line1.equalsIgnoreCase("[" + SignMessage + "]")) {
+		} else if (DonationPoints.permission.has(p, "donationpoints.sign.create") && line1.equalsIgnoreCase("[" + SignMessage + "]")) {
 			if (block.getType() == Material.SIGN_POST) {
 				p.sendMessage(Commands.Prefix + "§cDonationPoints signs must be placed on a wall.");
 				block.breakNaturally();
