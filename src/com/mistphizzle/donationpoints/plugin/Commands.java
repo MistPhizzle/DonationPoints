@@ -511,6 +511,7 @@ public class Commands {
 				} else if (args[0].equalsIgnoreCase("version")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.version")) {
 						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
 					}
 					s.sendMessage(Prefix + plugin.getDescription().getVersion());
 					s.sendMessage(Prefix + "http://dev.bukkit.org/server-mods/DonationPoints");
