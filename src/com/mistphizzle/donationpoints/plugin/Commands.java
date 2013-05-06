@@ -446,6 +446,16 @@ public class Commands {
 						s.sendMessage("§aPackage Name:§3 " + packName);
 						s.sendMessage("§aPrice:§3 " + price + "0");
 						s.sendMessage("§aDescription:§3 " + description);
+						if (plugin.getConfig().getBoolean("packages." + packName + ".expires") == false) {
+							s.sendMessage("§aExpires: §3Never");
+						} else if (plugin.getConfig().getBoolean("packages." + packName + ".expires") == true) {
+							int expiretime = plugin.getConfig().getInt("packages." + packName + ".expiretime");
+							if (expiretime == 1) {
+								s.sendMessage("§aExpires After: §3" + expiretime + " Day");
+							} else if (expiretime != 1) {
+								s.sendMessage("§aExpires After: §3" + expiretime + " Days");
+							}
+						}
 					}
 				} else if (args[0].equalsIgnoreCase("purchase")) {
 					if (args.length != 2) {
