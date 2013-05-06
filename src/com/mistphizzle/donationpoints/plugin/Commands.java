@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,7 +22,7 @@ public class Commands {
 		this.plugin = instance;
 		init();
 	}
-
+	
 	// Strings
 	static String Prefix;
 	static String noPermissionMessage;
@@ -74,6 +74,8 @@ public class Commands {
 					s.sendMessage("-----§4DonationPoints Package Commands§f-----");
 					if (DonationPoints.permission.has(s, "donationpoints.package.info")) {
 						s.sendMessage("§3/dp package info <packageName>§f - Shows package information.");
+					} if (DonationPoints.permission.has(s, "donationpoints.package.list")) {
+						s.sendMessage("§3/dp package list§f - Lista all packages.");
 					} else {
 						s.sendMessage("§cYou don't have permission to use any of the packages commands.");
 					}
@@ -430,7 +432,7 @@ public class Commands {
 					String amount2 = amount.toString();
 					s.sendMessage(Prefix + DPSet.replace("%player", target).replace("%amount", amount2));
 				} else if (args[0].equalsIgnoreCase("package")) {
-					if (args.length != 3) {
+					if (args.length < 2 | args.length > 4) {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
@@ -456,6 +458,17 @@ public class Commands {
 								s.sendMessage("§aExpires After: §3" + expiretime + " Days");
 							}
 						}
+					}
+					if (args[1].equalsIgnoreCase("list")) {
+						if (!DonationPoints.permission.has(s, "donationpoints.package.list")) {
+							s.sendMessage(Prefix + noPermissionMessage);
+							return true;
+						}
+						Set<String> packs = plugin.getConfig().getConfigurationSection("packages").getKeys(false);
+						s.sendMessage(Prefix + "§3Available Packages: §a" + packs.toString());
+						return true;
+						
+						
 					}
 				} else if (args[0].equalsIgnoreCase("purchase")) {
 					if (args.length != 2) {
