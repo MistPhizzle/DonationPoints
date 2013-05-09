@@ -425,6 +425,7 @@ public class Commands {
 					}
 					if (!DonationPoints.permission.has(s, "donationpoints.set")) {
 						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
 					}
 					String target = args[1].toLowerCase();
 					Double amount = Double.parseDouble(args[2]);
