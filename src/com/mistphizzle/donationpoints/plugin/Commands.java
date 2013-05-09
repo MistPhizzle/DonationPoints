@@ -304,6 +304,7 @@ public class Commands {
 									s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", "0.00"));
 								}
 								s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
+								PlayerListener.purchases.remove(s.getName().toLowerCase());
 							} if (expires.equals(true)) {
 								Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
 								s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
