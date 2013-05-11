@@ -1,73 +1,48 @@
 General:
-  AutoCreateAccounts: true
-  SignMessage: Premium
-  Transferrable: false
-  ExpireOnStartup: false
-  AutoFillSigns: true
-  SpecificPermissions: false
+  AutoCreateAccounts:
+  SignMessage: 
+  Transferrable: 
+  ExpireOnStartup:
+  AutoFillSigns:
+  SpecificPermissions:
+  ConfigVersion: 
 MySQL:
-  engine: sqlite
-  SQLiteDB: donationpoints.db
-  host: localhost
-  port: 3306
-  username: root
+  engine:
+  SQLiteDB:
+  host:
+  port:
+  username:
   password: 
-  database: minecraft
+  database:
 messages:
-  Prefix: '&7[&aDonationPoints&7] '
-  NoPermission: '&cYou dont have permission to do that'
-  InvalidArguments: '&cYou have specified an incorrect number of arguments.'
-  PlayerOnly: '&cThis command is only available to players.'
-  ReloadSuccessful: '&cConfig File has been successfully reloaded.'
-  NoCommandExists: '&cThat is not a valid DonationPoints command.'
-  DPConfirm: '&cType &3/dp confirm &cto confirm your purchase of &3%pack &cfor &3%amount points&c.'
-  DPActivate: '&cType &3/dp activate %pack &cto activate your purchase.'
-  DPSuccessfulActivation: '&cYou have activated your &3%pack &cpackage.'
-  DPFailedActivation: '&cYou do not have a &3%pack &cto activate.'
-  ExpireDate: '&cYour &3%pack &cis set to expire on &3%expiredate&c.'
-  DPGive: '&3%amount &chas been added to &cplayer balance.'
-  DPTake: '&3%amount &chas been removed from &3player &c balance.'
-  DPSet: '&3%player &caccount has been set to &3%amount points&c.'
-  NoAccount: '&cNo Account Found for &3%player&c.'
-  AccountCreated: '&cAn account has been created for &3%player&c.'
-  AccountAlreadyExists: '&cAn account already exists for &3%player&c.'
-  NoTransfer: '&cUnable to make the transfer.'
-  TransferOff: '&cThis server does not have transfers enabled.'
-  TransferSent: '&cYou have sent &3%amount &cto &3%player.'
-  TransferReceive: '&cYou have received &3%amount &cfrom &3%player.'
-  PlayerBalance: '&cYou have a balance of &3%amount&c.'
-  OtherBalance: '&3%player &chas a balance of &3%amount&c.'
-  NoPurchaseStarted: '&cYou have not yet started a purchase.'
-  PurchaseSuccessful: '&cYou have purchased &3%pack &cfor &3%amount points&c.'
-  NeedActivation: '&cYou have already purchased &3%pack &cbut it is not active.'
-  LimitReached: '&cYou have already reached the limit of &3%limit &cpurchases of &3%pack.'
-  PackageActivated: '&cYou have successfully activated your &3%pack &cpackage.'
-  InvalidPackage: '&cUnable to find that package.'
-  NotEnoughPoints: '&cYou dont have enough points to make that purchase.'
+  Prefix:
+  NoPermission:
+  InvalidArguments:
+  PlayerOnly:
+  ReloadSuccessful:
+  NoCommandExists:
+  DPConfirm:
+  DPActivate:
+  DPSuccessfulActivation:
+  DPFailedActivation:
+  ExpireDate:
+  DPGive:
+  DPTake:
+  DPSet:
+  NoAccount:
+  AccountCreated:
+  AccountAlreadyExists:
+  NoTransfer:
+  TransferOff:
+  TransferSent:
+  TransferReceive:
+  PlayerBalance:
+  OtherBalance:
+  NoPurchaseStarted:
+  PurchaseSuccessful:
+  NeedActivation:
+  LimitReached:
+  PackageActivated:
+  InvalidPackage:
+  NotEnoughPoints:
 packages:
-  God:
-    price: 500
-    description: This will give you god mode.
-    haslimit: true
-    limit: 3
-    activateimmediately: false
-    expires: true
-    expiretime: 1
-    commands:
-    - god %player
-    - say %player has received god mode.
-    expirecommands:
-    - god %player
-    - say %player -- Your god mode has expired.
-  kick:
-    price: 1000
-    description: This will kick the player.
-    haslimit: false
-    limit: 1
-    activateimmediately: true
-    expires: false
-    expiretime: 1
-    commands:
-    - kick %player
-    expirecommands:
-    - say %player -- Your kick as expired.
