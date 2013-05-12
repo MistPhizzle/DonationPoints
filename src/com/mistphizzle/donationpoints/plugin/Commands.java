@@ -22,7 +22,7 @@ public class Commands {
 		this.plugin = instance;
 		init();
 	}
-	
+
 	// Strings
 	static String Prefix;
 	static String noPermissionMessage;
@@ -54,6 +54,7 @@ public class Commands {
 	static String DPSet;
 	static String NotEnoughPoints;
 	static String InvalidPackage;
+	static String DPPrerequisite;
 
 	private void init() {
 		PluginCommand donationpoints = plugin.getCommand("donationpoints");
@@ -469,8 +470,8 @@ public class Commands {
 						Set<String> packs = plugin.getConfig().getConfigurationSection("packages").getKeys(false);
 						s.sendMessage(Prefix + "§3Available Packages: §a" + packs.toString());
 						return true;
-						
-						
+
+
 					}
 				} else if (args[0].equalsIgnoreCase("purchase")) {
 					if (args.length != 2) {
@@ -485,6 +486,13 @@ public class Commands {
 						if (price == 0) {
 							s.sendMessage(Prefix + InvalidPackage);
 							return true;
+						}
+						if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite")) {
+							String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
+							if (!Methods.hasPurchased(s.getName(), prerequisite)) {
+								s.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
+								return true;
+							}
 						}
 						String username = s.getName();
 						Double balance = Methods.getBalance(username.toLowerCase());
@@ -510,24 +518,25 @@ public class Commands {
 											s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
 										}
 									}
+
 								}
-							}
-						} if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
-							if (DonationPoints.permission.has(s, "donationpoints.free")) {
-								PlayerListener.purchases.put(username.toLowerCase(), packName);
-								if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-									s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
-								} return true;
-							} else {
-								if (!(balance >= price)) {
-									s.sendMessage(Prefix + NotEnoughPoints);
-									return true;
-								} else if (balance >= price) {
+							} if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
+								if (DonationPoints.permission.has(s, "donationpoints.free")) {
 									PlayerListener.purchases.put(username.toLowerCase(), packName);
 									if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-										String price2 = price.toString();
-										s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
+										s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
+									} return true;
+								} else {
+									if (!(balance >= price)) {
+										s.sendMessage(Prefix + NotEnoughPoints);
 										return true;
+									} else if (balance >= price) {
+										PlayerListener.purchases.put(username.toLowerCase(), packName);
+										if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+											String price2 = price.toString();
+											s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
+											return true;
+										}
 									}
 								}
 							}

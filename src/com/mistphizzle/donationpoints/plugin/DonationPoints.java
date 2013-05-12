@@ -119,6 +119,7 @@ public class DonationPoints extends JavaPlugin {
 		Commands.DPSet = Methods.colorize(getConfig().getString("messages.DPSet"));
 		Commands.InvalidPackage = Methods.colorize(getConfig().getString("messages.InvalidPackage"));
 		Commands.NotEnoughPoints = Methods.colorize(getConfig().getString("messages.NotEnoughPoints"));
+		Commands.DPPrerequisite = Methods.colorize(getConfig().getString("messages.DPPrerequisite"));
 
 		DBConnection.init();
 		DBConnection.sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
@@ -214,7 +215,7 @@ public class DonationPoints extends JavaPlugin {
 
 	public void configCheck() {
 		int ConfigVersion = getConfig().getInt("General.ConfigVersion");
-		if (ConfigVersion != 164) {
+		if (ConfigVersion != 170) {
 			this.log.info("Config is not up to date! Updating.");
 			// General
 			if (!getConfig().contains("General.AutoCreateAccounts")) {
@@ -277,7 +278,7 @@ public class DonationPoints extends JavaPlugin {
 				getConfig().set("messages.NoCommandExists", "&cThat is not a valid DonationPoints command.");
 			}
 			if (!getConfig().contains("messages.DPConfirm")) {
-				getConfig().set("messages.DPConfirm", "&cType &3/dp confirm &cto confirm your purchase of &3&pack &cfor &3%amount points&c.");
+				getConfig().set("messages.DPConfirm", "&cType &3/dp confirm &cto confirm your purchase of &3%pack &cfor &3%amount points&c.");
 			}
 			if (!getConfig().contains("messages.DPActivate")) {
 				getConfig().set("messages.DPActivate", "&cType &3/dp activate %pack &cto activate your purchase.");
@@ -348,8 +349,11 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("messages.NotEnoughPoints")) {
 				getConfig().set("messages.NotEnoughPoints", "&cYou don't have enough points to make that purchase.");
 			}
+			if (!getConfig().contains("messages.DPPrerequisite")) {
+				getConfig().set("messages.DPPrerequisite", "&cYou must purchase &3%pack &cbefore you can purchase this one.");
+			}
 			if (!getConfig().contains("packages.ExamplePackage.price")) {
-				getConfig().set("packages.ExamplePackage.Price", 100);
+				getConfig().set("packages.ExamplePackage.price", 100);
 			}
 			if (!getConfig().contains("packages.ExamplePackage.description")) {
 				getConfig().set("packages.ExamplePackage.description", "This is an example package.");
@@ -381,7 +385,13 @@ public class DonationPoints extends JavaPlugin {
 				exampleexpirecommands.add("say %player's example package has expired.");
 				getConfig().set("packages.ExamplePackage.expirecommands", exampleexpirecommands);
 			}
-			getConfig().set("General.ConfigVersion", "164");
+			if (!getConfig().contains("packages.ExamplePackage.requireprerequisite")) {
+				getConfig().set("packages.ExamplePackage.requireprerequisite", false);
+			}
+			if (!getConfig().contains("packages.ExamplePackage.prerequisite")) {
+				getConfig().set("packages.ExamplePackage.prerequisite", "");
+			}
+			getConfig().set("General.ConfigVersion", "170");
 			saveConfig();
 		}
 	}

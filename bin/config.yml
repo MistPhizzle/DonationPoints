@@ -45,4 +45,5 @@ messages:
   PackageActivated:
   InvalidPackage:
   NotEnoughPoints:
+  DPPrerequisite:
 packages:

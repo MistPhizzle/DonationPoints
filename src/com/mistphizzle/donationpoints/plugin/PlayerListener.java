@@ -64,6 +64,13 @@ public class PlayerListener implements Listener {
 							player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 							return;
 						}
+						if (plugin.getConfig().getBoolean("packages." + purchasedPack + ".requireprerequisite")) {
+							String prerequisite = plugin.getConfig().getString("packages." + purchasedPack + ".prerequisite");
+							if (!Methods.hasPurchased(player.getName(), prerequisite)) {
+								player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
+								return;
+							}
+						}
 						if (DonationPoints.permission.has(player, "donationpoints.sign.use." + purchasedPack)) {
 							Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 							String username = player.getName().toLowerCase();
@@ -91,26 +98,33 @@ public class PlayerListener implements Listener {
 						Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 						String username = player.getName().toLowerCase();
 						Double balance = Methods.getBalance(username);
-						if (DonationPoints.permission.has(player, "donationpoints.free")) {
-							purchases.put(username, purchasedPack);
-							if (purchases.containsKey(username)) {
-								String price2 = price.toString();
-								player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
+						if (plugin.getConfig().getBoolean("packages." + purchasedPack + ".requireprerequisite")) {
+							String prerequisite = plugin.getConfig().getString("packages." + purchasedPack + ".prerequisite");
+							if (!Methods.hasPurchased(player.getName(), prerequisite)) {
+								player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
+								return;
 							}
-						} else {
-							if (!(balance >= price)) {
-								player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
-							} else if (balance >= price) {
+							if (DonationPoints.permission.has(player, "donationpoints.free")) {
 								purchases.put(username, purchasedPack);
 								if (purchases.containsKey(username)) {
 									String price2 = price.toString();
-									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
+									player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
+								}
+							} else {
+								if (!(balance >= price)) {
+									player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+								} else if (balance >= price) {
+									purchases.put(username, purchasedPack);
+									if (purchases.containsKey(username)) {
+										String price2 = price.toString();
+										player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
+									}
 								}
 							}
 						}
+						event.setUseItemInHand(Result.DENY);
+						event.setUseInteractedBlock(Result.DENY);
 					}
-					event.setUseItemInHand(Result.DENY);
-					event.setUseInteractedBlock(Result.DENY);
 				}
 			}
 		}

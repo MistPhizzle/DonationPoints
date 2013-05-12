@@ -93,4 +93,18 @@ public class Methods {
 	public static String colorize(String message) {
         return message.replaceAll("(?i)&([a-fk-or0-9])", "\u00A7$1");
     }
+	
+	public static boolean hasPurchased(String player, String packName) {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player LIKE '" + player + "' AND package = '" + packName + "';");
+		try {
+			if (rs2.next()) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 }
