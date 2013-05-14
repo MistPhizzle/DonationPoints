@@ -479,65 +479,70 @@ public class Commands {
 						return true;
 					} if (!DonationPoints.permission.has(s, "donationpoints.purchase")) {
 						s.sendMessage(Prefix + noPermissionMessage);
-						return true;
-					} else {
-						String packName = args[1];
-						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-						if (price == 0) {
-							s.sendMessage(Prefix + InvalidPackage);
+						return true;				
+					}
+					String packName = args[1];
+					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
+						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
+						plugin.saveConfig();
+					}
+					if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite", true)) {
+						String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
+						if (!Methods.hasPurchased(s.getName(), prerequisite)) {
+							s.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
 							return true;
 						}
-						if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite")) {
-							String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
-							if (!Methods.hasPurchased(s.getName(), prerequisite)) {
-								s.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
-								return true;
-							}
+					}
+					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+					if (price == 0) {
+						s.sendMessage(Prefix + InvalidPackage);
+						return true;
+					}
+					String username = s.getName();
+					Double balance = Methods.getBalance(username.toLowerCase());
+
+					if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
+						if (!DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
+							s.sendMessage(Prefix + noPermissionMessage);
+							return true;
 						}
-						String username = s.getName();
-						Double balance = Methods.getBalance(username.toLowerCase());
-
-						if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
-							if (!DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
-								s.sendMessage(Prefix + noPermissionMessage);
-								return true;
+						if (DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
+							if (DonationPoints.permission.has(s, "donationpoints.free")) {
+								PlayerListener.purchases.put(username.toLowerCase(), packName);
 							}
-							if (DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
-								if (DonationPoints.permission.has(s, "donationpoints.free")) {
-									PlayerListener.purchases.put(username.toLowerCase(), packName);
-									if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-										s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
-									}
-								} if (!DonationPoints.permission.has(s, "donationpoints.free")) {
-									if (!(balance >= price)) {
-										s.sendMessage(Prefix + NotEnoughPoints);
-									} else if (balance >= price) {
-										PlayerListener.purchases.put(username.toLowerCase(), packName);
-										if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-											String price2 = price.toString();
-											s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
-										}
-									}
+							if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+								s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
+							}
+						} if (!DonationPoints.permission.has(s, "donationpoints.free")) {
+							if (!(balance >= price)) {
+								s.sendMessage(Prefix + NotEnoughPoints);
+							} else if (balance >= price) {
+								PlayerListener.purchases.put(username.toLowerCase(), packName);
 
+								if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+									String price2 = price.toString();
+									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
 								}
-							} if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
-								if (DonationPoints.permission.has(s, "donationpoints.free")) {
-									PlayerListener.purchases.put(username.toLowerCase(), packName);
-									if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-										s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
-									} return true;
-								} else {
-									if (!(balance >= price)) {
-										s.sendMessage(Prefix + NotEnoughPoints);
-										return true;
-									} else if (balance >= price) {
-										PlayerListener.purchases.put(username.toLowerCase(), packName);
-										if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-											String price2 = price.toString();
-											s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
-											return true;
-										}
-									}
+							}
+
+						}
+					}
+					if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
+						if (DonationPoints.permission.has(s, "donationpoints.free")) {
+							PlayerListener.purchases.put(username.toLowerCase(), packName);
+							if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+								s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
+							} return true;
+						} else {
+							if (!(balance >= price)) {
+								s.sendMessage(Prefix + NotEnoughPoints);
+								return true;
+							} else if (balance >= price) {
+								PlayerListener.purchases.put(username.toLowerCase(), packName);
+								if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
+									String price2 = price.toString();
+									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
+									return true;
 								}
 							}
 						}

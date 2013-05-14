@@ -391,7 +391,7 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("packages.ExamplePackage.prerequisite")) {
 				getConfig().set("packages.ExamplePackage.prerequisite", "");
 			}
-			getConfig().set("General.ConfigVersion", "170");
+			getConfig().set("General.ConfigVersion", 170);
 			saveConfig();
 		}
 	}
