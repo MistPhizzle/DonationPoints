@@ -139,7 +139,7 @@ public class PlayerListener implements Listener {
 				plugin.log.info("Created an account for " + user.toLowerCase());
 			}
 		}
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
 		try {
 			if (rs2.next()) {
 				String pack2 = rs2.getString("package");
@@ -148,7 +148,7 @@ public class PlayerListener implements Listener {
 				for (String cmd : commands) {
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
 				}
-				DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
+				DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
 			} else if (!rs2.next()) {
 			}
 		} catch (SQLException ex) {

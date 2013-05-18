@@ -83,6 +83,8 @@ public class DonationPoints extends JavaPlugin {
 		DBConnection.port = config.getInt("MySQL.port", 3306);
 		DBConnection.engine = config.getString("MySQL.engine", "sqlite");
 		DBConnection.sqlite_db = config.getString("MySQL.SQLiteDB", "donationpoints.db");
+		DBConnection.playerTable = config.getString("MySQL.PlayerTable", "dp_players");
+		DBConnection.transactionTable = config.getString("MySQL.TransactionTable", "dp_transactions");
 
 		// Other Variables.
 		PlayerListener.SignMessage = config.getString("General.SignMessage");
@@ -137,7 +139,7 @@ public class DonationPoints extends JavaPlugin {
 		}
 		
 		if (getConfig().getBoolean("General.ExpireOnStartup")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE expired = 'false' AND expiredate = '" + Methods.getCurrentDate() + "';");
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE expired = 'false' AND expiredate = '" + Methods.getCurrentDate() + "';");
 			try {
 				if (rs2.next()) {
 					String pack2 = rs2.getString("package");
@@ -147,7 +149,7 @@ public class DonationPoints extends JavaPlugin {
 					for (String cmd : commands) {
 						getServer().dispatchCommand(getServer().getConsoleSender(), cmd.replace("%player", user));
 					}
-					DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
+					DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
 					log.info("Some packages were expired.");
 				} else if (!rs2.next()) {
 					log.info("There were no packages to expire.");
@@ -390,6 +392,12 @@ public class DonationPoints extends JavaPlugin {
 			}
 			if (!getConfig().contains("packages.ExamplePackage.prerequisite")) {
 				getConfig().set("packages.ExamplePackage.prerequisite", "");
+			}
+			if (!getConfig().contains("MySQL.PlayerTable")) {
+				getConfig().set("MySQL.PlayerTransaction", "dp_players");
+			}
+			if (!getConfig().contains("MySQL.TransactionTable")) {
+				getConfig().set("MySQL.TransactionTable", "dp_transactions");
 			}
 			getConfig().set("General.ConfigVersion", 170);
 			saveConfig();

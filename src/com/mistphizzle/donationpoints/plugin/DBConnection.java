@@ -15,6 +15,8 @@ public final class DBConnection {
 	public static String db;
 	public static String user;
 	public static String pass;
+	public static String playerTable;
+	public static String transactionTable;
 
 	public static void init() {
 		if (engine.equalsIgnoreCase("mysql")) {
@@ -23,16 +25,16 @@ public final class DBConnection {
 			DonationPoints.log.info("[DonationPoints] Etablishing Database Connection...");
 
 			if (sql.tableExists("points_players")) {
-				DonationPoints.log.info("Renaming points_players to dp_players");
-				sql.modifyQuery("RENAME TABLE points_players TO dp_players");
+				DonationPoints.log.info("Renaming points_players to " + playerTable + ".");
+				sql.modifyQuery("RENAME TABLE points_players TO " + playerTable);
 			}
 			
 			DonationPoints.log.info("Making sure all data is correct.");
-			sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
+			sql.modifyQuery("UPDATE " + playerTable + " SET player = lower(player)");
 			
-			if (!sql.tableExists("dp_players")) {
-				DonationPoints.log.info("Creating dp_players table.");
-				String query = "CREATE TABLE IF NOT EXISTS `dp_players` ("
+			if (!sql.tableExists(playerTable)) {
+				DonationPoints.log.info("Creating " + playerTable + " table.");
+				String query = "CREATE TABLE IF NOT EXISTS `" + playerTable + "` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
 						+ "`player` TEXT(32),"
 						+ "`balance` double,"
@@ -40,9 +42,9 @@ public final class DBConnection {
 				sql.modifyQuery(query);
 			}
 
-			if (!sql.tableExists("dp_transactions")) {
-				DonationPoints.log.info("Creating dp_transactions table");
-				String query = "CREATE TABLE `dp_transactions` ("
+			if (!sql.tableExists(transactionTable)) {
+				DonationPoints.log.info("Creating " + transactionTable + " table");
+				String query = "CREATE TABLE `" + transactionTable + "` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
@@ -66,21 +68,21 @@ public final class DBConnection {
 			((SQLite) sql).open();
 			
 			if (sql.tableExists("points_players")) {
-				DonationPoints.log.info("Renaming points_players to dp_players");
-				sql.modifyQuery("RENAME TABLE points_players TO dp_players");
+				DonationPoints.log.info("Renaming points_players to " + playerTable);
+				sql.modifyQuery("RENAME TABLE points_players TO " + playerTable);
 			}
 
-			if (!sql.tableExists("dp_players")) {
-				DonationPoints.log.info("Creating dp_players table.");
-				String query = "CREATE TABLE `dp_players` ("
+			if (!sql.tableExists(playerTable)) {
+				DonationPoints.log.info("Creating " + playerTable + " table.");
+				String query = "CREATE TABLE `" + playerTable + "` ("
 						+ "`player` TEXT(32),"
 						+ "`balance` DOUBLE(255));";
 				sql.modifyQuery(query);
 			}
 
-			if (!sql.tableExists("dp_transactions")) {
-				DonationPoints.log.info("Creating dp_transactions table.");
-				String query = "CREATE TABLE `dp_transactions` ("
+			if (!sql.tableExists(transactionTable)) {
+				DonationPoints.log.info("Creating " + transactionTable + " table.");
+				String query = "CREATE TABLE `" + transactionTable + "` ("
 						+ "`player` TEXT(32),"
 						+ "`package` TEXT(255),"
 						+ "`price` DOUBLE(255),"

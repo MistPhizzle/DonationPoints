@@ -317,7 +317,7 @@ public class Commands {
 								return true;
 							} return true;
 						} else if (haslimit.equals(true)) {
-							ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM dp_transactions WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
+							ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM " + DBConnection.transactionTable + " WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
 							try {
 								numberpurchased.next();
 								int size = numberpurchased.getInt("size");
@@ -392,7 +392,7 @@ public class Commands {
 					Boolean expires = plugin.getConfig().getBoolean("packages." + pack2 + ".expires");
 					Double ActualPrice = plugin.getConfig().getDouble("packages." + pack2 + ".price");
 
-					ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM dp_transactions WHERE player = '" + sender + "' AND package = '" + pack2 + "' AND activated = 'false';");
+					ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + sender + "' AND package = '" + pack2 + "' AND activated = 'false';");
 					try {
 						if(rs2.next()) {
 							if (ActualPrice == 0) {
@@ -400,7 +400,7 @@ public class Commands {
 								s.sendMessage(Prefix + "§cPackage names are case sensitive.");
 								return true;
 							}
-							DBConnection.sql.modifyQuery("UPDATE dp_transactions SET activated = 'true' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
+							DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET activated = 'true' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
 							s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 							for (String cmd : commands) {
@@ -408,7 +408,7 @@ public class Commands {
 							}
 
 							if (expires.equals(true)) {
-								DBConnection.sql.modifyQuery("UPDATE dp_transactions SET expiredate = '" + expiredate + "' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
+								DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expiredate = '" + expiredate + "' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
 								s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 							} return true;
 						} if (!rs2.next()) {
