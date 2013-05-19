@@ -24,37 +24,37 @@ public class Commands {
 	}
 
 	// Strings
-	static String Prefix;
-	static String noPermissionMessage;
-	static String InvalidArguments;
-	static String NoCommandExists;
-	static String DPConfirm;
-	static String DPActivate;
-	static String DPSuccessfulActivation;
-	static String DPFailedActivation;
-	static String ExpireDate;
-	static String DPGive;
-	static String DPTake;
-	static String NoAccount;
-	static String AccountCreated;
-	static String TransferOff;
-	static String NoTransfer;
-	static String TransferSent;
-	static String TransferReceive;
-	static String PlayerOnly;
-	static String ReloadSuccessful;
-	static String PlayerBalance;
-	static String OtherBalance;
-	static String AccountAlreadyExists;
-	static String NoPurchaseStarted;
-	static String NeedActivation;
-	static String PurchaseSuccessful;
-	static String LimitReached;
-	static String PackageActivated;
-	static String DPSet;
-	static String NotEnoughPoints;
-	static String InvalidPackage;
-	static String DPPrerequisite;
+	public static String Prefix;
+	public static String noPermissionMessage;
+	public static String InvalidArguments;
+	public static String NoCommandExists;
+	public static String DPConfirm;
+	public static String DPActivate;
+	public static String DPSuccessfulActivation;
+	public static String DPFailedActivation;
+	public static String ExpireDate;
+	public static String DPGive;
+	public static String DPTake;
+	public static String NoAccount;
+	public static String AccountCreated;
+	public static String TransferOff;
+	public static String NoTransfer;
+	public static String TransferSent;
+	public static String TransferReceive;
+	public static String PlayerOnly;
+	public static String ReloadSuccessful;
+	public static String PlayerBalance;
+	public static String OtherBalance;
+	public static String AccountAlreadyExists;
+	public static String NoPurchaseStarted;
+	public static String NeedActivation;
+	public static String PurchaseSuccessful;
+	public static String LimitReached;
+	public static String PackageActivated;
+	public static String DPSet;
+	public static String NotEnoughPoints;
+	public static String InvalidPackage;
+	public static String DPPrerequisite;
 
 	private void init() {
 		PluginCommand donationpoints = plugin.getCommand("donationpoints");
@@ -294,7 +294,7 @@ public class Commands {
 							if (activateimmediately.equals(true)) {
 								List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 								for (String cmd : commands) {
-									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
+									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
 								}
 								if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 									Methods.removePoints(price2, sender);
@@ -328,7 +328,7 @@ public class Commands {
 									if (activateimmediately.equals(true)) {
 										List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 										for (String cmd : commands) {
-											plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName().toLowerCase()));
+											plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
 										}
 										String price3 = price2.toString();
 										if (!DonationPoints.permission.has(s, "donationpoints.free")) {
@@ -404,7 +404,7 @@ public class Commands {
 							s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 							List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
 							for (String cmd : commands) {
-								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", sender));
+								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
 							}
 
 							if (expires.equals(true)) {
