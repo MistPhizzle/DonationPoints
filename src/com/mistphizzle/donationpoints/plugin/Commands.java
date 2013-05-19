@@ -461,6 +461,11 @@ public class Commands {
 								s.sendMessage("§aExpires After: §3" + expiretime + " Days");
 							}
 						}
+						if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite") == false) {
+							s.sendMessage("§aPrerequisite: §3None");
+						} else if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite") == true) {
+							s.sendMessage("§aPrerequisite: §3" + plugin.getConfig().getString("packages." + packName + ".prerequisite"));
+						}
 					}
 					if (args[1].equalsIgnoreCase("list")) {
 						if (!DonationPoints.permission.has(s, "donationpoints.package.list")) {
