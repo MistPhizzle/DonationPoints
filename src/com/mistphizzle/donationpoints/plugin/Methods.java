@@ -108,41 +108,6 @@ public class Methods {
 		}
 		return true;
 	}
-
-	public static boolean isInCumulativeTable(String player) {
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.cumulativeTable + " WHERE player LIKE '" + player + "';");
-		try {
-			if (rs2.next()) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return true;
-	}
-
-	public static int lastCumulativePackage(String player) {
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT package FROM " + DBConnection.cumulativeTable + " WHERE player LIKE '" + player + "';");
-		int lastCumulativePackage = 0;
-		try {
-			lastCumulativePackage = rs2.getInt("package");
-			return lastCumulativePackage;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return lastCumulativePackage;
-	}
-
-	public static void addCumulativePoints(String player, Double points) {
-		DBConnection.sql.modifyQuery("UPDATE points SET points = points + " + points + " FROM " + DBConnection.cumulativeTable + " WHERE player = '" + player + "';");
-	}
-	
-	//Check, I typed this query too fast for it to be accurate. TODO
-	public static void insertIntoCumulativePointsTable(String player, Double points) {
-		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.cumulativeTable + " (player, points) VALUES ('" + player + "', '" + points + "');");
-	}
 	
 	public static double roundTwoDecimals(double d) {
 		DecimalFormat twoDForm = new DecimalFormat("#.##");

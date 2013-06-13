@@ -7,8 +7,6 @@ commands:
   donationpoints:
     usage: /<command>
     aliases: [dp, points]
-  buy:
-    usage: /<command>
 permissions:
   donationpoints.free:
     default: false

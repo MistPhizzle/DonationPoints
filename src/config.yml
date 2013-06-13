@@ -5,7 +5,6 @@ General:
   ExpireOnStartup:
   AutoFillSigns:
   SpecificPermissions:
-  EnableCumulative:
   ConfigVersion: 
 MySQL:
   engine:
@@ -17,11 +16,6 @@ MySQL:
   database:
   TransactionTable:
   PlayerTable:
-  CumulativeTable:
-Categories:
-- Kits
-- Commands
-- Permissions
 messages:
   Prefix:
   NoPermission:
