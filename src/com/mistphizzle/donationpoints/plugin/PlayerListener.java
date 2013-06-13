@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+@SuppressWarnings("unused")
 public class PlayerListener implements Listener {
 
 	public static String SignMessage;
@@ -27,6 +28,7 @@ public class PlayerListener implements Listener {
 		plugin = instance;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static HashMap<String, String> purchases = new HashMap();
 
 	@EventHandler
@@ -107,7 +109,6 @@ public class PlayerListener implements Listener {
 						if (DonationPoints.permission.has(player, "donationpoints.free")) {
 							purchases.put(username, purchasedPack);
 							if (purchases.containsKey(username)) {
-								String price2 = price.toString();
 								player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
 							}
 						} else {
@@ -129,6 +130,7 @@ public class PlayerListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("static-access")
 	@EventHandler
 	public void PlayerJoinEvent(PlayerJoinEvent e) {
 		Player p = e.getPlayer();

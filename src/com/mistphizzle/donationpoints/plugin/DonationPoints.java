@@ -36,8 +36,6 @@ public class DonationPoints extends JavaPlugin {
 	// Configs
 	File configFile;
 	FileConfiguration config;
-	File cumulativeConfigFile;
-	FileConfiguration cumulativeConfig;
 
 	// Commands
 	Commands cmd;
@@ -46,6 +44,7 @@ public class DonationPoints extends JavaPlugin {
 	private final SignListener signListener = new SignListener(this);
 	private final PlayerListener playerListener = new PlayerListener(this);
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void onEnable() {
 
@@ -56,7 +55,6 @@ public class DonationPoints extends JavaPlugin {
 
 		// Initialize Config
 		configFile = new File(getDataFolder(), "config.yml");
-		cumulativeConfigFile = new File(getDataFolder(), "cumulativepackages.yml");
 
 		// Use firstRun() method
 		try {
@@ -88,7 +86,6 @@ public class DonationPoints extends JavaPlugin {
 		DBConnection.sqlite_db = config.getString("MySQL.SQLiteDB", "donationpoints.db");
 		DBConnection.playerTable = config.getString("MySQL.PlayerTable", "dp_players");
 		DBConnection.transactionTable = config.getString("MySQL.TransactionTable", "dp_transactions");
-		DBConnection.cumulativeTable = config.getString("MySQL.CumulativeTable", "dp_cumulative");
 
 		// Other Variables.
 		PlayerListener.SignMessage = config.getString("General.SignMessage");
@@ -178,17 +175,11 @@ public class DonationPoints extends JavaPlugin {
 			copy(getResource("config.yml"), configFile);
 			log.info("Main Config not found. Generating.");
 		}
-		if (!cumulativeConfigFile.exists()) {
-			cumulativeConfigFile.getParentFile().mkdirs();
-			copy(getResource("cumulativepackages.yml"), cumulativeConfigFile);
-			log.info("Cumulative Config not found. Generating.");
-		}
 	}
 
 	private void loadYamls() {
 		try {
 			config.load(configFile);
-			config.load(cumulativeConfigFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -212,7 +203,6 @@ public class DonationPoints extends JavaPlugin {
 	public void saveYamls() {
 		try {
 			config.save(configFile);
-			saveCumulativeConfig();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -224,56 +214,10 @@ public class DonationPoints extends JavaPlugin {
 
 	public void configReload() {
 		reloadConfig();
-		reloadCumulativeConfig();
-	}
-	
-	public FileConfiguration getCumulativeConfig() {
-		if (cumulativeConfig == null) {
-			reloadCumulativeConfig();
-		}
-		return cumulativeConfig;
 	}
 
-	public void reloadCumulativeConfig() {
-		if (cumulativeConfigFile == null) {
-			cumulativeConfigFile = new File(getDataFolder(), "cumulativepackages.yml");
-		}
-		cumulativeConfig = YamlConfiguration.loadConfiguration(cumulativeConfigFile);
-		
-		InputStream defConfigStream = getResource("cumulativepackages.yml");
-		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-			cumulativeConfig.setDefaults(defConfig);
-		}
-		}
-	
-	public void saveCumulativeConfig() {
-		if (cumulativeConfig == null || cumulativeConfigFile == null) {
-			return;
-		}
-		try {
-			cumulativeConfig.save(cumulativeConfigFile);
-		} catch (IOException ex) {
-			this.log.info("Could not save config to " + cumulativeConfigFile);
-		}
-	}
-
+	@SuppressWarnings("static-access")
 	public void configCheck() {
-		int CumulativeConfigVersion = getCumulativeConfig().getInt("General.ConfigVersion");
-		if (CumulativeConfigVersion != 170) {
-			this.log.info("Cumulative Config is not up to date. Updating.");
-			if (!getCumulativeConfig().contains("packages.1.points")) {
-				getCumulativeConfig().set("packages.1.points", 100);
-			}
-			if (!getCumulativeConfig().contains("packages.1.commands")) {
-				getCumulativeConfig().createSection("packages.1.commands");
-				List<String> examplecumulativecommands = getCumulativeConfig().getStringList("packages.1.commands");
-				examplecumulativecommands.add("say You have received the ExampleCumulativePackage.");
-				getCumulativeConfig().set("packages.1.commands", examplecumulativecommands);
-			}
-			getCumulativeConfig().set("General.ConfigVersion", 170);
-			saveCumulativeConfig();
-		}
 		// Normal Config
 		int ConfigVersion = getConfig().getInt("General.ConfigVersion");
 		if (ConfigVersion != 170) {
@@ -296,9 +240,6 @@ public class DonationPoints extends JavaPlugin {
 			}
 			if (!getConfig().contains("General.SpecificPermissions")) {
 				getConfig().set("General.SpecificPermissions", false);
-			}
-			if (!getConfig().contains("General.EnableCumulative")) {
-				getConfig().set("General.EnableCumulative", false);
 			}
 			// MySQL Stuff
 			if (!getConfig().contains("MySQL.engine")) {
@@ -460,9 +401,6 @@ public class DonationPoints extends JavaPlugin {
 			}
 			if (!getConfig().contains("MySQL.TransactionTable")) {
 				getConfig().set("MySQL.TransactionTable", "dp_transactions");
-			}
-			if (!getConfig().contains("MySQL.CumulativeTable")) {
-				getConfig().set("MySQL.CumulativeTable", "dp_cumulative");
 			}
 			getConfig().set("General.ConfigVersion", 170);
 			saveConfig();
