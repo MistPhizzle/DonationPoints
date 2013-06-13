@@ -3,6 +3,7 @@ package com.mistphizzle.donationpoints.plugin;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,7 +27,8 @@ public class Methods {
 			try {
 				if (rs2.next()) {
 					Double balance = rs2.getDouble("balance");
-					return balance;
+					Double balance2 = Methods.roundTwoDecimals(balance);
+					return balance2;
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -140,5 +142,10 @@ public class Methods {
 	//Check, I typed this query too fast for it to be accurate. TODO
 	public static void insertIntoCumulativePointsTable(String player, Double points) {
 		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.cumulativeTable + " (player, points) VALUES ('" + player + "', '" + points + "');");
+	}
+	
+	public static double roundTwoDecimals(double d) {
+		DecimalFormat twoDForm = new DecimalFormat("#.##");
+		return Double.valueOf(twoDForm.format(d));
 	}
 }
