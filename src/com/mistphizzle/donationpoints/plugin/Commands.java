@@ -154,11 +154,12 @@ public class Commands {
 						}
 						Methods.addPoints(transferamount, target);
 						Methods.removePoints(transferamount, sender);
-						String transferamount2 = transferamount.toString();
-						s.sendMessage(Prefix + TransferSent.replace("%player", target).replace("%amount", transferamount2));
+						Double transferamount2 = Methods.roundTwoDecimals(transferamount);
+						String transferamount3 = transferamount2.toString();
+						s.sendMessage(Prefix + TransferSent.replace("%player", target).replace("%amount", transferamount3));
 						for (Player player: Bukkit.getOnlinePlayers()) {
 							if (player.getName().equalsIgnoreCase(args[1])) {
-								player.sendMessage(Prefix + TransferReceive.replace("%player", sender).replace("%amount", transferamount2));
+								player.sendMessage(Prefix + TransferReceive.replace("%player", sender).replace("%amount", transferamount3));
 							}
 						}
 					}
