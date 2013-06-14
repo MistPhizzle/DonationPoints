@@ -238,6 +238,10 @@ public class Commands {
 					}
 					Double addamount = Double.parseDouble(args[2]);
 					String target = args[1].toLowerCase();
+					if (!Methods.hasAccount(target)) {
+						s.sendMessage(Prefix + NoAccount);
+						return true;
+					}
 					Methods.addPoints(addamount, target);
 					String addamount2 = addamount.toString();
 					s.sendMessage(Prefix + DPGive.replace("%amount", addamount2).replace("%player", target));
