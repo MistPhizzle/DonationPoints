@@ -5,6 +5,7 @@ General:
   ExpireOnStartup:
   AutoFillSigns:
   SpecificPermissions:
+  PurgeEmptyAccountsOnStartup:
   ConfigVersion: 
 MySQL:
   engine:

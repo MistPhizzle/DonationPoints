@@ -139,6 +139,11 @@ public class DonationPoints extends JavaPlugin {
 			// Failed to submit stats.
 		}
 		
+		if (getConfig().getBoolean("General.PurgeEmptyAccountsOnStartup")) {
+			Methods.purgeEmptyAccounts();
+			this.log.info("Purged Empty Accounts.");
+		}
+		
 		if (getConfig().getBoolean("General.ExpireOnStartup")) {
 			ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE expired = 'false' AND expiredate = '" + Methods.getCurrentDate() + "';");
 			try {
@@ -220,7 +225,7 @@ public class DonationPoints extends JavaPlugin {
 	public void configCheck() {
 		// Normal Config
 		int ConfigVersion = getConfig().getInt("General.ConfigVersion");
-		if (ConfigVersion != 170) {
+		if (ConfigVersion != 173) {
 			this.log.info("Config is not up to date! Updating.");
 			// General
 			if (!getConfig().contains("General.AutoCreateAccounts")) {
@@ -240,6 +245,9 @@ public class DonationPoints extends JavaPlugin {
 			}
 			if (!getConfig().contains("General.SpecificPermissions")) {
 				getConfig().set("General.SpecificPermissions", false);
+			}
+			if (!getConfig().contains("General.PurgeEmptyAccountsOnStartup")) {
+				getConfig().set("General.PurgeEmptyAccountsOnStartup", false);
 			}
 			// MySQL Stuff
 			if (!getConfig().contains("MySQL.engine")) {
@@ -402,7 +410,7 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("MySQL.TransactionTable")) {
 				getConfig().set("MySQL.TransactionTable", "dp_transactions");
 			}
-			getConfig().set("General.ConfigVersion", 170);
+			getConfig().set("General.ConfigVersion", 173);
 			saveConfig();
 		}
 	}

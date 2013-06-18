@@ -108,4 +108,15 @@ public class Methods {
 		DecimalFormat twoDForm = new DecimalFormat("#.##");
 		return Double.valueOf(twoDForm.format(d));
 	}
+
+	public static void purgeEmptyAccounts() {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.playerTable + " WHERE balance = 0");
+		try {
+			if (rs2.next()) {
+				DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.playerTable + " WHERE balance = 0");
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
 }
