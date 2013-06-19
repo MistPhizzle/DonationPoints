@@ -119,4 +119,11 @@ public class Methods {
 			ex.printStackTrace();
 		}
 	}
+	
+	public static boolean getPackageExists(String pack) {
+		if (DonationPoints.instance.getConfig().getDouble("packages." + pack + ".price") == 0) {
+			return false;
+		}
+		return true;
+	}
 }
