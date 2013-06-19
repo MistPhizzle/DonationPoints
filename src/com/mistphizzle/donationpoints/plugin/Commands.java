@@ -95,6 +95,8 @@ public class Commands {
 						s.sendMessage("§3/dp update§f - Checks if there is an update available.");
 					} if (DonationPoints.permission.has(s, "donationpoints.reload")) {
 						s.sendMessage("§3/dp reload§f - Reloads the Configuration / Packages.");
+					} if (DonationPoints.permission.has(s, "donationpoints.purge")) {
+						s.sendMessage("§3/dp purge§f - Purges Empty Accounts.");
 					} else {
 						s.sendMessage("§cYou don't have any permission for ANY DonationPoints Admin Commands.");
 					}
@@ -424,7 +426,13 @@ public class Commands {
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
-
+				} else if (args[0].equalsIgnoreCase("purge")) {
+					if (!DonationPoints.permission.has(s,  "donationpoints.purge")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+					} else {
+						Methods.purgeEmptyAccounts();
+						s.sendMessage(Prefix + " §cAll Empty Accounts Purged.");
+					}
 				} else if (args[0].equalsIgnoreCase("set")) {
 					if (args.length != 3) {
 						s.sendMessage(Prefix + InvalidArguments);

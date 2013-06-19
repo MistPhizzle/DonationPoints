@@ -1,5 +1,6 @@
 package com.mistphizzle.donationpoints.plugin;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,18 +23,25 @@ public class SignListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent e) {
 		Player player = e.getPlayer();
 		Block block = e.getBlock();
-		
+
 		if (block.getState() instanceof Sign) {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
-			if (signline1.equalsIgnoreCase("[" + SignMessage + "]") && !DonationPoints.permission.has(player, "donationpoints.sign.break")) {
-				if (!DonationPoints.permission.has(player, "donationpoints.sign.break")) {
-					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+			if (signline1.equalsIgnoreCase("[" + SignMessage + "]") && DonationPoints.permission.has(player, "donationpoints.sign.break")) {
+				if (player.getGameMode() == GameMode.CREATIVE) {
+					if (!player.isSneaking()) {
+						player.sendMessage(Commands.Prefix + "§cYou must sneak to break DonationPoints signs while in Creative.");
+						e.setCancelled(true);
+					}
 				}
+			}
+			if (!DonationPoints.permission.has(player, "donationpoints.sign.break")) {
+				player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 				e.setCancelled(true);
 			}
 		}
 	}
+
 	@EventHandler
 	public void onSignChance(SignChangeEvent e) {
 		if (e.isCancelled()) return;
