@@ -17,7 +17,7 @@ public final class DBConnection {
 	public static String pass;
 	public static String playerTable;
 	public static String transactionTable;
-	public static String cumulativeTable;
+	public static String frameTable;
 
 	public static void init() {
 		if (engine.equalsIgnoreCase("mysql")) {
@@ -58,17 +58,19 @@ public final class DBConnection {
 						+ " PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
-			
-			if (!sql.tableExists(cumulativeTable)) {
-				DonationPoints.log.info("Creating " + cumulativeTable + " table");
-				String query = "CREATE TABLE `" + cumulativeTable + "` ("
+			if (!sql.tableExists(frameTable)) {
+				DonationPoints.log.info("Creating " + frameTable + " table");
+				String query = "CREATE TABLE `" + frameTable + "` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
-						+ "`player` TEXT(32),"
+						+ "`x` double,"
+						+ "`y` double,"
+						+ "`z` double,"
+						+ "`world` TEXT(255),"
 						+ "`package` TEXT(255),"
-						+ "`points` double,"
 						+ " PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
+			
 			/*
 			 * Everything below this line is for the sqlite connections.
 			 * Will only work if the player has "sqlite" for the engine in their config. 
@@ -106,12 +108,15 @@ public final class DBConnection {
 				
 				sql.modifyQuery(query);
 			}
-			if (!sql.tableExists(cumulativeTable)) {
-				DonationPoints.log.info("Creating " + cumulativeTable + " table.");
-				String query = "CREATE TABLE `" + cumulativeTable + "` ("
-						+ "`player` TEXT(32),"
-						+ "`package` TEXT(255),"
-						+ "`points` double(255));";
+			
+			if (!sql.tableExists(frameTable)) {
+				DonationPoints.log.info("Creating " + frameTable + " table");
+				String query = "CREATE TABLE `" + frameTable + "` ("
+						+ "`x` double,"
+						+ "`y` double,"
+						+ "`z` double,"
+						+ "`world` TEXT(255),"
+						+ "`package` TEXT(255));";
 				sql.modifyQuery(query);
 			}
 		} else {

@@ -103,7 +103,7 @@ public class Methods {
 		}
 		return true;
 	}
-	
+
 	public static double roundTwoDecimals(double d) {
 		DecimalFormat twoDForm = new DecimalFormat("#.##");
 		return Double.valueOf(twoDForm.format(d));
@@ -119,11 +119,47 @@ public class Methods {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static boolean getPackageExists(String pack) {
 		if (DonationPoints.instance.getConfig().getDouble("packages." + pack + ".price") == 0) {
 			return false;
 		}
 		return true;
+	}
+
+	public static void linkFrame(String pack, Double x, Double y, Double z, String world) {
+		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.frameTable + " (x,y,z,world,package) VALUES ('" + x + "','" + y + "','" + z + "','" + world + "','" + pack + "')");
+	}
+
+	public static boolean isFrameLinked(Double x, Double y, Double z, String world) {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "';");
+		try {
+			if (rs2.next()) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static String getLinkedPackage(Double x, Double y, Double z, String world) {
+		String linkedPack = null;
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT package FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "';");
+		try {
+			if (rs2.next()) {
+				linkedPack = rs2.getString("package");
+				return linkedPack;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return linkedPack;
+	}
+	
+	public static void unlinkFrame(Double x, Double y, Double z, String world) {
+		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "';");
 	}
 }

@@ -17,6 +17,7 @@ MySQL:
   database:
   TransactionTable:
   PlayerTable:
+  ItemFrameTable:
 messages:
   Prefix:
   NoPermission:

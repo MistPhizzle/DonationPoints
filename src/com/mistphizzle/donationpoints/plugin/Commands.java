@@ -565,6 +565,25 @@ public class Commands {
 							}
 						}
 					}
+				} else if (args[0].equalsIgnoreCase("link")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.link")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
+					if (args.length != 2) {
+						s.sendMessage(Prefix + InvalidArguments);
+						return true;
+					}
+					String packName = args[1];
+					if (!Methods.getPackageExists(packName)) {
+						s.sendMessage(Prefix + InvalidPackage);
+						return true;
+					}
+					if (PlayerListener.links.containsKey(s.getName())) {
+						PlayerListener.links.remove(s.getName());
+					}
+					s.sendMessage(Prefix + "§cClick the Item Frame you would like to link §3" + packName + " §cto.");
+					PlayerListener.links.put(s.getName(), packName);
 				} else if (args[0].equalsIgnoreCase("version")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.version")) {
 						s.sendMessage(Prefix + noPermissionMessage);

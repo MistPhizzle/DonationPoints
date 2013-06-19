@@ -6,14 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.Rotation;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -30,7 +34,106 @@ public class PlayerListener implements Listener {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static HashMap<String, String> purchases = new HashMap();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static HashMap<String, String> links = new HashMap();
 
+	
+	@EventHandler 
+	public void playerEntityInteract(PlayerInteractEntityEvent event) {
+		Player player = event.getPlayer();
+		Entity entity = event.getRightClicked();
+		if (entity instanceof ItemFrame) {
+			Double x = entity.getLocation().getX();
+			Double y = entity.getLocation().getY();
+			Double z = entity.getLocation().getZ();
+			String world = entity.getWorld().getName();
+			if (Methods.isFrameLinked(x, y, z, world)) {
+				((ItemFrame) entity).setRotation(Rotation.NONE);
+				if (!DonationPoints.permission.has(player, "donationpoints.sign.use")) {
+					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+					event.setCancelled(true);
+					return;
+				}
+				String packName = Methods.getLinkedPackage(x, y, z, world);
+				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
+					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
+						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
+						plugin.saveConfig();
+					}
+					if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite")) {
+						String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
+						if (!Methods.hasPurchased(player.getName(),  prerequisite)) {
+							player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack",  prerequisite));
+							event.setCancelled(true);
+							return;
+						}
+					}
+					if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
+						if (!DonationPoints.permission.has(player, "donationpoints.sign.use." + packName)) {
+							player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+							event.setCancelled(true);
+							return;
+						}
+						if (DonationPoints.permission.has(player, "donationpoints.sign.use." + packName)) {
+							Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+							String username = player.getName().toLowerCase();
+							Double balance = Methods.getBalance(username);
+							if (DonationPoints.permission.has(player, "donationpoints.free")) {
+								price = 0.0;
+								purchases.put(username, packName);
+								if (purchases.containsKey(username)) {
+									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
+									event.setCancelled(true);
+									return;
+								}
+							}
+							if (!DonationPoints.permission.has(player, "donationpoints.free")) {
+								if (!(balance >= price)) {
+									player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+									event.setCancelled(true);
+								} else if (balance >= price) {
+									purchases.put(username, packName);
+									if (purchases.containsKey(username)) {
+										String price2 = price.toString();
+										player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack",  packName).replace("%amount", price2));
+										event.setCancelled(true);
+										return;
+									}
+								}
+							}
+						}
+					} if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
+						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
+						String username = player.getName().toLowerCase();
+						Double balance = Methods.getBalance(username);
+						
+						if (DonationPoints.permission.has(player, "donationpoints.free")) {
+							purchases.put(username, packName);
+							if (purchases.containsKey(username)) {
+								player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
+								event.setCancelled(true);
+								return;
+							}
+						} else {
+							if (!(balance >= price)) {
+								player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+								event.setCancelled(true);
+								return;
+							} else if (balance >= price) {
+								purchases.put(username, packName);
+								if (purchases.containsKey(username)) {
+									String price2 = price.toString();
+									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack",  packName).replace("%amount", price2));
+									event.setCancelled(true);
+									return;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();

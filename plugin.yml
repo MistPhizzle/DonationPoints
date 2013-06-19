@@ -26,6 +26,7 @@ permissions:
       donationpoints.reload: true
       donationpoints.version: true
       donationpoints.user: true
+      donationpoints.link: true
   donationpoints.user:
     default: op
     children:

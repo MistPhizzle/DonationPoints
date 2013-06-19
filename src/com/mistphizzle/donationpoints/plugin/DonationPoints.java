@@ -86,6 +86,7 @@ public class DonationPoints extends JavaPlugin {
 		DBConnection.sqlite_db = config.getString("MySQL.SQLiteDB", "donationpoints.db");
 		DBConnection.playerTable = config.getString("MySQL.PlayerTable", "dp_players");
 		DBConnection.transactionTable = config.getString("MySQL.TransactionTable", "dp_transactions");
+		DBConnection.frameTable = config.getString("MySQL.ItemFrameTable", "dp_frames");
 
 		// Other Variables.
 		PlayerListener.SignMessage = config.getString("General.SignMessage");
@@ -225,7 +226,7 @@ public class DonationPoints extends JavaPlugin {
 	public void configCheck() {
 		// Normal Config
 		int ConfigVersion = getConfig().getInt("General.ConfigVersion");
-		if (ConfigVersion != 173) {
+		if (ConfigVersion != 180) {
 			this.log.info("Config is not up to date! Updating.");
 			// General
 			if (!getConfig().contains("General.AutoCreateAccounts")) {
@@ -410,7 +411,10 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("MySQL.TransactionTable")) {
 				getConfig().set("MySQL.TransactionTable", "dp_transactions");
 			}
-			getConfig().set("General.ConfigVersion", 173);
+			if (!getConfig().contains("MySQL.ItemFrameTable")) {
+				getConfig().set("MySQL.ItemFrameTable", "dp_frames");
+			}
+			getConfig().set("General.ConfigVersion", 180);
 			saveConfig();
 		}
 	}
