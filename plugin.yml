@@ -25,6 +25,8 @@ permissions:
       donationpoints.sign.break: true
       donationpoints.reload: true
       donationpoints.version: true
+      donationpoints.delete: true
+      donationpoints.purge: true
       donationpoints.user: true
       donationpoints.link: true
   donationpoints.user:

@@ -159,6 +159,10 @@ public class Methods {
 		return linkedPack;
 	}
 	
+	public static void deleteAccount(String accountName) {
+		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.playerTable + " WHERE player = '" + accountName + "';");
+	}
+	
 	public static void unlinkFrame(Double x, Double y, Double z, String world) {
 		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "';");
 	}

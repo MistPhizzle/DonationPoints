@@ -97,6 +97,8 @@ public class Commands {
 						s.sendMessage("§3/dp reload§f - Reloads the Configuration / Packages.");
 					} if (DonationPoints.permission.has(s, "donationpoints.purge")) {
 						s.sendMessage("§3/dp purge§f - Purges Empty Accounts.");
+					} if (DonationPoints.permission.has(s, "donationpoints.delete")) {
+						s.sendMessage("§3/dp delete§f - Deletes a player's account.");
 					} else {
 						s.sendMessage("§cYou don't have any permission for ANY DonationPoints Admin Commands.");
 					}
@@ -565,6 +567,22 @@ public class Commands {
 							}
 						}
 					}
+				} else if (args[0].equalsIgnoreCase("delete")) {
+					if (!DonationPoints.permission.has(s, "donationpoints.delete")) {
+						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
+					if (args.length != 2) {
+						s.sendMessage(Prefix + InvalidArguments);
+						return true;
+					}
+					String accountName = args[1];
+					if (!Methods.hasAccount(accountName)) {
+						s.sendMessage(Prefix + NoAccount.replace("%player", accountName));
+						return true;						
+					}
+					Methods.deleteAccount(accountName.toLowerCase());
+					s.sendMessage(Prefix + "§cDeleted §3" + accountName + "'s §caccount.");
 				} else if (args[0].equalsIgnoreCase("link")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.link")) {
 						s.sendMessage(Prefix + noPermissionMessage);
