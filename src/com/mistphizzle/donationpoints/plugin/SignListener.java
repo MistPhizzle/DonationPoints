@@ -101,18 +101,21 @@ public class SignListener implements Listener {
 		if (block.getState() instanceof Sign) {
 			Sign s = (Sign) block.getState();
 			String signline1 = s.getLine(0);
-			if (signline1.equalsIgnoreCase("[" + SignMessage + "]") && DonationPoints.permission.has(player, "donationpoints.sign.break")) {
-				if (player.getGameMode() == GameMode.CREATIVE) {
-					if (!player.isSneaking()) {
-						player.sendMessage(Commands.Prefix + "§cYou must sneak to break DonationPoints signs while in Creative.");
-						e.setCancelled(true);
+			if (signline1.equalsIgnoreCase("[" + SignMessage + "]"))  {
+				if (DonationPoints.permission.has(player, "donationpoints.sign.break")) {
+					if (player.getGameMode() == GameMode.CREATIVE) {
+						if (!player.isSneaking()) {
+							player.sendMessage(Commands.Prefix + "§cYou must sneak to break DonationPoints signs while in Creative.");
+							e.setCancelled(true);
+						}
 					}
 				}
+				if (!DonationPoints.permission.has(player, "donationpoints.sign.break")) {
+					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+					e.setCancelled(true);
+				}
 			}
-			if (!DonationPoints.permission.has(player, "donationpoints.sign.break")) {
-				player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
-				e.setCancelled(true);
-			}
+
 		}
 	}
 
