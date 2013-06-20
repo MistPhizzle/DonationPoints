@@ -16,9 +16,9 @@ public class Methods {
 		plugin = instance;
 	}
 
-	public static Double getBalance(String string) {
+	public static Double getBalance(String accountName) {
 		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM " + DBConnection.playerTable + " WHERE player LIKE '" + string.toLowerCase() + "';");
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM " + DBConnection.playerTable + " WHERE player LIKE '" + accountName.toLowerCase() + "';");
 			try {
 				if (rs2.next()) {
 					Double balance = rs2.getDouble("balance");
@@ -32,9 +32,9 @@ public class Methods {
 		return null;
 	}
 
-	public static boolean hasAccount(String string) {
+	public static boolean hasAccount(String accountName) {
 		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM " + DBConnection.playerTable + " WHERE player = '" + string.toLowerCase() + "';");
+			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM " + DBConnection.playerTable + " WHERE player = '" + accountName.toLowerCase() + "';");
 			try {
 				if (rs2.next()) {
 					return true;
@@ -47,19 +47,19 @@ public class Methods {
 		}
 		return true;
 	}
-	public static void createAccount(String string) {
-		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.playerTable + "(player, balance) VALUES ('" + string.toLowerCase() + "', 0)");
+	public static void createAccount(String accountName) {
+		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.playerTable + "(player, balance) VALUES ('" + accountName.toLowerCase() + "', 0)");
 	}
 
-	public static void addPoints (Double amount, String string) {
-		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance + " + amount + " WHERE player = '" + string.toLowerCase() + "';");
+	public static void addPoints (Double amount, String accountName) {
+		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance + " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
 	}
 
-	public static void removePoints (Double amount, String string) {
-		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance - " + amount + " WHERE player = '" + string.toLowerCase() + "';");
+	public static void removePoints (Double amount, String accountName) {
+		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance - " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
 	}
-	public static void setPoints (Double amount, String string) {
-		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = " + amount + " WHERE player = '" + string.toLowerCase() + "';");
+	public static void setPoints (Double amount, String accountName) {
+		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
 	}
 
 	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired) {
