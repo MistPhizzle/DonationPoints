@@ -40,6 +40,7 @@ public class SignListener implements Listener {
 					String packName = PlayerListener.links.get(player.getName());
 					if (Methods.isFrameLinked(x, y, z, world)) {
 						player.sendMessage(Commands.Prefix + "§cThis item frame is already linked.");
+						PlayerListener.links.remove(player.getName());
 						e.setCancelled(true);
 						return;
 					}
