@@ -76,7 +76,7 @@ public class Commands {
 					if (DonationPoints.permission.has(s, "donationpoints.package.info")) {
 						s.sendMessage("§3/dp package info <packageName>§f - Shows package information.");
 					} if (DonationPoints.permission.has(s, "donationpoints.package.list")) {
-						s.sendMessage("§3/dp package list§f - Lista all packages.");
+						s.sendMessage("§3/dp package list§f - List all packages.");
 					} else {
 						s.sendMessage("§cYou don't have permission to use any of the packages commands.");
 					}
