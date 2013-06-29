@@ -55,6 +55,7 @@ public class Commands {
 	public static String NotEnoughPoints;
 	public static String InvalidPackage;
 	public static String DPPrerequisite;
+	public static String Server;
 
 	private void init() {
 		PluginCommand donationpoints = plugin.getCommand("donationpoints");
@@ -291,7 +292,7 @@ public class Commands {
 								Methods.removePoints(price2, sender);
 								String price3 = price2.toString();
 								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
-								Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
+								Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false", Server);
 							}
 							if (DonationPoints.permission.has(s, "donationpoints.free")) {
 								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", "0.00"));
@@ -316,17 +317,17 @@ public class Commands {
 								s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 								PlayerListener.purchases.remove(s.getName().toLowerCase());
 							} if (expires.equals(true)) {
-								Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
+								Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false", Server);
 								s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 								return true;
 							} else if (expires.equals(false)) {
-								Methods.logTransaction(sender, price2, pack2, date, "true", "false", null, null);
+								Methods.logTransaction(sender, price2, pack2, date, "true", "false", null, null, Server);
 								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 								return true;
 							} return true;
 						} else if (haslimit.equals(true)) {
-							ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM " + DBConnection.transactionTable + " WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "';");
+							ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM " + DBConnection.transactionTable + " WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "' AND server = '" + Server + "';");
 							try {
 								numberpurchased.next();
 								int size = numberpurchased.getInt("size");
@@ -351,12 +352,12 @@ public class Commands {
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 										if (expires.equals(true)) {
-											Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false");
+											Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false", Server);
 											s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 											DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 											return true;
 										} else if (expires.equals(false)) {
-											Methods.logTransaction(sender, price2, pack2, date, "true", "false", expiredate, "false");
+											Methods.logTransaction(sender, price2, pack2, date, "true", "false", expiredate, "false", Server);
 											DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 											return true;
 										} return true;
@@ -373,9 +374,9 @@ public class Commands {
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 										if (expires.equals(true)) {
-											Methods.logTransaction(sender, price2, pack2, date, "false", "true", null, "false");
+											Methods.logTransaction(sender, price2, pack2, date, "false", "true", null, "false", Server);
 										} else if (expires.equals(false)) {
-											Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false");
+											Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false", Server);
 										}
 										DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
 										return true;
@@ -508,7 +509,7 @@ public class Commands {
 					}
 					if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite", true)) {
 						String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
-						if (!Methods.hasPurchased(s.getName(), prerequisite)) {
+						if (!Methods.hasPurchased(s.getName(), prerequisite, Server)) {
 							s.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
 							return true;
 						}

@@ -38,18 +38,18 @@ public class SignListener implements Listener {
 				String world = broken.getWorld().getName();
 				if (PlayerListener.links.containsKey(player.getName())) {
 					String packName = PlayerListener.links.get(player.getName());
-					if (Methods.isFrameLinked(x, y, z, world)) {
+					if (Methods.isFrameLinked(x, y, z, world, Commands.Server)) {
 						player.sendMessage(Commands.Prefix + "§cThis item frame is already linked.");
 						PlayerListener.links.remove(player.getName());
 						e.setCancelled(true);
 						return;
 					}
-					Methods.linkFrame(packName, x, y, z, world);
+					Methods.linkFrame(packName, x, y, z, world, Commands.Server);
 					player.sendMessage(Commands.Prefix + "§cSuccessfully linked §3" + packName + "§3.");
 					PlayerListener.links.remove(player.getName());
 					e.setCancelled(true);
 				} else if (!PlayerListener.links.containsKey(player.getName())) {
-					if (Methods.isFrameLinked(x, y, z, world)) {
+					if (Methods.isFrameLinked(x, y, z, world, Commands.Server)) {
 						if (player.isSneaking()) {
 							if (!DonationPoints.permission.has(player, "donationpoints.sign.break")) {
 								player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
@@ -57,14 +57,14 @@ public class SignListener implements Listener {
 								return;
 							}
 							if (DonationPoints.permission.has(player, "donationpoints.sign.break")) {
-								Methods.unlinkFrame(x, y, z, world);
+								Methods.unlinkFrame(x, y, z, world, Commands.Server);
 								player.sendMessage(Commands.Prefix + "§cItem Frame unlinked.");
 								e.setCancelled(false);
 								return;
 							}
 						}
 						e.setCancelled(true);
-						String packName = Methods.getLinkedPackage(x, y, z, world);
+						String packName = Methods.getLinkedPackage(x, y, z, world, Commands.Server);
 						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
 						String packDesc = plugin.getConfig().getString("packages." + packName + ".description");
 						if (!DonationPoints.permission.has(player, "donationpoints.sign.use")) {

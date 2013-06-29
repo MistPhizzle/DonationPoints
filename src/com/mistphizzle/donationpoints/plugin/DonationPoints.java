@@ -93,6 +93,7 @@ public class DonationPoints extends JavaPlugin {
 		SignListener.SignMessage = config.getString("General.SignMessage");
 
 		//String Variables
+		Commands.Server = getConfig().getString("General.ServerName");
 		Commands.Prefix = Methods.colorize(getConfig().getString("messages.Prefix"));
 		Commands.InvalidArguments = Methods.colorize(getConfig().getString("messages.InvalidArguments"));
 		Commands.noPermissionMessage = Methods.colorize(getConfig().getString("messages.NoPermission"));
@@ -226,7 +227,7 @@ public class DonationPoints extends JavaPlugin {
 	public void configCheck() {
 		// Normal Config
 		int ConfigVersion = getConfig().getInt("General.ConfigVersion");
-		if (ConfigVersion != 180) {
+		if (ConfigVersion != 181) {
 			this.log.info("Config is not up to date! Updating.");
 			// General
 			if (!getConfig().contains("General.AutoCreateAccounts")) {
@@ -414,7 +415,10 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("MySQL.ItemFrameTable")) {
 				getConfig().set("MySQL.ItemFrameTable", "dp_frames");
 			}
-			getConfig().set("General.ConfigVersion", 180);
+			if (!getConfig().contains("General.ServerName")) {
+				getConfig().set("General.ServerName", "MinecraftServer");
+			}
+			getConfig().set("General.ConfigVersion", 181);
 			saveConfig();
 		}
 	}

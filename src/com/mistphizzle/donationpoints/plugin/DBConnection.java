@@ -1,8 +1,12 @@
 package com.mistphizzle.donationpoints.plugin;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import com.mistphizzle.donationpoints.sql.Database;
 import com.mistphizzle.donationpoints.sql.MySQLConnection;
 import com.mistphizzle.donationpoints.sql.SQLite;
+import com.mysql.jdbc.DatabaseMetaData;
 
 public final class DBConnection {
 
@@ -25,6 +29,7 @@ public final class DBConnection {
 			((MySQLConnection) sql).open();
 			DonationPoints.log.info("[DonationPoints] Etablishing Database Connection...");
 
+			
 			if (sql.tableExists("points_players")) {
 				DonationPoints.log.info("Renaming points_players to " + playerTable + ".");
 				sql.modifyQuery("RENAME TABLE points_players TO " + playerTable);
@@ -55,6 +60,7 @@ public final class DBConnection {
 						+ "`expires` VARCHAR(32),"
 						+ "`expiredate` VARCHAR(32),"
 						+ "`expired` VARCHAR(32),"
+						+ "`server` VARCHAR(255),"
 						+ " PRIMARY KEY (id));";
 				sql.modifyQuery(query);
 			}
@@ -67,8 +73,24 @@ public final class DBConnection {
 						+ "`z` double,"
 						+ "`world` TEXT(255),"
 						+ "`package` TEXT(255),"
+						+ "`server` VARCHAR(255),"
 						+ " PRIMARY KEY (id));";
 				sql.modifyQuery(query);
+			}
+			java.sql.DatabaseMetaData md;
+			try {
+				md = sql.getConnection().getMetaData();
+				ResultSet rs1 = md.getColumns(null, null, transactionTable, "server");
+				ResultSet rs2 = md.getColumns(null, null, frameTable, "server");
+				if (!rs1.next()) {
+					sql.modifyQuery("ALTER TABLE " + transactionTable + " ADD server STRING(255)");
+				}
+				if (!rs2.next()) {
+					sql.modifyQuery("ALTER TABLE " + frameTable + " ADD server STRING(255)");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
 			/*
@@ -104,6 +126,7 @@ public final class DBConnection {
 						+ "`activated` STRING(32),"
 						+ "`expires` STRING(32),"
 						+ "`expiredate` STRING(32),"
+						+ "`server` STRING(255),"
 						+ "`expired` STRING(32));";
 				
 				sql.modifyQuery(query);
@@ -116,8 +139,23 @@ public final class DBConnection {
 						+ "`y` double,"
 						+ "`z` double,"
 						+ "`world` TEXT(255),"
+						+ "`server` VARCHAR(255),"
 						+ "`package` TEXT(255));";
 				sql.modifyQuery(query);
+			}
+			java.sql.DatabaseMetaData md;
+			try {
+				md = sql.getConnection().getMetaData();
+				ResultSet rs1 = md.getColumns(null, null, transactionTable, "server");
+				ResultSet rs2 = md.getColumns(null, null, frameTable, "server");
+				if (!rs1.next()) {
+					sql.modifyQuery("ALTER TABLE " + transactionTable + " ADD server STRING(255)");
+				}
+				if (!rs2.next()) {
+					sql.modifyQuery("ALTER TABLE " + frameTable + " ADD server STRING(255)");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		} else {
 			DonationPoints.log.info("[DonationPoints] Unknown value for SQL Engine, expected sqlite or mysql.");

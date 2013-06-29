@@ -6,6 +6,7 @@ General:
   AutoFillSigns:
   SpecificPermissions:
   PurgeEmptyAccountsOnStartup:
+  ServerName:
   ConfigVersion: 
 MySQL:
   engine:

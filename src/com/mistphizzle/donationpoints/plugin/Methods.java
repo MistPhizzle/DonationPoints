@@ -62,8 +62,8 @@ public class Methods {
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
 	}
 
-	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired) {
-		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.transactionTable + "(player, package, price, date, activated, expires, expiredate, expired) VALUES ('" + player + "', '" + packageName + "', " + price + ", '" + date + "', '" + activated + "', '" + expires + "', '" + expiredate + "', '" + expired + "')");
+	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired, String server) {
+		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.transactionTable + "(player, package, price, date, activated, expires, expiredate, expired, server) VALUES ('" + player + "', '" + packageName + "', " + price + ", '" + date + "', '" + activated + "', '" + expires + "', '" + expiredate + "', '" + expired + "', '" + server + "');");
 	}
 
 	public static boolean NeedActive(String player, String packageName) {
@@ -90,8 +90,8 @@ public class Methods {
 		return message.replaceAll("(?i)&([a-fk-or0-9])", "\u00A7$1");
 	}
 
-	public static boolean hasPurchased(String player, String packName) {
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player LIKE '" + player + "' AND package = '" + packName + "';");
+	public static boolean hasPurchased(String player, String packName, String server) {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player LIKE '" + player + "' AND package = '" + packName + "', '" + server + "';");
 		try {
 			if (rs2.next()) {
 				return true;
@@ -127,12 +127,12 @@ public class Methods {
 		return true;
 	}
 
-	public static void linkFrame(String pack, Double x, Double y, Double z, String world) {
-		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.frameTable + " (x,y,z,world,package) VALUES ('" + x + "','" + y + "','" + z + "','" + world + "','" + pack + "')");
+	public static void linkFrame(String pack, Double x, Double y, Double z, String world, String server) {
+		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.frameTable + " (x,y,z,world,package,server) VALUES ('" + x + "','" + y + "','" + z + "','" + world + "','" + pack + "', '" + server + "');");
 	}
 
-	public static boolean isFrameLinked(Double x, Double y, Double z, String world) {
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "';");
+	public static boolean isFrameLinked(Double x, Double y, Double z, String world, String server) {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "' AND server = '" + server + "';");
 		try {
 			if (rs2.next()) {
 				return true;
@@ -145,9 +145,9 @@ public class Methods {
 		return false;
 	}
 	
-	public static String getLinkedPackage(Double x, Double y, Double z, String world) {
+	public static String getLinkedPackage(Double x, Double y, Double z, String world, String server) {
 		String linkedPack = null;
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT package FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "';");
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT package FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "' AND server = '" + server + "';");
 		try {
 			if (rs2.next()) {
 				linkedPack = rs2.getString("package");
@@ -163,7 +163,7 @@ public class Methods {
 		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.playerTable + " WHERE player = '" + accountName + "';");
 	}
 	
-	public static void unlinkFrame(Double x, Double y, Double z, String world) {
-		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "';");
+	public static void unlinkFrame(Double x, Double y, Double z, String world, String server) {
+		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "' AND server = '"+ server + "';");
 	}
 }

@@ -47,14 +47,14 @@ public class PlayerListener implements Listener {
 			Double y = entity.getLocation().getY();
 			Double z = entity.getLocation().getZ();
 			String world = entity.getWorld().getName();
-			if (Methods.isFrameLinked(x, y, z, world)) {
+			if (Methods.isFrameLinked(x, y, z, world, Commands.Server)) {
 				((ItemFrame) entity).setRotation(Rotation.NONE);
 				if (!DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 					event.setCancelled(true);
 					return;
 				}
-				String packName = Methods.getLinkedPackage(x, y, z, world);
+				String packName = Methods.getLinkedPackage(x, y, z, world, Commands.Server);
 				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
 						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
@@ -62,7 +62,7 @@ public class PlayerListener implements Listener {
 					}
 					if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite")) {
 						String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
-						if (!Methods.hasPurchased(player.getName(),  prerequisite)) {
+						if (!Methods.hasPurchased(player.getName(),  prerequisite, Commands.Server)) {
 							player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack",  prerequisite));
 							event.setCancelled(true);
 							return;
@@ -170,7 +170,7 @@ public class PlayerListener implements Listener {
 					}
 					if (plugin.getConfig().getBoolean("packages." + purchasedPack + ".requireprerequisite")) {
 						String prerequisite = plugin.getConfig().getString("packages." + purchasedPack + ".prerequisite");
-						if (!Methods.hasPurchased(player.getName(), prerequisite)) {
+						if (!Methods.hasPurchased(player.getName(), prerequisite, Commands.Server)) {
 							player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
 							return;
 						}
