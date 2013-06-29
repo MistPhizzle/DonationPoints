@@ -227,7 +227,7 @@ public class DonationPoints extends JavaPlugin {
 	public void configCheck() {
 		// Normal Config
 		int ConfigVersion = getConfig().getInt("General.ConfigVersion");
-		if (ConfigVersion != 181) {
+		if (ConfigVersion != 182) {
 			this.log.info("Config is not up to date! Updating.");
 			// General
 			if (!getConfig().contains("General.AutoCreateAccounts")) {
@@ -418,7 +418,7 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("General.ServerName")) {
 				getConfig().set("General.ServerName", "MinecraftServer");
 			}
-			getConfig().set("General.ConfigVersion", 181);
+			getConfig().set("General.ConfigVersion", 182);
 			saveConfig();
 		}
 	}
