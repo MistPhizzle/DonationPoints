@@ -83,10 +83,10 @@ public final class DBConnection {
 				ResultSet rs1 = md.getColumns(null, null, transactionTable, "server");
 				ResultSet rs2 = md.getColumns(null, null, frameTable, "server");
 				if (!rs1.next()) {
-					sql.modifyQuery("ALTER TABLE " + transactionTable + " ADD server STRING(255)");
+					sql.modifyQuery("ALTER TABLE " + transactionTable + " ADD server VARCHAR(255)");
 				}
 				if (!rs2.next()) {
-					sql.modifyQuery("ALTER TABLE " + frameTable + " ADD server STRING(255)");
+					sql.modifyQuery("ALTER TABLE " + frameTable + " ADD server VARCHAR(255)");
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
