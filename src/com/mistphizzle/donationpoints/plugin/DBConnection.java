@@ -35,9 +35,6 @@ public final class DBConnection {
 				sql.modifyQuery("RENAME TABLE points_players TO " + playerTable);
 			}
 			
-			DonationPoints.log.info("Making sure all data is correct.");
-			sql.modifyQuery("UPDATE " + playerTable + " SET player = lower(player)");
-			
 			if (!sql.tableExists(playerTable)) {
 				DonationPoints.log.info("Creating " + playerTable + " table.");
 				String query = "CREATE TABLE IF NOT EXISTS `" + playerTable + "` ("
@@ -92,6 +89,10 @@ public final class DBConnection {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			DonationPoints.log.info("Making sure all data is correct.");
+			sql.modifyQuery("UPDATE " + playerTable + " SET player = lower(player)");
+			
 			
 			/*
 			 * Everything below this line is for the sqlite connections.
