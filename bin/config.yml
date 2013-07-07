@@ -52,4 +52,6 @@ messages:
   InvalidPackage:
   NotEnoughPoints:
   DPPrerequisite:
+  SignLeftClick:
+  SignLeftClickDescription:
 packages:

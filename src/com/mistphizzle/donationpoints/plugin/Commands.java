@@ -60,6 +60,8 @@ public class Commands {
 	public static String NotEnoughPoints;
 	public static String InvalidPackage;
 	public static String DPPrerequisite;
+	public static String SignLeftClick;
+	public static String SignLeftClickDescription;
 	public static String Server;
 
 	private void init() {

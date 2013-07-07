@@ -164,8 +164,8 @@ public class PlayerListener implements Listener {
 					String purchasedPack = s.getLine(1);
 					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 					String packDesc = plugin.getConfig().getString("packages." + purchasedPack + ".description");
-					player.sendMessage(Commands.Prefix + "§cRight Clicking this sign will allow you to purchase §3" + purchasedPack + "§c for §3" + price + "§c.");
-					player.sendMessage(Commands.Prefix + "§cDescription: §3" + packDesc);
+					player.sendMessage(Commands.Prefix + Commands.SignLeftClick.replace("%pack", purchasedPack).replace("%price", price.toString()));
+					player.sendMessage(Commands.Prefix + Commands.SignLeftClickDescription.replace("%desc", packDesc));
 				}
 			}
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
