@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -41,6 +42,14 @@ public class PlayerListener implements Listener {
 	public static HashMap<String, String> links = new HashMap();
 
 
+	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent e) {
+		if (purchases.containsKey(e.getPlayer().getName().toLowerCase())) {
+			purchases.remove(e.getPlayer().getName().toLowerCase());
+			e.getPlayer().sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
+		}
+	}
+	
 	@EventHandler 
 	public void playerEntityInteract(PlayerInteractEntityEvent event) {
 		Player player = event.getPlayer();
