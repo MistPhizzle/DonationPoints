@@ -167,7 +167,7 @@ public class DonationPoints extends JavaPlugin {
 				ex.printStackTrace();
 			}
 		}
-
+		
 	}
 
 	@Override

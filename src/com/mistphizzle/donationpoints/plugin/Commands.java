@@ -4,8 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -488,8 +492,23 @@ public class Commands {
 							s.sendMessage(Prefix + noPermissionMessage);
 							return true;
 						}
-						Set<String> packs = plugin.getConfig().getConfigurationSection("packages").getKeys(false);
-						s.sendMessage(Prefix + "§3Available Packages: §a" + packs.toString());
+						List<String> packages = new ArrayList<String>(plugin.getConfig().getConfigurationSection("packages").getKeys(false));
+						List<String> packagestoRemove = new ArrayList<String> ();
+						for (String p1: packages) {
+							if (plugin.getConfig().getBoolean("packages." + p1 + ".requireprerequisite")) {
+								String prerequisite = plugin.getConfig().getString("packages." + p1 + ".prerequisite");
+								if (!Methods.hasPurchased(s.getName(), prerequisite, Server)) {
+									packagestoRemove.add(p1);
+								}
+							}
+							if (plugin.getConfig().getBoolean("General.SpecificPermissions")) {
+								if (!DonationPoints.permission.has(s, "donationpoints.purchase." + p1)) {
+									packagestoRemove.add(p1);
+								}
+							}
+						}
+						packages.removeAll(packagestoRemove);
+						s.sendMessage(Prefix + "§3Available Packages: §a" + packages.toString());
 						return true;
 
 

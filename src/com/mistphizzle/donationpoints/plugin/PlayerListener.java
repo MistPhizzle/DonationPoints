@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
 import org.bukkit.block.Block;
@@ -20,6 +21,8 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 @SuppressWarnings("unused")
 public class PlayerListener implements Listener {
@@ -37,7 +40,7 @@ public class PlayerListener implements Listener {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static HashMap<String, String> links = new HashMap();
 
-	
+
 	@EventHandler 
 	public void playerEntityInteract(PlayerInteractEntityEvent event) {
 		Player player = event.getPlayer();
@@ -106,7 +109,7 @@ public class PlayerListener implements Listener {
 						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
 						String username = player.getName().toLowerCase();
 						Double balance = Methods.getBalance(username);
-						
+
 						if (DonationPoints.permission.has(player, "donationpoints.free")) {
 							purchases.put(username, packName);
 							if (purchases.containsKey(username)) {

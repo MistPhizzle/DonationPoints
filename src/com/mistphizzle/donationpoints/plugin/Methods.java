@@ -7,6 +7,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.bukkit.Bukkit;
+
 
 public class Methods {
 
@@ -47,6 +49,7 @@ public class Methods {
 		}
 		return true;
 	}
+	
 	public static void createAccount(String accountName) {
 		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.playerTable + "(player, balance) VALUES ('" + accountName.toLowerCase() + "', 0)");
 	}
@@ -91,7 +94,7 @@ public class Methods {
 	}
 
 	public static boolean hasPurchased(String player, String packName, String server) {
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player LIKE '" + player + "' AND package = '" + packName + "', '" + server + "';");
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + player + "' AND package = '" + packName + "' AND SERVER = '" + server + "';");
 		try {
 			if (rs2.next()) {
 				return true;
