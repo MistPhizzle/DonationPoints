@@ -139,7 +139,7 @@ public class PlayerListener implements Listener {
 	}
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		Block block = event.getClickedBlock();
 		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (block.getState() instanceof Sign) {
@@ -225,6 +225,14 @@ public class PlayerListener implements Listener {
 								if (purchases.containsKey(username)) {
 									String price2 = price.toString();
 									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
+									Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+										public void run() {
+											if (purchases.containsKey(player.getName().toLowerCase())) {
+												purchases.remove(player.getName().toLowerCase());
+												player.sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
+											}
+										}
+									}, 300L);
 								}
 							}
 						}
@@ -263,4 +271,5 @@ public class PlayerListener implements Listener {
 			ex.printStackTrace();
 		}
 	}
+
 }

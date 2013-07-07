@@ -125,6 +125,7 @@ public class DonationPoints extends JavaPlugin {
 		Commands.InvalidPackage = Methods.colorize(getConfig().getString("messages.InvalidPackage"));
 		Commands.NotEnoughPoints = Methods.colorize(getConfig().getString("messages.NotEnoughPoints"));
 		Commands.DPPrerequisite = Methods.colorize(getConfig().getString("messages.DPPrerequisite"));
+		Commands.TooLongOnConfirm = Methods.colorize(getConfig().getString("messages.TooLongOnConfirm"));
 
 		DBConnection.init();
 		DBConnection.sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
@@ -342,6 +343,9 @@ public class DonationPoints extends JavaPlugin {
 			}
 			if (!getConfig().contains("messages.OtherBalance")) {
 				getConfig().set("messages.OtherBalance", "&3%player &chas a balance of &3%amount&c.");
+			}
+			if (!getConfig().contains("messages.TooLongOnConfirm")) {
+				getConfig().set("messages.TooLongOnConfirm", "&cYou waited too long to confirm your purchase. Purchase canceled.");
 			}
 			if (!getConfig().contains("messages.NoPurchaseStarted")) {
 				getConfig().set("messages.NoPurchaseStarted", "&cYou have not yet started a purchase.");

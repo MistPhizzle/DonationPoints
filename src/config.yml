@@ -46,6 +46,7 @@ messages:
   NoPurchaseStarted:
   PurchaseSuccessful:
   NeedActivation:
+  TooLongOnConfirm:
   LimitReached:
   PackageActivated:
   InvalidPackage:

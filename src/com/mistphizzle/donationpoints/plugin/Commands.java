@@ -53,6 +53,7 @@ public class Commands {
 	public static String NoPurchaseStarted;
 	public static String NeedActivation;
 	public static String PurchaseSuccessful;
+	public static String TooLongOnConfirm;
 	public static String LimitReached;
 	public static String PackageActivated;
 	public static String DPSet;
@@ -540,7 +541,7 @@ public class Commands {
 					}
 					String username = s.getName();
 					Double balance = Methods.getBalance(username.toLowerCase());
-
+					final Player player = (Player) s;
 					if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
 						if (!DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
 							s.sendMessage(Prefix + noPermissionMessage);
@@ -553,6 +554,14 @@ public class Commands {
 							if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
 								s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
 							}
+							Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+								public void run() {
+									if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
+										PlayerListener.purchases.remove(player.getName().toLowerCase());
+										player.sendMessage(Prefix + TooLongOnConfirm);
+									}
+								}
+							}, 300L);
 						} if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 							if (!(balance >= price)) {
 								s.sendMessage(Prefix + NotEnoughPoints);
@@ -563,6 +572,14 @@ public class Commands {
 									String price2 = price.toString();
 									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
 								}
+								Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+									public void run() {
+										if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
+											PlayerListener.purchases.remove(player.getName().toLowerCase());
+											player.sendMessage(Prefix + TooLongOnConfirm);
+										}
+									}
+								}, 300L);
 							}
 
 						}
@@ -582,6 +599,16 @@ public class Commands {
 								if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
 									String price2 = price.toString();
 									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
+									
+									Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+										public void run() {
+											if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
+												PlayerListener.purchases.remove(player.getName().toLowerCase());
+												player.sendMessage(Prefix + TooLongOnConfirm);
+											}
+										}
+									}, 300L);
+									
 									return true;
 								}
 							}
