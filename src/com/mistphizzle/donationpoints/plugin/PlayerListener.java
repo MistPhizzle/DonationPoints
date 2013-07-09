@@ -31,6 +31,8 @@ public class PlayerListener implements Listener {
 	public static String SignMessage;
 
 	public static DonationPoints plugin;
+	
+	public static int confirmTask;
 
 	public PlayerListener(DonationPoints instance) {
 		plugin = instance;
@@ -234,7 +236,7 @@ public class PlayerListener implements Listener {
 								if (purchases.containsKey(username)) {
 									String price2 = price.toString();
 									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
-									Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+									confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 										public void run() {
 											if (purchases.containsKey(player.getName().toLowerCase())) {
 												purchases.remove(player.getName().toLowerCase());

@@ -272,6 +272,7 @@ public class Commands {
 					String takeamount2 = takeamount.toString();
 					s.sendMessage(Prefix + DPTake.replace("%amount", takeamount2).replace("%player", target));
 				} else if (args[0].equalsIgnoreCase("confirm")) {
+					Bukkit.getScheduler().cancelTask(PlayerListener.confirmTask);
 					if (!DonationPoints.permission.has(s, "donationpoints.confirm")) {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
@@ -556,7 +557,7 @@ public class Commands {
 							if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
 								s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
 							}
-							Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 								public void run() {
 									if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
 										PlayerListener.purchases.remove(player.getName().toLowerCase());
@@ -574,7 +575,7 @@ public class Commands {
 									String price2 = price.toString();
 									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
 								}
-								Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+								PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 									public void run() {
 										if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
 											PlayerListener.purchases.remove(player.getName().toLowerCase());
@@ -602,7 +603,7 @@ public class Commands {
 									String price2 = price.toString();
 									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
 									
-									Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+									PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 										public void run() {
 											if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
 												PlayerListener.purchases.remove(player.getName().toLowerCase());
