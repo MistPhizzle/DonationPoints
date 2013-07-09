@@ -6,11 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -63,6 +59,7 @@ public class Commands {
 	public static String SignLeftClick;
 	public static String SignLeftClickDescription;
 	public static String Server;
+	public static String RequiredInventorySpace;
 
 	private void init() {
 		PluginCommand donationpoints = plugin.getCommand("donationpoints");
@@ -289,7 +286,17 @@ public class Commands {
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
 						Boolean activateimmediately = plugin.getConfig().getBoolean("packages." + pack2 + ".activateimmediately");
 						Boolean expires = plugin.getConfig().getBoolean("packages." + pack2 + ".expires");
-
+						Integer requiredSlots = plugin.getConfig().getInt("packages." + pack2 + ".RequiredInventorySpace");
+						Player p = (Player) s;
+						if (requiredSlots == null) {
+							requiredSlots = 0;
+						}
+						String requiredSlots2 = Integer.toString(requiredSlots);
+						if (!Methods.hasInventorySpace(p, requiredSlots)) {
+							s.sendMessage(Prefix + RequiredInventorySpace.replace("%slot", requiredSlots2));
+							return true;
+						}
+						
 						if (Methods.NeedActive(sender, pack2)) {
 							s.sendMessage(Prefix + NeedActivation.replace("%pack", pack2));
 							s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));

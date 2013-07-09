@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import com.mistphizzle.donationpoints.sql.Database;
 import com.mistphizzle.donationpoints.sql.MySQLConnection;
 import com.mistphizzle.donationpoints.sql.SQLite;
-import com.mysql.jdbc.DatabaseMetaData;
 
 public final class DBConnection {
 

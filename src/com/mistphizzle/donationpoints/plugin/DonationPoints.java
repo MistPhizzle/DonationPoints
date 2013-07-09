@@ -128,7 +128,8 @@ public class DonationPoints extends JavaPlugin {
 		Commands.TooLongOnConfirm = Methods.colorize(getConfig().getString("messages.TooLongOnConfirm"));
 		Commands.SignLeftClick = Methods.colorize(getConfig().getString("messages.SignLeftClick"));
 		Commands.SignLeftClickDescription = Methods.colorize(getConfig().getString("messages.SignLeftClickDescription"));
-
+		Commands.RequiredInventorySpace = Methods.colorize(getConfig().getString("messages.RequiredInventorySpace"));
+		
 		DBConnection.init();
 		DBConnection.sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
 
@@ -230,7 +231,7 @@ public class DonationPoints extends JavaPlugin {
 	public void configCheck() {
 		// Normal Config
 		int ConfigVersion = getConfig().getInt("General.ConfigVersion");
-		if (ConfigVersion != 1900) {
+		if (ConfigVersion != 1902) {
 			this.log.info("Config is not up to date! Updating.");
 			// General
 			if (!getConfig().contains("General.AutoCreateAccounts")) {
@@ -379,6 +380,9 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("messages.DPPrerequisite")) {
 				getConfig().set("messages.DPPrerequisite", "&cYou must purchase &3%pack &cbefore you can purchase this one.");
 			}
+			if (!getConfig().contains("messages.RequiredInventorySpace")) {
+				getConfig().set("messages.RequiredInventorySpace", "&cYou need at least &3%slot &cinventory slots to purchase this package.");
+			}
 			if (!getConfig().contains("packages.ExamplePackage.price")) {
 				getConfig().set("packages.ExamplePackage.price", 100);
 			}
@@ -418,6 +422,9 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("packages.ExamplePackage.prerequisite")) {
 				getConfig().set("packages.ExamplePackage.prerequisite", "");
 			}
+			if (!getConfig().contains("packages.ExamplePackage.RequiredInventorySpace")) {
+				getConfig().set("packages.ExamplePackage.RequiredInventorySpace", 0);
+			}
 			if (!getConfig().contains("MySQL.PlayerTable")) {
 				getConfig().set("MySQL.PlayerTransaction", "dp_players");
 			}
@@ -430,7 +437,7 @@ public class DonationPoints extends JavaPlugin {
 			if (!getConfig().contains("General.ServerName")) {
 				getConfig().set("General.ServerName", "MinecraftServer");
 			}
-			getConfig().set("General.ConfigVersion", 1900);
+			getConfig().set("General.ConfigVersion", 1902);
 			saveConfig();
 		}
 	}

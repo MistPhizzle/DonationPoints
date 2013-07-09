@@ -7,7 +7,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 
 public class Methods {
@@ -168,5 +169,18 @@ public class Methods {
 	
 	public static void unlinkFrame(Double x, Double y, Double z, String world, String server) {
 		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.frameTable + " WHERE x = '" + x + "' AND y = '" + y + "' AND z = '" + z + "' AND world = '" + world + "' AND server = '"+ server + "';");
+	}
+	
+	public static boolean hasInventorySpace(Player player, int requiredSlots) {
+		int emptySlots = 0;
+		for (ItemStack i : player.getInventory().getContents()) {
+			if (i == null) {
+				emptySlots++;
+			}
+		}
+		if (emptySlots >= requiredSlots) {
+			return true;
+		}
+		return false;
 	}
 }
