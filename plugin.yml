@@ -1,6 +1,6 @@
 name: DonationPoints
 author: MistPhizzle
-version: 1.9.0 SNAPSHOT 2
+version: 1.9.0
 main: com.mistphizzle.donationpoints.plugin.DonationPoints
 depend: [Vault]
 commands:
