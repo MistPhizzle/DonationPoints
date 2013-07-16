@@ -124,7 +124,7 @@ public class PlayerListener implements Listener {
 						if (DonationPoints.permission.has(player, "donationpoints.free")) {
 							purchases.put(username, packName);
 							if (purchases.containsKey(username)) {
-								player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
+								player.sendMessage(Commands.Prefix + "Â§cUse Â§3/dp confirm Â§cto confirm.");
 								event.setCancelled(true);
 								return;
 							}
@@ -226,7 +226,7 @@ public class PlayerListener implements Listener {
 						if (DonationPoints.permission.has(player, "donationpoints.free")) {
 							purchases.put(username, purchasedPack);
 							if (purchases.containsKey(username)) {
-								player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
+								player.sendMessage(Commands.Prefix + "Â§cUse Â§3/dp confirm Â§cto confirm.");
 							}
 						} else {
 							if (!(balance >= price)) {

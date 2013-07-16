@@ -70,56 +70,56 @@ public class Commands {
 			public boolean onCommand(CommandSender s, Command c, String label, String[] args) {
 				if (args.length < 1) {
 					// Base Command
-					s.sendMessage("-----�4DonationPoints Commands�f-----");
-					s.sendMessage("�3/dp basic�f - Show basic DonationPoints commands.");
-					s.sendMessage("�3/dp packages�f - Show the DonationPoints packages commands.");
-					s.sendMessage("�3/dp admin�f - Show the DonationPoints Admin Commands.");
+					s.sendMessage("-----§4DonationPoints Commands§f-----");
+					s.sendMessage("§3/dp basic§f - Show basic DonationPoints commands.");
+					s.sendMessage("§3/dp packages§f - Show the DonationPoints packages commands.");
+					s.sendMessage("§3/dp admin§f - Show the DonationPoints Admin Commands.");
 					return true;
 					// Packages Commands
 				} else if (args[0].equalsIgnoreCase("packages")) {
-					s.sendMessage("-----�4DonationPoints Package Commands�f-----");
+					s.sendMessage("-----§4DonationPoints Package Commands§f-----");
 					if (DonationPoints.permission.has(s, "donationpoints.package.info")) {
-						s.sendMessage("�3/dp package info <packageName>�f - Shows package information.");
+						s.sendMessage("§3/dp package info <packageName>§f - Shows package information.");
 					} if (DonationPoints.permission.has(s, "donationpoints.package.list")) {
-						s.sendMessage("�3/dp package list�f - List all packages.");
+						s.sendMessage("§3/dp package list§f - List all packages.");
 					} else {
-						s.sendMessage("�cYou don't have permission to use any of the packages commands.");
+						s.sendMessage("§cYou don't have permission to use any of the packages commands.");
 					}
 					// Admin Commands
 				} else if (args[0].equalsIgnoreCase("admin")) {
-					s.sendMessage("-----�4DonationPoints Admin Commands�f-----");
+					s.sendMessage("-----§4DonationPoints Admin Commands§f-----");
 					if (DonationPoints.permission.has(s, "donationpoints.give")) {
-						s.sendMessage("�3/dp give <player> <amount>�f - Give points to a player.");
+						s.sendMessage("§3/dp give <player> <amount>§f - Give points to a player.");
 					} if (DonationPoints.permission.has(s, "donationpoints.take")) {
-						s.sendMessage("�3/dp take <player> <amount>�f - Take points from a player.");
+						s.sendMessage("§3/dp take <player> <amount>§f - Take points from a player.");
 					} if (DonationPoints.permission.has(s, "donationpoints.set")) {
-						s.sendMessage("�3/dp set <player> <amount>�f - Set a player's balance.");
+						s.sendMessage("§3/dp set <player> <amount>§f - Set a player's balance.");
 					} if (DonationPoints.permission.has(s, "donationpoints.version")) {
-						s.sendMessage("�3/dp version�f - Shows the version of the plugin you're running.");
+						s.sendMessage("§3/dp version§f - Shows the version of the plugin you're running.");
 					} if (DonationPoints.permission.has(s, "donationpoints.update")) {
-						s.sendMessage("�3/dp update�f - Checks if there is an update available.");
+						s.sendMessage("§3/dp update§f - Checks if there is an update available.");
 					} if (DonationPoints.permission.has(s, "donationpoints.reload")) {
-						s.sendMessage("�3/dp reload�f - Reloads the Configuration / Packages.");
+						s.sendMessage("§3/dp reload§f - Reloads the Configuration / Packages.");
 					} if (DonationPoints.permission.has(s, "donationpoints.purge")) {
-						s.sendMessage("�3/dp purge�f - Purges Empty Accounts.");
+						s.sendMessage("§3/dp purge§f - Purges Empty Accounts.");
 					} if (DonationPoints.permission.has(s, "donationpoints.delete")) {
-						s.sendMessage("�3/dp delete�f - Deletes a player's account.");
+						s.sendMessage("§3/dp delete§f - Deletes a player's account.");
 					} else {
-						s.sendMessage("�cYou don't have any permission for ANY DonationPoints Admin Commands.");
+						s.sendMessage("§cYou don't have any permission for ANY DonationPoints Admin Commands.");
 					}
 				} else if (args[0].equalsIgnoreCase("basic")) {
-					s.sendMessage("-----�4DonationPoints Basic Commands�f-----");
+					s.sendMessage("-----§4DonationPoints Basic Commands§f-----");
 					if (DonationPoints.permission.has(s, "donationpoints.create")) {
-						s.sendMessage("�3/dp create�f - Creates a points account for you.");
+						s.sendMessage("§3/dp create§f - Creates a points account for you.");
 					}
 					if (DonationPoints.permission.has(s, "donationpoints.balance")) {
-						s.sendMessage("�3/dp balance�f - Checks your points balance.");
+						s.sendMessage("§3/dp balance§f - Checks your points balance.");
 					} if (DonationPoints.permission.has(s, "donationpoints.transfer")) {
-						s.sendMessage("�3/dp transfer <player> <amount>�f - Transfer Points.");
+						s.sendMessage("§3/dp transfer <player> <amount>§f - Transfer Points.");
 					} if (DonationPoints.permission.has(s, "donationpoints.transfer")) {
-						s.sendMessage("�3/dp purchase <package>�f - Purchase a package.");
+						s.sendMessage("§3/dp purchase <package>§f - Purchase a package.");
 					} else {
-						s.sendMessage("�cYou don't have permission for any DonationPoints Basic Commands.");
+						s.sendMessage("§cYou don't have permission for any DonationPoints Basic Commands.");
 					}
 				} else if (args[0].equalsIgnoreCase("transfer")) {
 					if (!plugin.getConfig().getBoolean("General.Transferrable")) {
@@ -422,7 +422,7 @@ public class Commands {
 						if(rs2.next()) {
 							if (ActualPrice == 0) {
 								s.sendMessage(Prefix + DPFailedActivation.replace("%pack", pack2));
-								s.sendMessage(Prefix + "�cPackage names are case sensitive.");
+								s.sendMessage(Prefix + "§cPackage names are case sensitive.");
 								return true;
 							}
 							DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET activated = 'true' WHERE player = '" + sender + "' AND package = '" + pack2 + "';");
@@ -438,7 +438,7 @@ public class Commands {
 							} return true;
 						} if (!rs2.next()) {
 							s.sendMessage(Prefix + DPFailedActivation.replace("%pack", pack2));
-							s.sendMessage(Prefix + "�cPackage names are case sensitive.");
+							s.sendMessage(Prefix + "§cPackage names are case sensitive.");
 							return true;
 						}
 					} catch (SQLException e) {
@@ -449,7 +449,7 @@ public class Commands {
 						s.sendMessage(Prefix + noPermissionMessage);
 					} else {
 						Methods.purgeEmptyAccounts();
-						s.sendMessage(Prefix + " �cAll Empty Accounts Purged.");
+						s.sendMessage(Prefix + " §cAll Empty Accounts Purged.");
 					}
 				} else if (args[0].equalsIgnoreCase("set")) {
 					if (args.length != 3) {
@@ -478,24 +478,24 @@ public class Commands {
 						String packName = args[2];
 						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
 						String description = plugin.getConfig().getString("packages." + packName + ".description");
-						s.sendMessage("-----�e" + packName + " Info�f-----");
-						s.sendMessage("�aPackage Name:�3 " + packName);
-						s.sendMessage("�aPrice:�3 " + price + "0");
-						s.sendMessage("�aDescription:�3 " + description);
+						s.sendMessage("-----§e" + packName + " Info§f-----");
+						s.sendMessage("§aPackage Name:§3 " + packName);
+						s.sendMessage("§aPrice:§3 " + price + "0");
+						s.sendMessage("§aDescription:§3 " + description);
 						if (plugin.getConfig().getBoolean("packages." + packName + ".expires") == false) {
-							s.sendMessage("�aExpires: �3Never");
+							s.sendMessage("§aExpires: §3Never");
 						} else if (plugin.getConfig().getBoolean("packages." + packName + ".expires") == true) {
 							int expiretime = plugin.getConfig().getInt("packages." + packName + ".expiretime");
 							if (expiretime == 1) {
-								s.sendMessage("�aExpires After: �3" + expiretime + " Day");
+								s.sendMessage("§aExpires After: §3" + expiretime + " Day");
 							} else if (expiretime != 1) {
-								s.sendMessage("�aExpires After: �3" + expiretime + " Days");
+								s.sendMessage("§aExpires After: §3" + expiretime + " Days");
 							}
 						}
 						if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite") == false) {
-							s.sendMessage("�aPrerequisite: �3None");
+							s.sendMessage("§aPrerequisite: §3None");
 						} else if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite") == true) {
-							s.sendMessage("�aPrerequisite: �3" + plugin.getConfig().getString("packages." + packName + ".prerequisite"));
+							s.sendMessage("§aPrerequisite: §3" + plugin.getConfig().getString("packages." + packName + ".prerequisite"));
 						}
 					}
 					if (args[1].equalsIgnoreCase("list")) {
@@ -519,7 +519,7 @@ public class Commands {
 							}
 						}
 						packages.removeAll(packagestoRemove);
-						s.sendMessage(Prefix + "�3Available Packages: �a" + packages.toString());
+						s.sendMessage(Prefix + "§3Available Packages: §a" + packages.toString());
 						return true;
 
 
@@ -639,7 +639,7 @@ public class Commands {
 						return true;						
 					}
 					Methods.deleteAccount(accountName.toLowerCase());
-					s.sendMessage(Prefix + "�cDeleted �3" + accountName + "'s �caccount.");
+					s.sendMessage(Prefix + "§cDeleted §3" + accountName + "'s §caccount.");
 				} else if (args[0].equalsIgnoreCase("link")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.link")) {
 						s.sendMessage(Prefix + noPermissionMessage);
@@ -657,7 +657,7 @@ public class Commands {
 					if (PlayerListener.links.containsKey(s.getName())) {
 						PlayerListener.links.remove(s.getName());
 					}
-					s.sendMessage(Prefix + "�cClick the Item Frame you would like to link �3" + packName + " �cto.");
+					s.sendMessage(Prefix + "§cClick the Item Frame you would like to link §3" + packName + " §cto.");
 					PlayerListener.links.put(s.getName(), packName);
 				} else if (args[0].equalsIgnoreCase("version")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.version")) {

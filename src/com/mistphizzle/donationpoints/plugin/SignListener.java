@@ -38,13 +38,13 @@ public class SignListener implements Listener {
 				if (PlayerListener.links.containsKey(player.getName())) {
 					String packName = PlayerListener.links.get(player.getName());
 					if (Methods.isFrameLinked(x, y, z, world, Commands.Server)) {
-						player.sendMessage(Commands.Prefix + "§cThis item frame is already linked.");
+						player.sendMessage(Commands.Prefix + "Â§cThis item frame is already linked.");
 						PlayerListener.links.remove(player.getName());
 						e.setCancelled(true);
 						return;
 					}
 					Methods.linkFrame(packName, x, y, z, world, Commands.Server);
-					player.sendMessage(Commands.Prefix + "§cSuccessfully linked §3" + packName + "§3.");
+					player.sendMessage(Commands.Prefix + "Â§cSuccessfully linked Â§3" + packName + "Â§3.");
 					PlayerListener.links.remove(player.getName());
 					e.setCancelled(true);
 				} else if (!PlayerListener.links.containsKey(player.getName())) {
@@ -57,7 +57,7 @@ public class SignListener implements Listener {
 							}
 							if (DonationPoints.permission.has(player, "donationpoints.sign.break")) {
 								Methods.unlinkFrame(x, y, z, world, Commands.Server);
-								player.sendMessage(Commands.Prefix + "§cItem Frame unlinked.");
+								player.sendMessage(Commands.Prefix + "Â§cItem Frame unlinked.");
 								e.setCancelled(false);
 								return;
 							}
@@ -79,12 +79,12 @@ public class SignListener implements Listener {
 								e.setCancelled(true);
 								return;
 							}
-							player.sendMessage(Commands.Prefix + "§cRight Clicking this sign will allow you to purchase §3" + packName + "§c for §3" + price + "§c.");
-							player.sendMessage(Commands.Prefix + "§cDescription: §3" + packDesc);
+							player.sendMessage(Commands.Prefix + "Â§cRight Clicking this sign will allow you to purchase Â§3" + packName + "Â§c for Â§3" + price + "Â§c.");
+							player.sendMessage(Commands.Prefix + "Â§cDescription: Â§3" + packDesc);
 						}
 						if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
-							player.sendMessage(Commands.Prefix + "§cRight Clicking this sign will allow you to purchase §3" + packName + "§c for §3" + price + "§c.");
-							player.sendMessage(Commands.Prefix + "§cDescription: §3" + packDesc);
+							player.sendMessage(Commands.Prefix + "Â§cRight Clicking this sign will allow you to purchase Â§3" + packName + "Â§c for Â§3" + price + "Â§c.");
+							player.sendMessage(Commands.Prefix + "Â§cDescription: Â§3" + packDesc);
 							return;
 						}
 					}
@@ -104,7 +104,7 @@ public class SignListener implements Listener {
 				if (DonationPoints.permission.has(player, "donationpoints.sign.break")) {
 					if (player.getGameMode() == GameMode.CREATIVE) {
 						if (!player.isSneaking()) {
-							player.sendMessage(Commands.Prefix + "§cYou must sneak to break DonationPoints signs while in Creative.");
+							player.sendMessage(Commands.Prefix + "Â§cYou must sneak to break DonationPoints signs while in Creative.");
 							e.setCancelled(true);
 						}
 					}
@@ -134,7 +134,7 @@ public class SignListener implements Listener {
 			p.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 		} else if (DonationPoints.permission.has(p, "donationpoints.sign.create") && line1.equalsIgnoreCase("[" + SignMessage + "]")) {
 			if (block.getType() == Material.SIGN_POST) {
-				p.sendMessage(Commands.Prefix + "§cDonationPoints signs must be placed on a wall.");
+				p.sendMessage(Commands.Prefix + "Â§cDonationPoints signs must be placed on a wall.");
 				block.breakNaturally();
 				e.setCancelled(true);
 			} if (plugin.getConfig().getString("packages." + pack) == null) {
@@ -150,7 +150,7 @@ public class SignListener implements Listener {
 					Double price = plugin.getConfig().getDouble("packages." + pack + ".price");
 					e.setLine(2, (price + " Points"));
 				}
-				p.sendMessage(Commands.Prefix + "§cYou have created a DonationPoints sign.");
+				p.sendMessage(Commands.Prefix + "Â§cYou have created a DonationPoints sign.");
 			}
 		} 
 	}
