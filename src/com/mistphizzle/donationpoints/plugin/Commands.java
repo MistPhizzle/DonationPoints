@@ -152,6 +152,9 @@ public class Commands {
 						} if (target.equalsIgnoreCase(sender)) {
 							s.sendMessage(Prefix + NoTransfer);
 							return true;
+						} if (transferamount < 0) {
+							s.sendMessage(Prefix + "§cYou cannot send a negative balance.");
+							return true;
 						} else {
 							if (transferamount > Methods.getBalance(sender)) {
 								s.sendMessage(Prefix + NoTransfer);
