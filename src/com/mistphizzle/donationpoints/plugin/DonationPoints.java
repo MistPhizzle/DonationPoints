@@ -36,11 +36,10 @@ public class DonationPoints extends JavaPlugin {
 	private final SignListener signListener = new SignListener(this);
 	private final PlayerListener playerListener = new PlayerListener(this);
 
-	@SuppressWarnings("static-access")
 	@Override
 	public void onEnable() {
 		instance = this;
-		this.log = this.getLogger();
+		DonationPoints.log = this.getLogger();
 
 		setupPermissions();
 
@@ -122,7 +121,7 @@ public class DonationPoints extends JavaPlugin {
 		
 		if (getConfig().getBoolean("General.PurgeEmptyAccountsOnStartup")) {
 			Methods.purgeEmptyAccounts();
-			this.log.info("Purged Empty Accounts.");
+			DonationPoints.log.info("Purged Empty Accounts.");
 		}
 		
 		if (getConfig().getBoolean("General.ExpireOnStartup")) {
@@ -235,7 +234,7 @@ public class DonationPoints extends JavaPlugin {
 		getConfig().addDefault("packages.ExamplePackage.expirecommands", expirecommands);
 		getConfig().addDefault("packages.ExamplePackage.requireprerequisite", false);
 		getConfig().addDefault("packages.ExamplePackage.prerequisite", "");
-		getConfig().addDefault("packages.RequiredInventorySpace", 0);
+		getConfig().addDefault("packages.ExamplePackage.RequiredInventorySpace", 0);
 		
 		// Update Config, Save
 		getConfig().options().copyDefaults(true);
