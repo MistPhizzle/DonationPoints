@@ -63,6 +63,8 @@ public class DonationPoints extends JavaPlugin {
 
 		// Other Variables.
 		PlayerListener.SignMessage = getConfig().getString("General.SignMessage");
+		PlayerListener.Points = getConfig().getString("General.Points");
+		SignListener.Points = getConfig().getString("General.Points");
 		SignListener.SignMessage = getConfig().getString("General.SignMessage");
 
 		//String Variables
@@ -171,6 +173,7 @@ public class DonationPoints extends JavaPlugin {
 		// General
 		getConfig().addDefault("General.AutoCreateAccounts", true);
 		getConfig().addDefault("General.SignMessage", "Premium");
+		getConfig().addDefault("General.Points", "Points");
 		getConfig().addDefault("General.Transferrable", true);
 		getConfig().addDefault("General.ExpireOnStartup", true);
 		getConfig().addDefault("General.AutoFillSigns", true);

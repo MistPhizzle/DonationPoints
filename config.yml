@@ -1,6 +1,7 @@
 General:
   AutoCreateAccounts: true
   SignMessage: Premium
+  Points: Points
   Transferrable: true
   ExpireOnStartup: true
   AutoFillSigns: true

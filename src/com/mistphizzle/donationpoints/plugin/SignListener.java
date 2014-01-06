@@ -16,6 +16,8 @@ import org.bukkit.block.Sign;
 public class SignListener implements Listener {
 
 	public static String SignMessage;
+	public static String Points;
+	
 	public static DonationPoints plugin;
 
 	public SignListener(DonationPoints instance) {
@@ -212,7 +214,7 @@ public class SignListener implements Listener {
 			} else {
 				if (plugin.getConfig().getBoolean("General.AutoFillSigns", true)) {
 					Double price = plugin.getConfig().getDouble("packages." + pack + ".price");
-					e.setLine(2, (price + " Points"));
+					e.setLine(2, (price + " " + Points));
 				}
 				p.sendMessage(Commands.Prefix + "§cYou have created a DonationPoints sign.");
 			}

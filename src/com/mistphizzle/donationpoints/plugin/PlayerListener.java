@@ -31,7 +31,8 @@ import org.bukkit.scheduler.BukkitTask;
 public class PlayerListener implements Listener {
 
 	public static String SignMessage;
-
+	public static String Points;
+	
 	public static DonationPoints plugin;
 	
 	public static int confirmTask;
