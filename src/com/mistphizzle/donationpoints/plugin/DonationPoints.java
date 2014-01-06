@@ -3,7 +3,6 @@ package com.mistphizzle.donationpoints.plugin;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,7 +39,7 @@ public class DonationPoints extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		DonationPoints.log = this.getLogger();
-
+		
 		setupPermissions();
 
 		configCheck();
@@ -103,13 +102,14 @@ public class DonationPoints extends JavaPlugin {
 		Commands.SignLeftClick = Methods.colorize(getConfig().getString("messages.SignLeftClick"));
 		Commands.SignLeftClickDescription = Methods.colorize(getConfig().getString("messages.SignLeftClickDescription"));
 		Commands.RequiredInventorySpace = Methods.colorize(getConfig().getString("messages.RequiredInventorySpace"));
-		
+
 		DBConnection.init();
 		DBConnection.sql.modifyQuery("UPDATE dp_players SET player = lower(player)");
 
 		// Register Commands
 
 		cmd = new Commands(this);
+		new Methods(this);
 
 		// Metrics
 		try {
@@ -118,12 +118,12 @@ public class DonationPoints extends JavaPlugin {
 		} catch (IOException e) {
 			// Failed to submit stats.
 		}
-		
+
 		if (getConfig().getBoolean("General.PurgeEmptyAccountsOnStartup")) {
 			Methods.purgeEmptyAccounts();
 			DonationPoints.log.info("Purged Empty Accounts.");
 		}
-		
+
 		if (getConfig().getBoolean("General.ExpireOnStartup")) {
 			ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE expired = 'false' AND expiredate = '" + Methods.getCurrentDate() + "';");
 			try {
@@ -146,6 +146,12 @@ public class DonationPoints extends JavaPlugin {
 			}
 		}
 		
+		if (getConfig().get("packages") == null) {
+			Methods.createExamplePackage();
+		}
+		
+		DonationPoints.log.info("test");
+
 	}
 
 	@Override
@@ -218,26 +224,10 @@ public class DonationPoints extends JavaPlugin {
 		getConfig().addDefault("messages.SignLeftClick", "&cRight click to purchase &3%pack &cfor &3%price points&c.");
 		getConfig().addDefault("messages.SignLeftClickDescription", "&7[&cDescription&7] &a%desc");
 		getConfig().addDefault("messages.RequiredInventorySpace", "&cYou need at least &3%slot &cinventory slots to purchase this package.");
-		// Example Package
-		List<String> examplecommands = new ArrayList<String>();
-		examplecommands.add("say %player has purchased the Example Package.");
-		List<String> expirecommands = new ArrayList<String>();
-		expirecommands.add("say %player's Example Package has expired.");
-		getConfig().addDefault("packages.ExamplePackage.price", 100);
-		getConfig().addDefault("packages.ExamplePackage.description", "This is an example package.");
-		getConfig().addDefault("packages.ExamplePackage.haslimit", false);
-		getConfig().addDefault("packages.ExamplePackage.limit", 3);
-		getConfig().addDefault("packages.ExamplePackage.activateimmediately", true);
-		getConfig().addDefault("packages.ExamplePackage.expires", false);
-		getConfig().addDefault("packages.ExamplePackage.expiretime", 3);
-		getConfig().addDefault("packages.ExamplePackage.commands", examplecommands);
-		getConfig().addDefault("packages.ExamplePackage.expirecommands", expirecommands);
-		getConfig().addDefault("packages.ExamplePackage.requireprerequisite", false);
-		getConfig().addDefault("packages.ExamplePackage.prerequisite", "");
-		getConfig().addDefault("packages.ExamplePackage.RequiredInventorySpace", 0);
-		
+
 		// Update Config, Save
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 	}
+	
 }

@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class Methods {
 
-	DonationPoints plugin;
+	static DonationPoints plugin;
 
 	public Methods(DonationPoints instance) {
 		plugin = instance;
@@ -182,5 +184,26 @@ public class Methods {
 			return true;
 		}
 		return false;
+	}
+	
+	public static void createExamplePackage() {
+		List<String> exampleCommands = new ArrayList<String>();
+		exampleCommands.add("say %player has purchased the Example Package.");
+		List<String> expireCommands = new ArrayList<String>();
+		expireCommands.add("say %player's Example package has expired.");
+		
+		plugin.getConfig().set("packages.ExamplePackage.price", 100);
+		plugin.getConfig().set("packages.ExamplePackage.description", "This is an exmaple package.");
+		plugin.getConfig().set("packages.ExamplePackage.haslimit", false);
+		plugin.getConfig().set("packages.ExamplePackage.limit", 3);
+		plugin.getConfig().set("packages.ExamplePackage.activateimmediately", true);
+		plugin.getConfig().set("packages.ExamplePackage.expires", false);
+		plugin.getConfig().set("packages.ExamplePackage.expiretime", 3);
+		plugin.getConfig().set("packages.ExamplePackage.commands", exampleCommands);
+		plugin.getConfig().set("packages.ExamplePackage.eexpirecommands", expireCommands);
+		plugin.getConfig().set("packages.ExamplePackage.requireprerequisite", false);
+		plugin.getConfig().set("packages.ExamplePackage.RequiredInventorySpace", 0);
+		
+		plugin.saveConfig();
 	}
 }

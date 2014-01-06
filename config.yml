@@ -54,19 +54,3 @@ messages:
   SignLeftClick: '&cRight click to purchase &3%pack &cfor &3%price points&c.'
   SignLeftClickDescription: '&7[&cDescription&7] &a%desc'
   RequiredInventorySpace: '&cYou need at least &3%slot &cinventory slots to purchase this package.'
-packages:
-  ExamplePackage:
-    price: 100
-    description: This is an example package.
-    haslimit: false
-    limit: 3
-    activeimmediately: true
-    expires: false
-    expiretime: 3
-    commands:
-    - say %player has purchased an Example Package.
-    expirecommands:
-    - say %player's example package has expired.
-    requireprerequisite: false
-    prerequisite: ''
-    RequiredInventorySpace: 0
