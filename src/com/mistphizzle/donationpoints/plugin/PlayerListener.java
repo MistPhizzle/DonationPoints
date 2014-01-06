@@ -3,7 +3,9 @@ package com.mistphizzle.donationpoints.plugin;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,11 +40,8 @@ public class PlayerListener implements Listener {
 		plugin = instance;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static HashMap<String, String> purchases = new HashMap();
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static HashMap<String, String> links = new HashMap();
-
+	public static HashMap<String, String> purchases = new HashMap<String, String>();
+	public static HashMap<String, String> links = new HashMap<String, String>();
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
@@ -255,7 +254,6 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	@SuppressWarnings("static-access")
 	@EventHandler
 	public void PlayerJoinEvent(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
@@ -263,7 +261,7 @@ public class PlayerListener implements Listener {
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
 			if (!Methods.hasAccount(user.toLowerCase())) {
 				Methods.createAccount(user.toLowerCase());
-				plugin.log.info("Created an account for " + user.toLowerCase());
+				DonationPoints.log.info("Created an account for " + user.toLowerCase());
 			}
 		}
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");

@@ -238,7 +238,7 @@ public class Commands {
 						} else if (Methods.hasAccount(string)) {
 							s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", string));
 						}
-					}
+					}					
 				} else if (args[0].equalsIgnoreCase("give")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.give")) {
 						s.sendMessage(Prefix + noPermissionMessage);
@@ -468,16 +468,16 @@ public class Commands {
 					Methods.setPoints(amount, target);
 					String amount2 = amount.toString();
 					s.sendMessage(Prefix + DPSet.replace("%player", target).replace("%amount", amount2));
-				} else if (args[0].equalsIgnoreCase("package")) {
-					if (args.length < 2 | args.length > 4) {
-						s.sendMessage(Prefix + InvalidArguments);
-						return true;
-					}
-					if (!DonationPoints.permission.has(s, "donationpoints.package.info")) {
-						s.sendMessage(Prefix + noPermissionMessage);
-						return true;
-					}
+				} else if (args[0].equalsIgnoreCase("package")) {					
 					if (args[1].equalsIgnoreCase("info")) {
+						if (!DonationPoints.permission.has(s, "donationpoints.package.info")) {
+							s.sendMessage(Prefix + noPermissionMessage);
+							return true;
+						}
+						if (args.length < 2 | args.length > 4) {
+							s.sendMessage(Prefix + InvalidArguments);
+							return true;
+						}
 						String packName = args[2];
 						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
 						String description = plugin.getConfig().getString("packages." + packName + ".description");
