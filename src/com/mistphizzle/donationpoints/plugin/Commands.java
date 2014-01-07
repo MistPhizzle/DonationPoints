@@ -24,6 +24,8 @@ public class Commands {
 
 	// Strings
 	public static String Prefix;
+	public static String RestrictedWorldMessage;
+	public static String noPermissionMessage;
 	public static String noPermissionMessage;
 	public static String InvalidArguments;
 	public static String NoCommandExists;
