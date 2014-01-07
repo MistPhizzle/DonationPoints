@@ -39,50 +39,58 @@ public class Methods {
 	}
 
 	public static Double getBalance(String accountName) {
-		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM " + DBConnection.playerTable + " WHERE player LIKE '" + accountName.toLowerCase() + "';");
-			try {
-				if (rs2.next()) {
-					Double balance = rs2.getDouble("balance");
-					Double balance2 = Methods.roundTwoDecimals(balance);
-					return balance2;
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
+		return accounts.get(accountName);
+//		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
+//			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM " + DBConnection.playerTable + " WHERE player LIKE '" + accountName.toLowerCase() + "';");
+//			try {
+//				if (rs2.next()) {
+//					Double balance = rs2.getDouble("balance");
+//					Double balance2 = Methods.roundTwoDecimals(balance);
+//					return balance2;
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return null;
 	}
 
 	public static boolean hasAccount(String accountName) {
-		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM " + DBConnection.playerTable + " WHERE player = '" + accountName.toLowerCase() + "';");
-			try {
-				if (rs2.next()) {
-					return true;
-				} else {
-					return false;
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return true;
+		return accounts.containsKey(accountName);
+//		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
+//			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM " + DBConnection.playerTable + " WHERE player = '" + accountName.toLowerCase() + "';");
+//			try {
+//				if (rs2.next()) {
+//					return true;
+//				} else {
+//					return false;
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return true;
 	}
 	
 	public static void createAccount(String accountName) {
 		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.playerTable + "(player, balance) VALUES ('" + accountName.toLowerCase() + "', 0)");
+		accounts.put(accountName.toLowerCase(), 0.0);
 	}
 
 	public static void addPoints (Double amount, String accountName) {
+		Double balance = accounts.get(accountName);
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance + " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
+		accounts.put(accountName, balance + amount);
 	}
 
 	public static void removePoints (Double amount, String accountName) {
+		Double balance = accounts.get(accountName);
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance - " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
+		accounts.put(accountName, balance - amount);
 	}
 	public static void setPoints (Double amount, String accountName) {
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
+		accounts.put(accountName, amount);
 	}
 
 	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired, String server) {
@@ -231,6 +239,7 @@ public class Methods {
 	
 	public static void deleteAccount(String accountName) {
 		DBConnection.sql.modifyQuery("DELETE FROM " + DBConnection.playerTable + " WHERE player = '" + accountName + "';");
+		accounts.remove(accountName);
 	}
 	
 	public static void unlinkFrame(Double x, Double y, Double z, String world, String server) {
