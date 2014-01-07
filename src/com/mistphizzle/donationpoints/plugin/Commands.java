@@ -26,7 +26,6 @@ public class Commands {
 	public static String Prefix;
 	public static String RestrictedWorldMessage;
 	public static String noPermissionMessage;
-	public static String noPermissionMessage;
 	public static String InvalidArguments;
 	public static String NoCommandExists;
 	public static String DPConfirm;
@@ -561,12 +560,12 @@ public class Commands {
 					}
 					packName = caseSensitivePackName;
 					
-					if (plugin.getConfig().contains("packages." + PackName + ".RestrictToWorlds")) {
+					if (plugin.getConfig().contains("packages." + packName + ".RestrictToWorlds")) {
 						Player p = (Player) s;
 						String worldName = p.getLocation().getWorld().getName().toLowerCase();
 						boolean worldFound = false;		
 						
-						List<String> worlds = plugin.getConfig().getStringList("packages." + PackName + ".RestrictToWorlds");
+						List<String> worlds = plugin.getConfig().getStringList("packages." + packName + ".RestrictToWorlds");
 						for (String world : worlds) {
 							if (worldName.equals(world.toLowerCase())) {
 								worldFound = true;
