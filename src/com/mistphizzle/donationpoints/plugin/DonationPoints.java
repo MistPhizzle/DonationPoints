@@ -1,9 +1,6 @@
 package com.mistphizzle.donationpoints.plugin;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
@@ -127,33 +124,13 @@ public class DonationPoints extends JavaPlugin {
 		}
 
 		if (getConfig().getBoolean("General.ExpireOnStartup")) {
-			ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE expired = 'false' AND expiredate = '" + Methods.getCurrentDate() + "';");
-			try {
-				if (rs2.next()) {
-					String pack2 = rs2.getString("package");
-					String user = rs2.getString("player");
-
-					List<String> commands = getConfig().getStringList("packages." + pack2 + ".expirecommands");
-					for (String cmd : commands) {
-						getServer().dispatchCommand(getServer().getConsoleSender(), cmd.replace("%player", user));
-					}
-					DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
-					log.info("Some packages were expired.");
-				} else if (!rs2.next()) {
-					log.info("There were no packages to expire.");
-
-				}
-			} catch (SQLException ex) {
-				ex.printStackTrace();
-			}
+			Methods.checkForExpiredPackages();
 		}
 		
 		if (getConfig().get("packages") == null) {
 			Methods.createExamplePackage();
 		}
 		
-		DonationPoints.log.info("test");
-
 	}
 
 	@Override

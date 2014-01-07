@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +12,6 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 
 public class Methods {
 
@@ -71,6 +71,52 @@ public class Methods {
 	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired, String server) {
 		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.transactionTable + "(player, package, price, date, activated, expires, expiredate, expired, server) VALUES ('" + player + "', '" + packageName + "', " + price + ", '" + date + "', '" + activated + "', '" + expires + "', '" + expiredate + "', '" + expired + "', '" + server + "');");
 	}
+	
+	public static Date getCurrentDateAsDate() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		String date2 = dateFormat.format(date);
+		try {
+			return dateFormat.parse(date2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static void checkForExpiredPackages() {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE expired = 'false';");
+		try {
+			if (!rs2.next()) return;
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			do {
+				String expireDate = rs2.getString("expiredate");
+				if ("expiredate" != null) { // The package will expire.
+					Date currentDate = Methods.getCurrentDateAsDate();
+					Date expireDate2 = null;
+					try {
+						expireDate2 = dateFormat.parse(expireDate);
+					} catch (ParseException e) {
+						DonationPoints.log.info("Unable to parse date: " + expireDate + ". Skipping Entry.");
+					}
+					if (expireDate2 == null) continue;
+					long timeUntilExpiration = (expireDate2.getTime() - currentDate.getTime()); // Returns time
+					if (timeUntilExpiration <= 0) {
+						String user = rs2.getString("player");
+						String pack = rs2.getString("package");
+						List<String> commands = plugin.getConfig().getStringList("packages." + pack + ".expirecommands");
+						for (String cmd: commands) {	
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
+						}
+						DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND package = '" + pack + "';");
+						DonationPoints.log.info("Expired " + user + "'s " + pack + " package.");
+					}
+				}
+			} while (rs2.next());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static boolean NeedActive(String player, String packageName) {
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player LIKE '" + player + "' AND package = '" + packageName + "' AND activated = 'false';");
@@ -87,7 +133,8 @@ public class Methods {
 	}
 
 	public static String getCurrentDate() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		
 		Date date = new Date();
 		return dateFormat.format(date);
 	}

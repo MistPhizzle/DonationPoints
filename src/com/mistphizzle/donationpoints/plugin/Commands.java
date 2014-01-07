@@ -2,7 +2,6 @@ package com.mistphizzle.donationpoints.plugin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -678,21 +677,30 @@ public class Commands {
 	}
 
 	public String getExpireDate(String packagename) {
-		int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
-		if (!(days == 0)) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		int minutes = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
+		if (!(minutes == 0)) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Calendar c = Calendar.getInstance();
-			try {
-				c.setTime(sdf.parse(Methods.getCurrentDate()));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			c.add(Calendar.MINUTE, minutes);
+			return sdf.format(c.getTime());
 
-			c.add(Calendar.DATE, days);
-			String exp = sdf.format(c.getTime());
-			return exp;
 		}
 		return null;
+//		int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
+//		if (!(days == 0)) {
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//			Calendar c = Calendar.getInstance();
+//			try {
+//				c.setTime(sdf.parse(Methods.getCurrentDate()));
+//			} catch (ParseException e) {
+//				e.printStackTrace();
+//			}
+//
+//			c.add(Calendar.DATE, days);
+//			String exp = sdf.format(c.getTime());
+//			return exp;
+//		}
+//		return null;
 	}
 
 }
