@@ -482,10 +482,8 @@ public class Commands {
 
 						// Resolve the supplied package name to the case sensitive equivalent from the config.
 						List<String> packages = new ArrayList<String>(plugin.getConfig().getConfigurationSection("packages").getKeys(false));
-						for (String packageName : packages)
-						{
-							if (packageName.toLowerCase().equals(packName.toLowerCase()))
-							{
+						for (String packageName : packages) {
+							if (packageName.toLowerCase().equals(packName.toLowerCase())) {
 								caseSensitivePackName = packageName;
 								break;
 							}
@@ -553,10 +551,8 @@ public class Commands {
 
 					// Resolve the supplied package name to the case sensitive equivalent from the config.
 					List<String> packages = new ArrayList<String>(plugin.getConfig().getConfigurationSection("packages").getKeys(false));
-					for (String packageName : packages)
-					{
-						if (packageName.toLowerCase().equals(packName.toLowerCase()))
-						{
+					for (String packageName : packages) {
+						if (packageName.toLowerCase().equals(packName.toLowerCase())) {
 							caseSensitivePackName = packageName;
 							break;
 						}
