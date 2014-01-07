@@ -558,6 +558,25 @@ public class Commands {
 						}
 					}
 					packName = caseSensitivePackName;
+					
+					if (plugin.getConfig().contains("packages." + PackName + ".RestrictToWorlds")) {
+						Player p = (Player) s;
+						String worldName = p.getLocation().getWorld().getName().toLowerCase();
+						boolean worldFound = false;		
+						
+						List<String> worlds = plugin.getConfig().getStringList("packages." + PackName + ".RestrictToWorlds");
+						for (String world : worlds) {
+							if (worldName.equals(world.toLowerCase())) {
+								worldFound = true;
+								break;
+							}
+						}
+						
+						if (worldFound == false) {
+							s.sendMessage(Prefix + RestrictedWorldMessage.replace("%worlds", worlds.toString()));
+							return true;
+						}
+					}
 						
 					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
 						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
