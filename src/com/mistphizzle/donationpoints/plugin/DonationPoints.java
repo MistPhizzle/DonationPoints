@@ -68,6 +68,7 @@ public class DonationPoints extends JavaPlugin {
 		Commands.Server = getConfig().getString("General.ServerName");
 		Commands.Prefix = Methods.colorize(getConfig().getString("messages.Prefix"));
 		Commands.InvalidArguments = Methods.colorize(getConfig().getString("messages.InvalidArguments"));
+		Commands.RestrictedWorldMessage = Methods.colorize(getConfig().getString("messages.RestrictedWorld"));
 		Commands.noPermissionMessage = Methods.colorize(getConfig().getString("messages.NoPermission"));
 		Commands.NoCommandExists = Methods.colorize(getConfig().getString("messages.NoCommandExists"));
 		Commands.ExpireDate = Methods.colorize(getConfig().getString("messages.ExpireDate"));
