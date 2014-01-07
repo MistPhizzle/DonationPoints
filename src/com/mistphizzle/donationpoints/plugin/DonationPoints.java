@@ -122,6 +122,12 @@ public class DonationPoints extends JavaPlugin {
 			Methods.purgeEmptyAccounts();
 			DonationPoints.log.info("Purged Empty Accounts.");
 		}
+		
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this,  new Runnable() {
+			public void run() {
+				Methods.checkForExpiredPackages();
+			}
+		}, 0, getConfig().getInt("General.ExpirationCheckTimer") * 20);
 
 		if (getConfig().getBoolean("General.ExpireOnStartup")) {
 			Methods.checkForExpiredPackages();
@@ -157,6 +163,7 @@ public class DonationPoints extends JavaPlugin {
 		getConfig().addDefault("General.SpecificPermissions", false);
 		getConfig().addDefault("General.PurgeEmptyAccountsOnStartup", true);
 		getConfig().addDefault("General.ServerName", "Minecraft Server");
+		getConfig().addDefault("General.ExpirationCheckTimer", 300);
 		// MySQL
 		getConfig().addDefault("MySQL.engine", "sqlite");
 		getConfig().addDefault("MySQL.SQLiteDB", "donationpoints.db");

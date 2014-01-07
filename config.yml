@@ -8,6 +8,7 @@ General:
   SpecificPermissions: false
   PurgeEmptyAccountsOnStartup: true
   ServerName: Minecraft Server
+  ExpirationCheckTimer: 300
 MySQL:
   engine: sqlite
   SQLiteDB: donationpoints.db
