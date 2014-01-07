@@ -85,7 +85,6 @@ public final class DBConnection {
 					sql.modifyQuery("ALTER TABLE " + frameTable + " ADD server VARCHAR(255)");
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -148,6 +147,7 @@ public final class DBConnection {
 				md = sql.getConnection().getMetaData();
 				ResultSet rs1 = md.getColumns(null, null, transactionTable, "server");
 				ResultSet rs2 = md.getColumns(null, null, frameTable, "server");
+				
 				if (!rs1.next()) {
 					sql.modifyQuery("ALTER TABLE " + transactionTable + " ADD server STRING(255)");
 				}

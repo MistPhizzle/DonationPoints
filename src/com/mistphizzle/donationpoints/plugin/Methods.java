@@ -273,7 +273,7 @@ public class Methods {
 		plugin.getConfig().set("packages.ExamplePackage.expires", false);
 		plugin.getConfig().set("packages.ExamplePackage.expiretime", 3);
 		plugin.getConfig().set("packages.ExamplePackage.commands", exampleCommands);
-		plugin.getConfig().set("packages.ExamplePackage.eexpirecommands", expireCommands);
+		plugin.getConfig().set("packages.ExamplePackage.expirecommands", expireCommands);
 		plugin.getConfig().set("packages.ExamplePackage.requireprerequisite", false);
 		plugin.getConfig().set("packages.ExamplePackage.RequiredInventorySpace", 0);
 		
