@@ -478,6 +478,20 @@ public class Commands {
 							return true;
 						}
 						String packName = args[2];
+						String caseSensitivePackName = packName;
+
+						// Resolve the supplied package name to the case sensitive equivalent from the config.
+						List<String> packages = new ArrayList<String>(plugin.getConfig().getConfigurationSection("packages").getKeys(false));
+						for (String packageName : packages)
+						{
+							if (packageName.toLowerCase().equals(packName.toLowerCase()))
+							{
+								caseSensitivePackName = packageName;
+								break;
+							}
+						}
+						packName = caseSensitivePackName;
+						
 						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
 						String description = plugin.getConfig().getString("packages." + packName + ".description");
 						s.sendMessage("-----§e" + packName + " Info§f-----");
@@ -535,6 +549,20 @@ public class Commands {
 						return true;				
 					}
 					String packName = args[1];
+					String caseSensitivePackName = packName;
+
+					// Resolve the supplied package name to the case sensitive equivalent from the config.
+					List<String> packages = new ArrayList<String>(plugin.getConfig().getConfigurationSection("packages").getKeys(false));
+					for (String packageName : packages)
+					{
+						if (packageName.toLowerCase().equals(packName.toLowerCase()))
+						{
+							caseSensitivePackName = packageName;
+							break;
+						}
+					}
+					packName = caseSensitivePackName;
+						
 					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
 						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
 						plugin.saveConfig();
