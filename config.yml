@@ -22,6 +22,7 @@ MySQL:
   ItemFrameTable: dp_frames
 messages:
   Prefix: '&7[&aDonationPoints&7]'
+  RestrictedWorld: '&cYou cannot purchase that in this world.  You need to be in : %worlds'
   NoPermission: '&cYou dont have permission to do that.'
   InvalidArguments: '&cYou have specified an incorrect number of arguments.'
   PlayerOnly: '&cThis command is only available to players.'

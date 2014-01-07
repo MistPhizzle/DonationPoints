@@ -24,6 +24,8 @@ public class Commands {
 
 	// Strings
 	public static String Prefix;
+	public static String RestrictedWorldMessage;
+	public static String noPermissionMessage;
 	public static String noPermissionMessage;
 	public static String InvalidArguments;
 	public static String NoCommandExists;
@@ -482,10 +484,8 @@ public class Commands {
 
 						// Resolve the supplied package name to the case sensitive equivalent from the config.
 						List<String> packages = new ArrayList<String>(plugin.getConfig().getConfigurationSection("packages").getKeys(false));
-						for (String packageName : packages)
-						{
-							if (packageName.toLowerCase().equals(packName.toLowerCase()))
-							{
+						for (String packageName : packages) {
+							if (packageName.toLowerCase().equals(packName.toLowerCase())) {
 								caseSensitivePackName = packageName;
 								break;
 							}
@@ -553,15 +553,32 @@ public class Commands {
 
 					// Resolve the supplied package name to the case sensitive equivalent from the config.
 					List<String> packages = new ArrayList<String>(plugin.getConfig().getConfigurationSection("packages").getKeys(false));
-					for (String packageName : packages)
-					{
-						if (packageName.toLowerCase().equals(packName.toLowerCase()))
-						{
+					for (String packageName : packages) {
+						if (packageName.toLowerCase().equals(packName.toLowerCase())) {
 							caseSensitivePackName = packageName;
 							break;
 						}
 					}
 					packName = caseSensitivePackName;
+					
+					if (plugin.getConfig().contains("packages." + PackName + ".RestrictToWorlds")) {
+						Player p = (Player) s;
+						String worldName = p.getLocation().getWorld().getName().toLowerCase();
+						boolean worldFound = false;		
+						
+						List<String> worlds = plugin.getConfig().getStringList("packages." + PackName + ".RestrictToWorlds");
+						for (String world : worlds) {
+							if (worldName.equals(world.toLowerCase())) {
+								worldFound = true;
+								break;
+							}
+						}
+						
+						if (worldFound == false) {
+							s.sendMessage(Prefix + RestrictedWorldMessage.replace("%worlds", worlds.toString()));
+							return true;
+						}
+					}
 						
 					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
 						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
