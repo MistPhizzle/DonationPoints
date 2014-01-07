@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -19,6 +20,22 @@ public class Methods {
 
 	public Methods(DonationPoints instance) {
 		plugin = instance;
+	}
+	
+	public static HashMap<String, Double> accounts = new HashMap<String, Double>();
+	
+	public static void loadAccounts() {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.playerTable);
+		try {
+			if (!rs2.next()) {
+				return;
+			}
+			do {
+				accounts.put(rs2.getString("player"), rs2.getDouble("balance"));
+			} while (rs2.next());
+		}  catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static Double getBalance(String accountName) {

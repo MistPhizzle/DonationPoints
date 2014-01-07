@@ -138,6 +138,8 @@ public class DonationPoints extends JavaPlugin {
 			Methods.createExamplePackage();
 		}
 		
+		Methods.loadAccounts();
+		
 	}
 
 	@Override
