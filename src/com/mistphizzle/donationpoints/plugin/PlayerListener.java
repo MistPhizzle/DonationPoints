@@ -1,9 +1,6 @@
 package com.mistphizzle.donationpoints.plugin;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
@@ -258,21 +255,21 @@ public class PlayerListener implements Listener {
 				DonationPoints.log.info("Created an account for " + user.toLowerCase());
 			}
 		}
-		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
-		try {
-			if (rs2.next()) {
-				String pack2 = rs2.getString("package");
-
-				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
-				for (String cmd : commands) {
-					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
-				}
-				DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
-			} else if (!rs2.next()) {
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
+//		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
+//		try {
+//			if (rs2.next()) {
+//				String pack2 = rs2.getString("package");
+//
+//				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
+//				for (String cmd : commands) {
+//					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
+//				}
+//				DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
+//			} else if (!rs2.next()) {
+//			}
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//		}
 	}
 	
 
