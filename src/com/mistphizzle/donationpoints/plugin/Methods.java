@@ -102,6 +102,24 @@ public class Methods {
 		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.transactionTable + "(player, package, price, date, activated, expires, expiredate, expired, server) VALUES ('" + player + "', '" + packageName + "', " + price + ", '" + date + "', '" + activated + "', '" + expires + "', '" + expiredate + "', '" + expired + "', '" + server + "');");
 	}
 	
+	public static int getTotalPackagePurchased(String player, String pack) {
+		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + player.toLowerCase() + "' AND package = '" + pack + "'");
+		int total = 0;
+		try {
+			while (rs2.next()) {
+				total++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return total;
+	}
+	
+	public static boolean doesPackageExpire(String pack) {
+		if (plugin.getConfig().getInt("packages." + pack + ".ExpireTime") != 0) return true;
+		return false;
+	}
+	
 	public static Date getCurrentDateAsDate() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();

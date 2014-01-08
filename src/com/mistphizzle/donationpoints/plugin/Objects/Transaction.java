@@ -11,13 +11,13 @@ public class Transaction {
 	final Double price;
 	final String packageName;
 	final String date;
-	final Boolean activated;
-	final Boolean expires;
+	final String activated;
+	final String expires;
 	final String expiredate;
-	final Boolean expired;
+	final String expired;
 	final String server;
 
-	public Transaction(String player, Double price, String packageName, String date, boolean activated, boolean expires, String expiredate, boolean expired, String server) {
+	public Transaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired, String server) {
 		this.player = player;
 		this.price = price;
 		this.packageName = packageName;
