@@ -19,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.mistphizzle.donationpoints.plugin.Objects.Transaction;
+
 public class Methods {
 
 	static DonationPoints plugin;
@@ -96,6 +98,10 @@ public class Methods {
 	public static void setPoints (Double amount, String accountName) {
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
 		accounts.put(accountName.toLowerCase(), amount);
+	}
+	
+	public static void logTransaction(Transaction tran) {
+		DBConnection.sql.modifyQuery("INSERT INTO " + DBConnection.transactionTable + "(player, package, price, date, activated, expires, expiredate, expired, server) VALUES ('" + Transaction.getPlayer() + "', '" + Transaction.getPackageName() + "', " + Transaction.getPrice() + ", '" + Transaction.getDate() + "', '" + Transaction.getActivated() + "', '" + Transaction.getExpires() + "', '" + Transaction.getExpireDate() + "', '" + Transaction.hasExpired()+ "', '" + Transaction.getServer() + "');");
 	}
 
 	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired, String server) {

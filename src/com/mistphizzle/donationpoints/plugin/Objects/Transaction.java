@@ -82,26 +82,24 @@ public class Transaction {
 		return null;
 	}
 	
-	public static Boolean getActivated() {
+	public static String getActivated() {
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable);
 		try {
-			if (rs2.getString("activated").equals("true")) return true;
-			return false;
+			return rs2.getString("activated");
 		} catch (SQLException e ) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
-	public static Boolean getExpires() {
+	public static String getExpires() {
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable);
 		try {
-			if (rs2.getString("expires").equals("true")) return true;
-			return false;
+			return rs2.getString("expires");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
 	public static String getExpireDate() {
@@ -114,15 +112,14 @@ public class Transaction {
 		return null;
 	}
 	
-	public static Boolean hasExpired() {
+	public static String hasExpired() {
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable);
 		try {
-			if (rs2.getString("expired").equals("true")) return true;
-			return false;
+			return rs2.getString("expired");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
 	public static String getServer() {

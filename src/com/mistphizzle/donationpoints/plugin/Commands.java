@@ -283,14 +283,12 @@ public class Commands {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
-					String sender = s.getName();
 					if (!PlayerListener.purchases.containsKey(s.getName().toLowerCase())) {
 						s.sendMessage(Prefix + NoPurchaseStarted);
 						return true;
 					}
 
 					String pack = PlayerListener.purchases.get(s.getName().toLowerCase());
-					String date = Methods.getCurrentDate();
 					Double price;
 
 					if (Methods.hasPermission(s, "donationpoints.free")) {
@@ -372,6 +370,7 @@ public class Commands {
 						s.sendMessage(Prefix + PackageActivated.replace("%pack", pack));
 					}
 					PlayerListener.purchases.remove(s.getName().toLowerCase());
+					Methods.logTransaction(tran);
 				} if (args[0].equalsIgnoreCase("activate")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.activate")) {
 						s.sendMessage(Prefix + noPermissionMessage);
@@ -671,7 +670,7 @@ public class Commands {
 	}
 
 	public String getExpireDate(String packagename) {
-		int minutes = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
+		int minutes = plugin.getConfig().getInt("packages." + packagename + ".ExpireTime");
 		if (!(minutes == 0)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Calendar c = Calendar.getInstance();
