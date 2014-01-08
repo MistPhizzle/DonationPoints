@@ -11,8 +11,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import net.milkbowl.vault.economy.Economy;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class Methods {
 
@@ -259,24 +264,65 @@ public class Methods {
 		return false;
 	}
 	
+	public static Economy econ;
+	public static boolean setupEconomy() {
+		if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) {
+			return false;
+		}
+		
+		RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
+		if (rsp == null) return false;
+		
+		econ = rsp.getProvider();
+		return econ != null;
+	}
+	
+	public static boolean hasPermission(CommandSender player, String permission) {
+		return DonationPoints.permission.has(player, permission);
+	}
+	
 	public static void createExamplePackage() {
-		List<String> exampleCommands = new ArrayList<String>();
-		exampleCommands.add("say %player has purchased the Example Package.");
-		List<String> expireCommands = new ArrayList<String>();
-		expireCommands.add("say %player's Example package has expired.");
+		FileConfiguration config = plugin.getConfig();
 		
-		plugin.getConfig().set("packages.ExamplePackage.price", 100);
-		plugin.getConfig().set("packages.ExamplePackage.description", "This is an exmaple package.");
-		plugin.getConfig().set("packages.ExamplePackage.haslimit", false);
-		plugin.getConfig().set("packages.ExamplePackage.limit", 3);
-		plugin.getConfig().set("packages.ExamplePackage.activateimmediately", true);
-		plugin.getConfig().set("packages.ExamplePackage.expires", false);
-		plugin.getConfig().set("packages.ExamplePackage.expiretime", 3);
-		plugin.getConfig().set("packages.ExamplePackage.commands", exampleCommands);
-		plugin.getConfig().set("packages.ExamplePackage.expirecommands", expireCommands);
-		plugin.getConfig().set("packages.ExamplePackage.requireprerequisite", false);
-		plugin.getConfig().set("packages.ExamplePackage.RequiredInventorySpace", 0);
+		config.set("packages.ExamplePackage.UseVaultEconomy", false);
+		config.set("packages.ExamplePackage.price", 100);
+		config.set("packages.ExamplePackage.description", "This is an example package.");
+		config.set("packages.ExamplePackage.limit", 0);
+		config.set("packages.ExamplePackage.ActivateImmediately", true);
+		config.set("packages.ExamplePackage.ExpireTime", 0);
 		
+		List<String> restrictToWorlds = new ArrayList<String>();
+		restrictToWorlds.add("world");
+		config.set("packages.ExamplePackage.RestrictToWorlds", restrictToWorlds);
+		
+		List<String> activationCommands = new ArrayList<String>();
+		activationCommands.add("say %player has purchased the Example package.");
+		activationCommands.add("p:me purchased the Example Package.");
+		config.set("packages.ExamplePackage.ActivationCommands", activationCommands);
+		
+		List<String> expirationCommands = new ArrayList<String>();
+		expirationCommands.add("say %player's Example Package has expired.");
+		config.set("packages.ExamplePackage.ExpirationCommands", expirationCommands);
+		
+		List<String> preRequisites = new ArrayList<String>();
+		config.set("packages.ExamplePackage.PreRequisites", preRequisites);
+		config.set("packages.ExamplePackage.RequiredInventorySpace", 0);
 		plugin.saveConfig();
+	}
+	
+	public static boolean isPackMisconfigured(String packageName) {
+		FileConfiguration config = plugin.getConfig();
+		
+		if (config.get("packages." + packageName + ".UseVaultEconomy") == null) return true;
+		if (config.get("packages." + packageName + ".price") == null) return true;
+		if (config.getDouble("packages." + packageName + ".price") < 0) return true;
+		if (config.getString("packages." + packageName + ".description") == null) return true;
+		if (config.get("packages." + packageName + ".limit") == null) return true;
+		if (config.getInt("packages." + packageName + ".limit") < 0) return true;
+		if (config.get("packages." + packageName + ".ActivateImmediately") == null) return true;
+		if (config.get("packages." + packageName + ".ExpireTime") == null) return true;
+		if (config.getInt("packages." + packageName + ".ExpireTime") < 0) return true;
+		if (config.get("packages." + packageName + ".ActivationCommands") == null) return true;
+		return false;
 	}
 }

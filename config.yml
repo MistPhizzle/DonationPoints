@@ -1,4 +1,5 @@
 General:
+  UseVaultEconomy: false
   AutoCreateAccounts: true
   SignMessage: Premium
   Points: Points

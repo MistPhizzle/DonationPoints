@@ -1,7 +1,12 @@
 package com.mistphizzle.donationpoints.plugin;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
 import org.bukkit.block.Block;
@@ -22,9 +27,9 @@ public class PlayerListener implements Listener {
 
 	public static String SignMessage;
 	public static String Points;
-	
+
 	public static DonationPoints plugin;
-	
+
 	public static int confirmTask;
 
 	public PlayerListener(DonationPoints instance) {
@@ -41,10 +46,10 @@ public class PlayerListener implements Listener {
 			e.getPlayer().sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
 		}
 	}
-	
+
 	@EventHandler 
 	public void playerEntityInteract(PlayerInteractEntityEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		Entity entity = event.getRightClicked();
 		if (entity instanceof ItemFrame) {
 			Double x = entity.getLocation().getX();
@@ -59,85 +64,99 @@ public class PlayerListener implements Listener {
 					return;
 				}
 				String packName = Methods.getLinkedPackage(x, y, z, world, Commands.Server);
-				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
-					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
-						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
-						plugin.saveConfig();
-					}
-					if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite")) {
-						String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
-						if (!Methods.hasPurchased(player.getName(),  prerequisite, Commands.Server)) {
-							player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack",  prerequisite));
-							event.setCancelled(true);
-							return;
-						}
-					}
-					if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
-						if (!DonationPoints.permission.has(player, "donationpoints.sign.use." + packName)) {
-							player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
-							event.setCancelled(true);
-							return;
-						}
-						if (DonationPoints.permission.has(player, "donationpoints.sign.use." + packName)) {
-							Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-							String username = player.getName().toLowerCase();
-							Double balance = Methods.getBalance(username);
-							if (DonationPoints.permission.has(player, "donationpoints.free")) {
-								price = 0.0;
-								purchases.put(username, packName);
-								if (purchases.containsKey(username)) {
-									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
-									event.setCancelled(true);
-									return;
-								}
-							}
-							if (!DonationPoints.permission.has(player, "donationpoints.free")) {
-								if (!(balance >= price)) {
-									player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
-									event.setCancelled(true);
-								} else if (balance >= price) {
-									purchases.put(username, packName);
-									if (purchases.containsKey(username)) {
-										String price2 = price.toString();
-										player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack",  packName).replace("%amount", price2));
-										event.setCancelled(true);
-										return;
-									}
-								}
-							}
-						}
-					} if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
-						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-						String username = player.getName().toLowerCase();
-						Double balance = Methods.getBalance(username);
+				if (Methods.isPackMisconfigured(packName)) {
+					player.sendMessage(Commands.Prefix + ChatColor.RED + "This package is misconfigured. Consult an administrator.");
+					return;
+				}
 
-						if (DonationPoints.permission.has(player, "donationpoints.free")) {
-							purchases.put(username, packName);
-							if (purchases.containsKey(username)) {
-								player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
-								event.setCancelled(true);
-								return;
-							}
-						} else {
-							if (!(balance >= price)) {
-								player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
-								event.setCancelled(true);
-								return;
-							} else if (balance >= price) {
-								purchases.put(username, packName);
-								if (purchases.containsKey(username)) {
-									String price2 = price.toString();
-									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack",  packName).replace("%amount", price2));
-									event.setCancelled(true);
-									return;
-								}
+				String purchasedPack = packName;
+				boolean usesVault;
+				boolean hasPreRequisites;
+				Set<String> preRequisites = new HashSet<String>();
+
+				if (plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites") == null
+						|| plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites").isEmpty()) {
+					hasPreRequisites = false;
+				} else {
+					hasPreRequisites = true;
+				}
+
+				if (hasPreRequisites) {
+					preRequisites.addAll(plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites"));
+				}
+
+				for (String preRequisite: preRequisites) {
+					if (!Methods.hasPurchased(player.getName(), preRequisite, Commands.Server)) {
+						player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", preRequisite));
+						return;
+					}
+				}
+
+				if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
+					if (!Methods.hasPermission(player, "donationpoitns.sign.use." + purchasedPack)) {
+						player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+						return;
+					}
+				}
+
+				if (plugin.getConfig().getBoolean("packages." + purchasedPack + ".UseVaultEconomy")) {
+					usesVault = true;
+				} else {
+					usesVault = false;
+				}
+
+				Double price;
+				boolean worldRestricted;
+
+				if (plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds") != null
+						&& !plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds").isEmpty()) {
+					worldRestricted = true;
+				} else {
+					worldRestricted = false;
+				}
+				if (worldRestricted) {
+					List<String> applicableWorlds = plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds");
+					if (!applicableWorlds.contains(player.getWorld().getName().toLowerCase())) {
+						player.sendMessage(Commands.RestrictedWorldMessage.replace("%worlds", applicableWorlds.toString()));
+						return;
+					}
+				}
+				
+				if (Methods.hasPermission(player, "donationpoints.free")) {
+					price = 0.0;
+				} else {
+					price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
+				}
+				
+				if (usesVault) {
+					if (!Methods.econ.has(player.getName(), price)) {
+						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+						return;
+					}
+				} else {
+					if (Methods.getBalance(player.getName().toLowerCase()) < price) {
+						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+						return;
+					}
+				}
+				
+				purchases.put(player.getName().toLowerCase(), purchasedPack);
+				if (purchases.containsKey(player.getName().toLowerCase())) {
+					player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%price", price.toString()));
+					confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						public void run() {
+							if (purchases.containsKey(player.getName().toLowerCase())) {
+								purchases.remove(player.getName().toLowerCase());
+								player.sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
 							}
 						}
-					}
+					}, 300L);
 				}
 			}
 		}
 	}
+
+
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
@@ -154,6 +173,10 @@ public class PlayerListener implements Listener {
 				}
 				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
 					String purchasedPack = s.getLine(1);
+					if (Methods.isPackMisconfigured(purchasedPack)) {
+						player.sendMessage(Commands.Prefix + ChatColor.RED + "This package is misconfigured. Consult an administrator.");
+						return;
+					}
 					Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
 					String packDesc = plugin.getConfig().getString("packages." + purchasedPack + ".description");
 					player.sendMessage(Commands.Prefix + Commands.SignLeftClick.replace("%pack", purchasedPack).replace("%price", price.toString()));
@@ -162,85 +185,122 @@ public class PlayerListener implements Listener {
 			}
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-					&& block.getType() == Material.WALL_SIGN) {
-				if (!DonationPoints.permission.has(player, "donationpoints.sign.use")) {
+					&& block.getType() == Material.WALL_SIGN) { // They clicked a sign and are going to purchase a package.
+				if (Methods.hasPermission(player, "donationpoints.sign.use")) {
 					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+					return;
 				}
-				if (DonationPoints.permission.has(player, "donationpoints.sign.use")) {
-					String purchasedPack = s.getLine(1);
-					if (!plugin.getConfig().contains("packages." + purchasedPack + ".requireprerequisite")) {
-						plugin.getConfig().set("packages." + purchasedPack + ".requireprerequisite", false);
-						plugin.saveConfig();
-					}
-					if (plugin.getConfig().getBoolean("packages." + purchasedPack + ".requireprerequisite")) {
-						String prerequisite = plugin.getConfig().getString("packages." + purchasedPack + ".prerequisite");
-						if (!Methods.hasPurchased(player.getName(), prerequisite, Commands.Server)) {
-							player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
-							return;
-						}
-					}
-					if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
-						if (!DonationPoints.permission.has(player, "donationpoints.sign.use." + purchasedPack)) {
-							player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
-							return;
-						}
-						if (DonationPoints.permission.has(player, "donationpoints.sign.use." + purchasedPack)) {
-							Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
-							String username = player.getName().toLowerCase();
-							Double balance = Methods.getBalance(username);
-							if (DonationPoints.permission.has(player, "donationpoints.free")) {
-								purchases.put(username, purchasedPack);
-								if (purchases.containsKey(username)) {
-									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%amount", "0.00").replace("%pack", purchasedPack));
-								}
-							} if (!DonationPoints.permission.has(player, "donationpoints.free")) {
-								if (!(balance >= price)) {
-									player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
-								} else if (balance >= price) {
-									purchases.put(username, purchasedPack);
-									if (purchases.containsKey(username)) {
-										String price2 = price.toString();
-										player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
-									}
+				String purchasedPack = s.getLine(1);
+				boolean usesVault;
+				boolean hasPreRequisites;
+				Set<String> preRequisites = new HashSet<String>();
 
-								}
-							}
-						}
-
-					} 
-					if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
-						Double price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
-						String username = player.getName().toLowerCase();
-						Double balance = Methods.getBalance(username);
-
-						if (DonationPoints.permission.has(player, "donationpoints.free")) {
-							purchases.put(username, purchasedPack);
-							if (purchases.containsKey(username)) {
-								player.sendMessage(Commands.Prefix + "§cUse §3/dp confirm §cto confirm.");
-							}
-						} else {
-							if (!(balance >= price)) {
-								player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
-							} else if (balance >= price) {
-								purchases.put(username, purchasedPack);
-								if (purchases.containsKey(username)) {
-									String price2 = price.toString();
-									player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%amount", price2));
-									confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-										public void run() {
-											if (purchases.containsKey(player.getName().toLowerCase())) {
-												purchases.remove(player.getName().toLowerCase());
-												player.sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
-											}
-										}
-									}, 300L);
-								}
-							}
-						}
-					}
-					event.setUseItemInHand(Result.DENY);
-					event.setUseInteractedBlock(Result.DENY);
+				if (Methods.isPackMisconfigured(purchasedPack)) {
+					player.sendMessage(Commands.Prefix + ChatColor.RED + "This package is misconfigured. Consult an administrator.");
+					return;
 				}
+				if (plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites") == null
+						|| plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites").isEmpty()) {
+					hasPreRequisites = false;
+				} else {
+					hasPreRequisites = true;
+				}
+				if (hasPreRequisites) {
+					preRequisites.addAll(plugin.getConfig().getStringList("packages." + purchasedPack + "PreRequisites"));
+				}
+				for (String preRequisite: preRequisites) {
+					if (!Methods.hasPurchased(player.getName(), preRequisite, Commands.Server)) {
+						player.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", preRequisite));
+						return; // We don't want to let the player purchase the package if they are missing even one of the PreRequisites.
+					}
+				}
+
+				/*
+				 * By this point we have made sure that the player has purchased all of the required PreRequisites and can continue to purchase to the package.
+				 */
+
+				if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
+					if (!Methods.hasPermission(player, "donationpoints.sign.use." + purchasedPack)) {
+						player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+						return;
+					}
+				}
+
+				event.setUseItemInHand(Result.DENY);
+				event.setUseInteractedBlock(Result.DENY);
+
+				/*
+				 * Now we have checked to make sure the player has the permission to buy the package,
+				 * if the SpecificPermission node is true. If the SpecificPermission node is false, we
+				 * checked for Permission earlier, we only care if they can click the sign.
+				 * 
+				 * We can start getting the package information now.
+				 */
+
+				if (plugin.getConfig().getBoolean("packages." + purchasedPack + ".UseVaultEconomy")) {
+					usesVault = true;
+				} else {
+					usesVault = false;
+				}
+
+				Double price;
+				boolean worldRestricted;
+
+				if (plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds") != null
+						&& plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds").isEmpty()) {
+					worldRestricted = true;
+				} else {
+					worldRestricted = false;
+				}
+
+				if (worldRestricted) {
+					List<String> applicableWorlds = plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds");
+					if (!applicableWorlds.contains(player.getWorld().getName().toLowerCase())) {
+						player.sendMessage(Commands.RestrictedWorldMessage.replace("%worlds", applicableWorlds.toString()));
+						return;
+					}
+				}
+
+				/*
+				 * Now we've made sure that the player is in a world where they are allowed to purchase the package.
+				 */
+
+				if (Methods.hasPermission(player, "donationpoints.free")) {
+					price = 0.0;
+				} else {
+					price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
+				}
+
+				if (usesVault) {
+					if (!Methods.econ.has(player.getName(), price)) {
+						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+						return;
+					}
+				} else {
+					if (Methods.getBalance(player.getName().toLowerCase()) < price) {
+						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+						return;
+					}
+				}
+
+				/*
+				 * Now we've checked to make sure that the player has the money / points to make the purchase.
+				 * If the player has the permission node donationpoints.free, the price is 0.
+				 */
+
+				purchases.put(player.getName().toLowerCase(), purchasedPack);
+				if (purchases.containsKey(player.getName().toLowerCase())) {
+					player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%price", price.toString()));
+					confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						public void run() {
+							if (purchases.containsKey(player.getName().toLowerCase())) {
+								purchases.remove(player.getName().toLowerCase());
+								player.sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
+							}
+						}
+					}, 300L);
+				}
+
 			}
 		}
 	}
@@ -252,25 +312,26 @@ public class PlayerListener implements Listener {
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
 			if (!Methods.hasAccount(user.toLowerCase())) {
 				Methods.createAccount(user.toLowerCase());
+				Methods.accounts.put(user.toLowerCase(), 0.0);
 				DonationPoints.log.info("Created an account for " + user.toLowerCase());
 			}
 		}
-//		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
-//		try {
-//			if (rs2.next()) {
-//				String pack2 = rs2.getString("package");
-//
-//				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
-//				for (String cmd : commands) {
-//					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
-//				}
-//				DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
-//			} else if (!rs2.next()) {
-//			}
-//		} catch (SQLException ex) {
-//			ex.printStackTrace();
-//		}
+		//		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
+		//		try {
+		//			if (rs2.next()) {
+		//				String pack2 = rs2.getString("package");
+		//
+		//				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
+		//				for (String cmd : commands) {
+		//					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
+		//				}
+		//				DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
+		//			} else if (!rs2.next()) {
+		//			}
+		//		} catch (SQLException ex) {
+		//			ex.printStackTrace();
+		//		}
 	}
-	
+
 
 }

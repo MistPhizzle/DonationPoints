@@ -5,8 +5,13 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
@@ -285,10 +290,9 @@ public class Commands {
 						Double price2 = plugin.getConfig().getDouble("packages." + pack2 + ".price");
 						String date = Methods.getCurrentDate();
 						String expiredate = getExpireDate(pack2);
-						Boolean haslimit = plugin.getConfig().getBoolean("packages." + pack2 + ".haslimit");
+						int expiretime = plugin.getConfig().getInt("packages." + pack2 + ".ExpireTime");
 						int limit = plugin.getConfig().getInt("packages." + pack2 + ".limit");
-						Boolean activateimmediately = plugin.getConfig().getBoolean("packages." + pack2 + ".activateimmediately");
-						Boolean expires = plugin.getConfig().getBoolean("packages." + pack2 + ".expires");
+						Boolean activateimmediately = plugin.getConfig().getBoolean("packages." + pack2 + ".ActivateImmediately");
 						Integer requiredSlots = plugin.getConfig().getInt("packages." + pack2 + ".RequiredInventorySpace");
 						Player p = (Player) s;
 						if (requiredSlots == null) {
@@ -299,17 +303,19 @@ public class Commands {
 							s.sendMessage(Prefix + RequiredInventorySpace.replace("%slot", requiredSlots2));
 							return true;
 						}
-						
+
 						if (Methods.NeedActive(sender, pack2)) {
 							s.sendMessage(Prefix + NeedActivation.replace("%pack", pack2));
 							s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 							return true;
 						}
-						if (haslimit.equals(false) && activateimmediately.equals(false)) {
+						if (limit == 0 && !activateimmediately) {
 							if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 								Methods.removePoints(price2, sender);
 								String price3 = price2.toString();
 								s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack2).replace("%amount", price3));
+
+								// TODO REDO TRANSACTION CODE
 								Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false", Server);
 							}
 							if (DonationPoints.permission.has(s, "donationpoints.free")) {
@@ -318,11 +324,17 @@ public class Commands {
 							DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
 							s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
 							return true;
-						} if (haslimit.equals(false) && activateimmediately.equals(true)) {
+						} if (limit  == 0 && activateimmediately) {
 							if (activateimmediately.equals(true)) {
-								List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+								List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".ActivationCommands");
 								for (String cmd : commands) {
-									plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+									if (cmd.contains("p:")) {
+										String[] parts = cmd.split(":");
+										String cmd2 = parts[1];
+										plugin.getServer().dispatchCommand(s, cmd2);
+									} else {
+										plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+									}
 								}
 								if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 									Methods.removePoints(price2, sender);
@@ -334,17 +346,19 @@ public class Commands {
 								}
 								s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
 								PlayerListener.purchases.remove(s.getName().toLowerCase());
-							} if (expires.equals(true)) {
+							} if (expiretime > 0) {
+								// TODO REWORK LOGGING TRANSACTIONS
 								Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false", Server);
 								s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 								return true;
-							} else if (expires.equals(false)) {
+							} else if (expiretime == 0) {
+								// TODO REWORK LOGGING TRANSACTIONS
 								Methods.logTransaction(sender, price2, pack2, date, "true", "false", null, null, Server);
 								DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 								return true;
 							} return true;
-						} else if (haslimit.equals(true)) {
+						} else if (limit > 0) {
 							ResultSet numberpurchased = DBConnection.sql.readQuery("SELECT COUNT(*) AS size FROM " + DBConnection.transactionTable + " WHERE player = '" + s.getName().toLowerCase() + "' AND package = '" + pack2 + "' AND server = '" + Server + "';");
 							try {
 								numberpurchased.next();
@@ -354,9 +368,14 @@ public class Commands {
 									s.sendMessage(Prefix + LimitReached.replace("%pack", pack2).replace("%limit", limit2));
 								} else if (size < limit) {
 									if (activateimmediately.equals(true)) {
-										List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".commands");
+										List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".ActivationCommands");
 										for (String cmd : commands) {
-											plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+											if (cmd.contains("p:")) {
+												String[] parts = cmd.split(":");
+												plugin.getServer().dispatchCommand(s, parts[1]);
+											} else {
+												plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", s.getName()));
+											}
 										}
 										String price3 = price2.toString();
 										if (!DonationPoints.permission.has(s, "donationpoints.free")) {
@@ -369,18 +388,20 @@ public class Commands {
 										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + PackageActivated.replace("%pack", pack2));
-										if (expires.equals(true)) {
+										if (expiretime > 0) {
+											// TODO REDO TRANSACTION LOGGING
 											Methods.logTransaction(sender, price2, pack2, date, "true", "true", expiredate, "false", Server);
 											s.sendMessage(Prefix + ExpireDate.replace("%pack", pack2).replace("%expiredate", expiredate));
 											DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 											return true;
-										} else if (expires.equals(false)) {
+										} else if (expiretime == 0) {
+											// TODO REDO TRANSACTION LOGGING
 											Methods.logTransaction(sender, price2, pack2, date, "true", "false", expiredate, "false", Server);
 											DonationPoints.log.info(s.getName().toLowerCase() + " has made a purchase.");
 											return true;
 										} return true;
 									}
-									if (activateimmediately.equals(false))  {
+									if (activateimmediately)  {
 										if (!DonationPoints.permission.has(s, "donationpoints.free")) {
 											Methods.removePoints(price2, sender);
 											String price3 = price2.toString();
@@ -391,9 +412,11 @@ public class Commands {
 										}
 										PlayerListener.purchases.remove(s.getName().toLowerCase());
 										s.sendMessage(Prefix + DPActivate.replace("%pack", pack2));
-										if (expires.equals(true)) {
+										if (expiretime > 0) {
+											// TODO REDO TRANSACTION LOGGING.
 											Methods.logTransaction(sender, price2, pack2, date, "false", "true", null, "false", Server);
-										} else if (expires.equals(false)) {
+										} else if (expiretime == 0) {
+											// TODO REDO TRANSACTION LOGGING
 											Methods.logTransaction(sender, price2, pack2, date, "false", "false", null, "false", Server);
 										}
 										DonationPoints.log.info(s.getName().toLowerCase() + " has made a transaction.");
@@ -490,7 +513,7 @@ public class Commands {
 							}
 						}
 						packName = caseSensitivePackName;
-						
+
 						Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
 						String description = plugin.getConfig().getString("packages." + packName + ".description");
 						s.sendMessage("-----§e" + packName + " Info§f-----");
@@ -559,116 +582,96 @@ public class Commands {
 						}
 					}
 					packName = caseSensitivePackName;
-					
-					if (plugin.getConfig().contains("packages." + packName + ".RestrictToWorlds")) {
-						Player p = (Player) s;
-						String worldName = p.getLocation().getWorld().getName().toLowerCase();
-						boolean worldFound = false;		
-						
-						List<String> worlds = plugin.getConfig().getStringList("packages." + packName + ".RestrictToWorlds");
-						for (String world : worlds) {
-							if (worldName.equals(world.toLowerCase())) {
-								worldFound = true;
-								break;
-							}
-						}
-						
-						if (worldFound == false) {
-							s.sendMessage(Prefix + RestrictedWorldMessage.replace("%worlds", worlds.toString()));
-							return true;
-						}
-					}
-						
-					if (!plugin.getConfig().contains("packages." + packName + ".requireprerequisite")) {
-						plugin.getConfig().set("packages." + packName + ".requireprerequisite", false);
-						plugin.saveConfig();
-					}
-					if (plugin.getConfig().getBoolean("packages." + packName + ".requireprerequisite", true)) {
-						String prerequisite = plugin.getConfig().getString("packages." + packName + ".prerequisite");
-						if (!Methods.hasPurchased(s.getName(), prerequisite, Server)) {
-							s.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", prerequisite));
-							return true;
-						}
-					}
-					Double price = plugin.getConfig().getDouble("packages." + packName + ".price");
-					if (price == 0) {
-						s.sendMessage(Prefix + InvalidPackage);
+
+					String purchasedPack = packName;
+					boolean usesVault;
+					boolean hasPreRequisites;
+					Set<String> preRequisites = new HashSet<String>();
+
+					if (Methods.isPackMisconfigured(purchasedPack)) {
+						s.sendMessage(Commands.Prefix + ChatColor.RED + "This package is misconfigured. Consult an administrator.");
 						return true;
 					}
-					String username = s.getName();
-					Double balance = Methods.getBalance(username.toLowerCase());
-					final Player player = (Player) s;
-					if (plugin.getConfig().getBoolean("General.SpecificPermissions", true)) {
-						if (!DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
-							s.sendMessage(Prefix + noPermissionMessage);
+
+					if (plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites") == null 
+							|| plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites").isEmpty()) {
+						hasPreRequisites = false;
+					} else {
+						hasPreRequisites = true;
+					}
+
+					if (hasPreRequisites) {
+						preRequisites.addAll(plugin.getConfig().getStringList("packages." + purchasedPack + ".PreRequisites"));
+					}
+
+					for (String preRequisite: preRequisites) {
+						if (!Methods.hasPurchased(s.getName().toLowerCase(), preRequisite, Commands.Server)) {
+							s.sendMessage(Commands.Prefix + Commands.DPPrerequisite.replace("%pack", preRequisite));
 							return true;
 						}
-						if (DonationPoints.permission.has(s, "donationpoints.purchase." + packName)) {
-							if (DonationPoints.permission.has(s, "donationpoints.free")) {
-								PlayerListener.purchases.put(username.toLowerCase(), packName);
-							}
-							if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-								s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
-							}
-							PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-								public void run() {
-									if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
-										PlayerListener.purchases.remove(player.getName().toLowerCase());
-										player.sendMessage(Prefix + TooLongOnConfirm);
-									}
-								}
-							}, 300L);
-						} if (!DonationPoints.permission.has(s, "donationpoints.free")) {
-							if (!(balance >= price)) {
-								s.sendMessage(Prefix + NotEnoughPoints);
-							} else if (balance >= price) {
-								PlayerListener.purchases.put(username.toLowerCase(), packName);
+					}
 
-								if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-									String price2 = price.toString();
-									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
-								}
-								PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-									public void run() {
-										if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
-											PlayerListener.purchases.remove(player.getName().toLowerCase());
-											player.sendMessage(Prefix + TooLongOnConfirm);
-										}
-									}
-								}, 300L);
-							}
-
+					if (plugin.getConfig().getBoolean("General.SpecificPermission", true)) {
+						if (!Methods.hasPermission(s, "donationpoints.purchase." + purchasedPack)) {
+							s.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
+							return true;
 						}
 					}
-					if (!plugin.getConfig().getBoolean("General.SpecificPermissions")) {
-						if (DonationPoints.permission.has(s, "donationpoints.free")) {
-							PlayerListener.purchases.put(username.toLowerCase(), packName);
-							if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-								s.sendMessage(Prefix + DPConfirm.replace("%amount", "0.00").replace("%pack", packName));
-							} return true;
-						} else {
-							if (!(balance >= price)) {
-								s.sendMessage(Prefix + NotEnoughPoints);
-								return true;
-							} else if (balance >= price) {
-								PlayerListener.purchases.put(username.toLowerCase(), packName);
-								if (PlayerListener.purchases.containsKey(username.toLowerCase())) {
-									String price2 = price.toString();
-									s.sendMessage(Prefix + DPConfirm.replace("%amount", price2).replace("%pack", packName));
-									
-									PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-										public void run() {
-											if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
-												PlayerListener.purchases.remove(player.getName().toLowerCase());
-												player.sendMessage(Prefix + TooLongOnConfirm);
-											}
-										}
-									}, 300L);
-									
-									return true;
+
+					if (plugin.getConfig().getBoolean("packages." + purchasedPack + ".UseVaultEconomy")) {
+						usesVault = true;
+					} else {
+						usesVault = false;
+					}
+
+					Double price;
+					boolean worldRestricted;
+
+					if (plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds") != null
+							&& plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds").isEmpty()) {
+						worldRestricted = false;
+					} else {
+						worldRestricted = true;
+					}
+
+					if (worldRestricted) {
+						List<String> applicableWorlds = plugin.getConfig().getStringList("packages." + purchasedPack + ".RestrictToWorlds");
+						if (!applicableWorlds.contains(((Player) s).getWorld().getName().toLowerCase())) {
+							s.sendMessage(Commands.Prefix + Commands.RestrictedWorldMessage.replace("%worlds", applicableWorlds.toString()));
+							return true;
+						}
+					}
+
+					if (Methods.hasPermission(s, "donationpoints.free")) {
+						price = 0.0;
+					} else {
+						price = plugin.getConfig().getDouble("packages." + purchasedPack + ".price");
+					}
+
+					if (usesVault) {
+						if (!Methods.econ.has(s.getName(), price)) {
+							s.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+							return true;
+						}
+					} else {
+						if (Methods.getBalance(s.getName().toLowerCase()) < price) {
+							s.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
+							return true;
+						}
+					}
+
+					final Player player = (Player) s;
+					PlayerListener.purchases.put(player.getName().toLowerCase(), purchasedPack);
+					if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
+						player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%price", price.toString()));
+						PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							public void run() {
+								if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
+									PlayerListener.purchases.remove(player.getName().toLowerCase());
+									player.sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
 								}
 							}
-						}
+						}, 300L);
 					}
 				} else if (args[0].equalsIgnoreCase("delete")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.delete")) {
@@ -730,21 +733,21 @@ public class Commands {
 
 		}
 		return null;
-//		int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
-//		if (!(days == 0)) {
-//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//			Calendar c = Calendar.getInstance();
-//			try {
-//				c.setTime(sdf.parse(Methods.getCurrentDate()));
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//			}
-//
-//			c.add(Calendar.DATE, days);
-//			String exp = sdf.format(c.getTime());
-//			return exp;
-//		}
-//		return null;
+		//		int days = plugin.getConfig().getInt("packages." + packagename + ".expiretime");
+		//		if (!(days == 0)) {
+		//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		//			Calendar c = Calendar.getInstance();
+		//			try {
+		//				c.setTime(sdf.parse(Methods.getCurrentDate()));
+		//			} catch (ParseException e) {
+		//				e.printStackTrace();
+		//			}
+		//
+		//			c.add(Calendar.DATE, days);
+		//			String exp = sdf.format(c.getTime());
+		//			return exp;
+		//		}
+		//		return null;
 	}
 
 }

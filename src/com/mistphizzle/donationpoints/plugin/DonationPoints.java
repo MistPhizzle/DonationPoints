@@ -36,10 +36,13 @@ public class DonationPoints extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		DonationPoints.log = this.getLogger();
-		
-		setupPermissions();
 
 		configCheck();
+
+		setupPermissions();
+		if (getConfig().getBoolean("General.UseVaultEconomy")) {
+			Methods.setupEconomy();
+		}
 
 		// Events
 		PluginManager pm = getServer().getPluginManager();
@@ -123,7 +126,7 @@ public class DonationPoints extends JavaPlugin {
 			Methods.purgeEmptyAccounts();
 			DonationPoints.log.info("Purged Empty Accounts.");
 		}
-		
+
 		this.getServer().getScheduler().scheduleSyncRepeatingTask(this,  new Runnable() {
 			public void run() {
 				Methods.checkForExpiredPackages();
@@ -133,13 +136,13 @@ public class DonationPoints extends JavaPlugin {
 		if (getConfig().getBoolean("General.ExpireOnStartup")) {
 			Methods.checkForExpiredPackages();
 		}
-		
+
 		if (getConfig().get("packages") == null) {
 			Methods.createExamplePackage();
 		}
-		
+
 		Methods.loadAccounts();
-		
+
 	}
 
 	@Override
@@ -157,6 +160,7 @@ public class DonationPoints extends JavaPlugin {
 
 	public void configCheck() {
 		// General
+		getConfig().addDefault("General.UseVaultEconomy", false);
 		getConfig().addDefault("General.AutoCreateAccounts", true);
 		getConfig().addDefault("General.SignMessage", "Premium");
 		getConfig().addDefault("General.Points", "Points");
@@ -219,5 +223,5 @@ public class DonationPoints extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 	}
-	
+
 }
