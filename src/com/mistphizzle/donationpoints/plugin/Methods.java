@@ -44,7 +44,7 @@ public class Methods {
 	}
 
 	public static Double getBalance(String accountName) {
-		return accounts.get(accountName);
+		return accounts.get(accountName.toLowerCase());
 //		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
 //			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM " + DBConnection.playerTable + " WHERE player LIKE '" + accountName.toLowerCase() + "';");
 //			try {
@@ -61,7 +61,7 @@ public class Methods {
 	}
 
 	public static boolean hasAccount(String accountName) {
-		return accounts.containsKey(accountName);
+		return accounts.containsKey(accountName.toLowerCase());
 //		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
 //			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM " + DBConnection.playerTable + " WHERE player = '" + accountName.toLowerCase() + "';");
 //			try {
@@ -83,19 +83,19 @@ public class Methods {
 	}
 
 	public static void addPoints (Double amount, String accountName) {
-		Double balance = accounts.get(accountName);
+		Double balance = accounts.get(accountName.toLowerCase());
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance + " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
-		accounts.put(accountName, balance + amount);
+		accounts.put(accountName.toLowerCase(), balance + amount);
 	}
 
 	public static void removePoints (Double amount, String accountName) {
-		Double balance = accounts.get(accountName);
+		Double balance = accounts.get(accountName.toLowerCase());
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = balance - " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
-		accounts.put(accountName, balance - amount);
+		accounts.put(accountName.toLowerCase(), balance - amount);
 	}
 	public static void setPoints (Double amount, String accountName) {
 		DBConnection.sql.modifyQuery("UPDATE " + DBConnection.playerTable + " SET balance = " + amount + " WHERE player = '" + accountName.toLowerCase() + "';");
-		accounts.put(accountName, amount);
+		accounts.put(accountName.toLowerCase(), amount);
 	}
 
 	public static void logTransaction(String player, Double price, String packageName, String date, String activated, String expires, String expiredate, String expired, String server) {

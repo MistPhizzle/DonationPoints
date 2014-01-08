@@ -198,10 +198,10 @@ public class Commands {
 						return true;
 					}
 					if (args.length == 1) {
-						if (!Methods.hasAccount(s.getName())) {
+						if (!Methods.hasAccount(s.getName().toLowerCase())) {
 							s.sendMessage(Prefix + NoAccount.replace("%player", s.getName()));
 						} else {
-							Double balance = Methods.getBalance(s.getName());
+							Double balance = Methods.getBalance(s.getName().toLowerCase());
 							String balance2 = balance.toString();
 							s.sendMessage(Prefix + PlayerBalance.replace("%amount", balance2));
 						}
@@ -211,7 +211,7 @@ public class Commands {
 							return true;
 						}
 						String string = args[1];
-						if (!Methods.hasAccount(string)) {
+						if (!Methods.hasAccount(string.toLowerCase())) {
 							s.sendMessage(Prefix + NoAccount.replace("%player", string));
 						} else {
 							Double balance = Methods.getBalance(string);
