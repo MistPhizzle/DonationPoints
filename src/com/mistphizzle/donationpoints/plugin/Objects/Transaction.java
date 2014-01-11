@@ -119,7 +119,7 @@ public class Transaction {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return "false";
 	}
 	
 	public static String getServer() {

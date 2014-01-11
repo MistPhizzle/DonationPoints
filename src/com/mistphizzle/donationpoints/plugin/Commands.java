@@ -371,6 +371,7 @@ public class Commands {
 					}
 					PlayerListener.purchases.remove(s.getName().toLowerCase());
 					Methods.logTransaction(tran);
+					return true;
 				} if (args[0].equalsIgnoreCase("activate")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.activate")) {
 						s.sendMessage(Prefix + noPermissionMessage);
