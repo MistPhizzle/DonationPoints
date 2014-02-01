@@ -40,3 +40,4 @@ permissions:
       donationpoints.package.info: true
       donationpoints.purchase: true
       donationpoints.activate: true
+      donationpoints.notify: true
