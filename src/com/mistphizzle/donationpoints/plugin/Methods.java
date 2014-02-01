@@ -47,36 +47,10 @@ public class Methods {
 
 	public static Double getBalance(String accountName) {
 		return accounts.get(accountName.toLowerCase());
-//		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
-//			ResultSet rs2 = DBConnection.sql.readQuery("SELECT balance FROM " + DBConnection.playerTable + " WHERE player LIKE '" + accountName.toLowerCase() + "';");
-//			try {
-//				if (rs2.next()) {
-//					Double balance = rs2.getDouble("balance");
-//					Double balance2 = Methods.roundTwoDecimals(balance);
-//					return balance2;
-//				}
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		return null;
 	}
 
 	public static boolean hasAccount(String accountName) {
 		return accounts.containsKey(accountName.toLowerCase());
-//		if (DBConnection.engine.equalsIgnoreCase("mysql") | DBConnection.engine.equalsIgnoreCase("sqlite")) {
-//			ResultSet rs2 = DBConnection.sql.readQuery("SELECT player FROM " + DBConnection.playerTable + " WHERE player = '" + accountName.toLowerCase() + "';");
-//			try {
-//				if (rs2.next()) {
-//					return true;
-//				} else {
-//					return false;
-//				}
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		return true;
 	}
 	
 	public static void createAccount(String accountName) {

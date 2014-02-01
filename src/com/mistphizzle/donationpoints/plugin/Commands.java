@@ -256,13 +256,20 @@ public class Commands {
 					}
 					Double addamount = Double.parseDouble(args[2]);
 					String target = args[1].toLowerCase();
+					
+					Player target2 = Bukkit.getPlayer(target);
+					if (target2 != null) {
+						if (target2.isOnline()) {
+							target = target2.getName();
+						}
+					}
+					
 					if (!Methods.hasAccount(target)) {
 						s.sendMessage(Prefix + NoAccount);
 						return true;
 					}
 					Methods.addPoints(addamount, target);
-					String addamount2 = addamount.toString();
-					s.sendMessage(Prefix + DPGive.replace("%amount", addamount2).replace("%player", target));
+					s.sendMessage(Prefix + DPGive.replace("%amount", addamount.toString()).replace("%player", target));
 				} if (args[0].equalsIgnoreCase("take")) {
 					if (args.length != 3) {
 						s.sendMessage(Prefix + InvalidArguments);
@@ -274,9 +281,14 @@ public class Commands {
 					}
 					Double takeamount = Double.parseDouble(args[2]);
 					String target = args[1].toLowerCase();
-					Methods.removePoints(takeamount, target);
-					String takeamount2 = takeamount.toString();
-					s.sendMessage(Prefix + DPTake.replace("%amount", takeamount2).replace("%player", target));
+					Player target2 = Bukkit.getPlayer(target);
+					if (target2 != null) {
+						if (target2.isOnline()) {
+							target = target2.getName();
+						}
+					}
+					Methods.removePoints(takeamount, target.toLowerCase());
+					s.sendMessage(Prefix + DPTake.replace("%amount", takeamount.toString()).replace("%player", target));
 				} if (args[0].equalsIgnoreCase("confirm")) {
 					Bukkit.getScheduler().cancelTask(PlayerListener.confirmTask);
 					if (!DonationPoints.permission.has(s, "donationpoints.confirm")) {
@@ -433,6 +445,12 @@ public class Commands {
 					}
 					String target = args[1].toLowerCase();
 					Double amount = Double.parseDouble(args[2]);
+					Player target2 = Bukkit.getPlayer(target);
+					if (target2 != null) {
+						if (target2.isOnline()) {
+							target = target2.getName();
+						}
+					}
 					Methods.setPoints(amount, target);
 					String amount2 = amount.toString();
 					s.sendMessage(Prefix + DPSet.replace("%player", target).replace("%amount", amount2));
