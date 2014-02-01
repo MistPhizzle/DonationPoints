@@ -261,6 +261,9 @@ public class Commands {
 					if (target2 != null) {
 						if (target2.isOnline()) {
 							target = target2.getName();
+							if (DonationPoints.permission.has(target2, "donationpoints.notify")) {
+								target2.sendMessage(Prefix + "§3" + addamount + " " + SignListener.Points + " §chas been added to your account.");
+							}
 						}
 					}
 					
@@ -285,6 +288,9 @@ public class Commands {
 					if (target2 != null) {
 						if (target2.isOnline()) {
 							target = target2.getName();
+							if (DonationPoints.permission.has(target2, "donationpoints.notify")) {
+								target2.sendMessage(Prefix + "§3" + takeamount + " " + SignListener.Points + " §chas been taken from your account.");
+							}
 						}
 					}
 					Methods.removePoints(takeamount, target.toLowerCase());
@@ -449,6 +455,9 @@ public class Commands {
 					if (target2 != null) {
 						if (target2.isOnline()) {
 							target = target2.getName();
+							if (DonationPoints.permission.has(target2, "donationpoints.notify")) {
+								target2.sendMessage(Prefix + "§cYour balance has been set to §3" + amount + SignListener.Points);
+							}
 						}
 					}
 					Methods.setPoints(amount, target);
