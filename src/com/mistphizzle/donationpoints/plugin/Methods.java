@@ -118,7 +118,7 @@ public class Methods {
 			if (!rs2.next()) return;
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			do {
-				String expireDate = rs2.getString("expiredate");
+				String expireDate = rs2.getString("expiredate").replaceAll("-", "/");
 				if ("expiredate" != null) { // The package will expire.
 					Date currentDate = Methods.getCurrentDateAsDate();
 					Date expireDate2 = null;
