@@ -38,6 +38,7 @@ public final class DBConnection {
 				DonationPoints.log.info("Creating " + playerTable + " table.");
 				String query = "CREATE TABLE IF NOT EXISTS `" + playerTable + "` ("
 						+ "`id` int(32) NOT NULL AUTO_INCREMENT,"
+						+ "`uuid` VARCHAR(255),"
 						+ "`player` TEXT(32),"
 						+ "`balance` double,"
 						+ " PRIMARY KEY (id));";
@@ -78,11 +79,16 @@ public final class DBConnection {
 				md = sql.getConnection().getMetaData();
 				ResultSet rs1 = md.getColumns(null, null, transactionTable, "server");
 				ResultSet rs2 = md.getColumns(null, null, frameTable, "server");
+				ResultSet rs3 = md.getColumns(null, null, playerTable, "uuid");
 				if (!rs1.next()) {
 					sql.modifyQuery("ALTER TABLE " + transactionTable + " ADD server VARCHAR(255)");
 				}
 				if (!rs2.next()) {
 					sql.modifyQuery("ALTER TABLE " + frameTable + " ADD server VARCHAR(255)");
+				}
+				
+				if (!rs3.next()) {
+					sql.modifyQuery("ALTER TABLE " + playerTable + " ADD uuid VARCHAR(255)");
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -110,6 +116,7 @@ public final class DBConnection {
 			if (!sql.tableExists(playerTable)) {
 				DonationPoints.log.info("Creating " + playerTable + " table.");
 				String query = "CREATE TABLE `" + playerTable + "` ("
+						+ "`uuid` TEXT(255),"
 						+ "`player` TEXT(32),"
 						+ "`balance` DOUBLE(255));";
 				sql.modifyQuery(query);
@@ -147,12 +154,16 @@ public final class DBConnection {
 				md = sql.getConnection().getMetaData();
 				ResultSet rs1 = md.getColumns(null, null, transactionTable, "server");
 				ResultSet rs2 = md.getColumns(null, null, frameTable, "server");
-				
+				ResultSet rs3 = md.getColumns(null, null, playerTable, "uuid");
 				if (!rs1.next()) {
 					sql.modifyQuery("ALTER TABLE " + transactionTable + " ADD server STRING(255)");
 				}
 				if (!rs2.next()) {
 					sql.modifyQuery("ALTER TABLE " + frameTable + " ADD server STRING(255)");
+				}
+				
+				if (!rs3.next()) {
+					sql.modifyQuery("ALTER TABLE " + playerTable + " ADD uuid STRING(255)");
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();

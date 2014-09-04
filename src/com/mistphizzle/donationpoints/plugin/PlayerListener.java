@@ -134,7 +134,7 @@ public class PlayerListener implements Listener {
 						return;
 					}
 				} else {
-					if (Methods.getBalance(player.getName().toLowerCase()) < price) {
+					if (Methods.getBalance(player.getUniqueId()) < price) {
 						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
 						return;
 					}
@@ -277,7 +277,7 @@ public class PlayerListener implements Listener {
 						return;
 					}
 				} else {
-					if (Methods.getBalance(player.getName().toLowerCase()) < price) {
+					if (Methods.getBalance(player.getUniqueId()) < price) {
 						player.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
 						return;
 					}
@@ -308,29 +308,12 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void PlayerJoinEvent(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		String user = p.getName();
 		if (plugin.getConfig().getBoolean("General.AutoCreateAccounts", true)) {
-			if (!Methods.hasAccount(user.toLowerCase())) {
-				Methods.createAccount(user.toLowerCase());
-				Methods.accounts.put(user.toLowerCase(), 0.0);
-				DonationPoints.log.info("Created an account for " + user.toLowerCase());
+			if (!Methods.hasAccount(p.getUniqueId())) {
+				Methods.createAccount(p.getUniqueId());
+				DonationPoints.log.info("Created an account for " + p.getName());
 			}
 		}
-		//		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM " + DBConnection.transactionTable + " WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "';");
-		//		try {
-		//			if (rs2.next()) {
-		//				String pack2 = rs2.getString("package");
-		//
-		//				List<String> commands = plugin.getConfig().getStringList("packages." + pack2 + ".expirecommands");
-		//				for (String cmd : commands) {
-		//					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd.replace("%player", user));
-		//				}
-		//				DBConnection.sql.modifyQuery("UPDATE " + DBConnection.transactionTable + " SET expired = 'true' WHERE player = '" + user + "' AND expiredate = '" + Methods.getCurrentDate() + "' AND package = '" + pack2 + "';");
-		//			} else if (!rs2.next()) {
-		//			}
-		//		} catch (SQLException ex) {
-		//			ex.printStackTrace();
-		//		}
 	}
 
 

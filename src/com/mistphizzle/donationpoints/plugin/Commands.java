@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
@@ -144,14 +145,17 @@ public class Commands {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
-					String sender = s.getName();
-					String target = args[1];
+					
+					Player player = (Player) s;
+//					String sender = s.getName();
+					OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+//					String target = args[1];
 					Double transferamount = Double.parseDouble(args[2]);
-					if (!Methods.hasAccount(sender.toLowerCase())) {
-						s.sendMessage(Prefix + NoAccount.replace("%player", sender));
+					if (!Methods.hasAccount(player.getUniqueId())) {
+						s.sendMessage(Prefix + NoAccount.replace("%player", player.getName()));
 						return true;
 					}
-					if (target.equalsIgnoreCase(sender)) {
+					if (target == null) {
 						s.sendMessage(Prefix + NoTransfer);
 						return true;
 					}
@@ -159,7 +163,7 @@ public class Commands {
 						s.sendMessage(Prefix + "§cYou cannot send a negative balance.");
 						return true;
 					}
-					if (transferamount > Methods.getBalance(sender)) {
+					if (transferamount > Methods.getBalance(player.getUniqueId())) {
 						s.sendMessage(Prefix + NoTransfer);
 						return true;
 					}
@@ -167,12 +171,12 @@ public class Commands {
 						s.sendMessage(Prefix + NoTransfer);
 						return true;
 					}
-					Methods.addPoints(transferamount, target.toLowerCase());
-					Methods.removePoints(transferamount, sender.toLowerCase());
+					Methods.addPoints(transferamount, target.getUniqueId());
+					Methods.removePoints(transferamount, player.getUniqueId());
 					Double transferamount2 = Methods.roundTwoDecimals(transferamount);
-					s.sendMessage(Prefix + TransferSent.replace("%player", target).replace("%amount", transferamount2.toString()));
-					if (Bukkit.getPlayer(target) != null) {
-						Bukkit.getPlayer(target).sendMessage(Prefix + TransferReceive.replace("%player", sender).replace("%amount", transferamount2.toString()));
+					s.sendMessage(Prefix + TransferSent.replace("%player", target.getName()).replace("%amount", transferamount2.toString()));
+					if (Bukkit.getPlayer(target.getUniqueId()) != null) {
+						Bukkit.getPlayer(target.getUniqueId()).sendMessage(Prefix + TransferReceive.replace("%player", player.getName()).replace("%amount", transferamount2.toString()));
 					}
 					return true;
 				} if (args[0].equalsIgnoreCase("reload")) {
@@ -194,11 +198,18 @@ public class Commands {
 						return true;
 					}
 					if (args.length == 1) {
-						if (!Methods.hasAccount(s.getName().toLowerCase())) {
+						if (!(s instanceof Player)) {
+							s.sendMessage(Prefix + PlayerOnly);
+							return true;
+						}
+						
+						Player player = (Player) s;
+						
+						if (!Methods.hasAccount(player.getUniqueId())) {
 							s.sendMessage(Prefix + NoAccount.replace("%player", s.getName()));
 							return true;
 						}
-						Double balance = Methods.getBalance(s.getName().toLowerCase());
+						Double balance = Methods.getBalance(player.getUniqueId());
 						String balance2 = balance.toString();
 						s.sendMessage(Prefix + PlayerBalance.replace("%amount", balance2));
 						return true;
@@ -207,14 +218,18 @@ public class Commands {
 							s.sendMessage(Prefix + noPermissionMessage);
 							return true;
 						}
-						String string = args[1];
-						if (!Methods.hasAccount(string.toLowerCase())) {
-							s.sendMessage(Prefix + NoAccount.replace("%player", string));
+						OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+						if (target == null) {
+							s.sendMessage(Prefix + NoAccount.replace("%player", args[1]));
 							return true;
 						}
-						Double balance = Methods.getBalance(string);
+						if (!Methods.hasAccount(target.getUniqueId())) {
+							s.sendMessage(Prefix + NoAccount.replace("%player", target.getName()));
+							return true;
+						}
+						Double balance = Methods.getBalance(target.getUniqueId());
 						String balance2 = balance.toString();
-						s.sendMessage(Prefix + OtherBalance.replace("%player", string).replace("%amount", balance2));
+						s.sendMessage(Prefix + OtherBalance.replace("%player", target.getName()).replace("%amount", balance2));
 					}
 				} if (args[0].equalsIgnoreCase("create")) {
 					if (!Methods.hasPermission(s, "donationpoints.create")) {
@@ -222,26 +237,35 @@ public class Commands {
 						return true;
 					}
 					if (args.length == 1) {
-						String string = s.getName();
-						if (!Methods.hasAccount(string)) {
-							Methods.createAccount(string);
-							s.sendMessage(Prefix + AccountCreated.replace("%player", string));
+						if (!(s instanceof Player)) {
+							s.sendMessage(Prefix + PlayerOnly);
 							return true;
 						}
-						s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", string));
+						
+						Player player = (Player) s;
+						if (!Methods.hasAccount(player.getUniqueId())) {
+							Methods.createAccount(player.getUniqueId());
+							s.sendMessage(Prefix + AccountCreated.replace("%player", player.getName()));
+							return true;
+						}
+						s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", player.getName()));
 						return true;
 					} if (args.length == 2) {
 						if (!Methods.hasPermission(s, "donationpoints.create.others")) {
 							s.sendMessage(Prefix + noPermissionMessage);
 							return true;
 						}
-						String string = args[1];
-						if (!Methods.hasAccount(string)) {
-							Methods.createAccount(string);
-							s.sendMessage(Prefix + AccountCreated.replace("%player", string));
+						OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+						if (target == null) {
+							s.sendMessage(Prefix + ChatColor.RED + "There is no record of that player playing here, we wont create an account.");
 							return true;
-						} if (Methods.hasAccount(string)) {
-							s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", string));
+						}
+						if (!Methods.hasAccount(target.getUniqueId())) {
+							Methods.createAccount(target.getUniqueId());
+							s.sendMessage(Prefix + AccountCreated.replace("%player", target.getName()));
+							return true;
+						} if (Methods.hasAccount(target.getUniqueId())) {
+							s.sendMessage(Prefix + AccountAlreadyExists.replace("%player", target.getName()));
 							return true;
 						}
 					}					
@@ -255,24 +279,22 @@ public class Commands {
 						return true;
 					}
 					Double addamount = Double.parseDouble(args[2]);
-					String target = args[1].toLowerCase();
 					
-					Player target2 = Bukkit.getPlayer(target);
+					OfflinePlayer target2 = Bukkit.getPlayer(args[1]);
 					if (target2 != null) {
 						if (target2.isOnline()) {
-							target = target2.getName();
-							if (DonationPoints.permission.has(target2, "donationpoints.notify")) {
-								target2.sendMessage(Prefix + "§3" + addamount + " " + SignListener.Points + " §chas been added to your account.");
+							if (DonationPoints.permission.has(Bukkit.getPlayer(target2.getName()), "donationpoints.notify")) {
+								Bukkit.getPlayer(target2.getName()).sendMessage(Prefix + "§3" + addamount + " " + SignListener.Points + " §chas been added to your account.");
 							}
 						}
 					}
 					
-					if (!Methods.hasAccount(target)) {
+					if (!Methods.hasAccount(target2.getUniqueId())) {
 						s.sendMessage(Prefix + NoAccount);
 						return true;
 					}
-					Methods.addPoints(addamount, target);
-					s.sendMessage(Prefix + DPGive.replace("%amount", addamount.toString()).replace("%player", target));
+					Methods.addPoints(addamount, target2.getUniqueId());
+					s.sendMessage(Prefix + DPGive.replace("%amount", addamount.toString()).replace("%player", target2.getName()));
 				} if (args[0].equalsIgnoreCase("take")) {
 					if (args.length != 3) {
 						s.sendMessage(Prefix + InvalidArguments);
@@ -283,22 +305,24 @@ public class Commands {
 						return true;
 					}
 					Double takeamount = Double.parseDouble(args[2]);
-					String target = args[1].toLowerCase();
-					Player target2 = Bukkit.getPlayer(target);
+					OfflinePlayer target2 = Bukkit.getPlayer(args[1]);
 					if (target2 != null) {
 						if (target2.isOnline()) {
-							target = target2.getName();
-							if (DonationPoints.permission.has(target2, "donationpoints.notify")) {
-								target2.sendMessage(Prefix + "§3" + takeamount + " " + SignListener.Points + " §chas been taken from your account.");
+							if (DonationPoints.permission.has(Bukkit.getPlayer(target2.getName()), "donationpoints.notify")) {
+								Bukkit.getPlayer(target2.getName()).sendMessage(Prefix + "§3" + takeamount + " " + SignListener.Points + " §chas been taken from your account.");
 							}
 						}
 					}
-					Methods.removePoints(takeamount, target.toLowerCase());
-					s.sendMessage(Prefix + DPTake.replace("%amount", takeamount.toString()).replace("%player", target));
+					Methods.removePoints(takeamount, target2.getUniqueId());
+					s.sendMessage(Prefix + DPTake.replace("%amount", takeamount.toString()).replace("%player", target2.getName()));
 				} if (args[0].equalsIgnoreCase("confirm")) {
 					Bukkit.getScheduler().cancelTask(PlayerListener.confirmTask);
 					if (!DonationPoints.permission.has(s, "donationpoints.confirm")) {
 						s.sendMessage(Prefix + noPermissionMessage);
+						return true;
+					}
+					if (!(s instanceof Player)) {
+						s.sendMessage(Prefix + PlayerOnly);
 						return true;
 					}
 					if (!PlayerListener.purchases.containsKey(s.getName().toLowerCase())) {
@@ -339,6 +363,7 @@ public class Commands {
 
 					String expires;
 					String activated;
+					Player player2 = (Player) s;
 					int ExpireTime = plugin.getConfig().getInt("packages." + pack + ".ExpireTime");
 					if (ExpireTime != 0) {
 						expires = "true";
@@ -369,7 +394,7 @@ public class Commands {
 						Methods.econ.withdrawPlayer(s.getName(), price);
 						s.sendMessage(Prefix + PurchaseSuccessful.replace("%pack", pack).replace("%amount", price.toString()));
 					} else {
-						Methods.removePoints(price, s.getName().toLowerCase());
+						Methods.removePoints(price, player2.getUniqueId());
 					}
 
 					if (!ActivateImmediately) {
@@ -449,20 +474,18 @@ public class Commands {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;
 					}
-					String target = args[1].toLowerCase();
 					Double amount = Double.parseDouble(args[2]);
-					Player target2 = Bukkit.getPlayer(target);
+					OfflinePlayer target2 = Bukkit.getPlayer(args[1]);
 					if (target2 != null) {
 						if (target2.isOnline()) {
-							target = target2.getName();
-							if (DonationPoints.permission.has(target2, "donationpoints.notify")) {
-								target2.sendMessage(Prefix + "§cYour balance has been set to §3" + amount + SignListener.Points);
+							if (DonationPoints.permission.has(Bukkit.getPlayer(target2.getName()), "donationpoints.notify")) {
+								Bukkit.getPlayer(target2.getName()).sendMessage(Prefix + "§cYour balance has been set to §3" + amount + SignListener.Points);
 							}
 						}
 					}
-					Methods.setPoints(amount, target);
+					Methods.setPoints(amount, target2.getUniqueId());
 					String amount2 = amount.toString();
-					s.sendMessage(Prefix + DPSet.replace("%player", target).replace("%amount", amount2));
+					s.sendMessage(Prefix + DPSet.replace("%player", target2.getName()).replace("%amount", amount2));
 					return true;
 				} if (args[0].equalsIgnoreCase("package")) {					
 					if (args[1].equalsIgnoreCase("info")) {
@@ -535,6 +558,10 @@ public class Commands {
 						return true;
 					}
 				} if (args[0].equalsIgnoreCase("purchase")) {
+					if (!(s instanceof Player)) {
+						s.sendMessage(Prefix + PlayerOnly);
+						return true;
+					}
 					if (args.length != 2) {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
@@ -542,6 +569,7 @@ public class Commands {
 						s.sendMessage(Prefix + noPermissionMessage);
 						return true;				
 					}
+					Player player = (Player) s;
 					String packName = args[1];
 					String caseSensitivePackName = packName;
 
@@ -626,21 +654,21 @@ public class Commands {
 							return true;
 						}
 					} else {
-						if (Methods.getBalance(s.getName().toLowerCase()) < price) {
+						if (Methods.getBalance(player.getUniqueId()) < price) {
 							s.sendMessage(Commands.Prefix + Commands.NotEnoughPoints);
 							return true;
 						}
 					}
 
-					final Player player = (Player) s;
-					PlayerListener.purchases.put(player.getName().toLowerCase(), purchasedPack);
-					if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
+					final Player player3 = (Player) s;
+					PlayerListener.purchases.put(player3.getName().toLowerCase(), purchasedPack);
+					if (PlayerListener.purchases.containsKey(player3.getName().toLowerCase())) {
 						player.sendMessage(Commands.Prefix + Commands.DPConfirm.replace("%pack", purchasedPack).replace("%price", price.toString()));
 						PlayerListener.confirmTask = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							public void run() {
-								if (PlayerListener.purchases.containsKey(player.getName().toLowerCase())) {
-									PlayerListener.purchases.remove(player.getName().toLowerCase());
-									player.sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
+								if (PlayerListener.purchases.containsKey(player3.getName().toLowerCase())) {
+									PlayerListener.purchases.remove(player3.getName().toLowerCase());
+									player3.sendMessage(Commands.Prefix + Commands.TooLongOnConfirm);
 								}
 							}
 						}, 300L);
@@ -654,13 +682,17 @@ public class Commands {
 						s.sendMessage(Prefix + InvalidArguments);
 						return true;
 					}
-					String accountName = args[1];
-					if (!Methods.hasAccount(accountName)) {
-						s.sendMessage(Prefix + NoAccount.replace("%player", accountName));
+					OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+					if (target == null) {
+						s.sendMessage(Prefix + "Unable to process request, perhaps that player didn't have an account?");
+						return true;
+					}
+					if (!Methods.hasAccount(target.getUniqueId())) {
+						s.sendMessage(Prefix + NoAccount.replace("%player", target.getName()));
 						return true;						
 					}
-					Methods.deleteAccount(accountName.toLowerCase());
-					s.sendMessage(Prefix + "§cDeleted §3" + accountName + "'s §caccount.");
+					Methods.deleteAccount(target.getUniqueId());
+					s.sendMessage(Prefix + "§cDeleted §3" + target.getName() + "'s §caccount.");
 				} else if (args[0].equalsIgnoreCase("link")) {
 					if (!DonationPoints.permission.has(s, "donationpoints.link")) {
 						s.sendMessage(Prefix + noPermissionMessage);
