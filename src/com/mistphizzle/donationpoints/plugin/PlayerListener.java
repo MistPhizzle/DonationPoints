@@ -186,7 +186,7 @@ public class PlayerListener implements Listener {
 			if (signline1.equalsIgnoreCase("[" + SignMessage + "]")
 					&& event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
 					&& block.getType() == Material.WALL_SIGN) { // They clicked a sign and are going to purchase a package.
-				if (Methods.hasPermission(player, "donationpoints.sign.use")) {
+				if (!Methods.hasPermission(player, "donationpoints.sign.use")) {
 					player.sendMessage(Commands.Prefix + Commands.noPermissionMessage);
 					return;
 				}
